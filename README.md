@@ -1,75 +1,70 @@
-# Nuxt Minimal Starter
+# Pelorus MVP
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Pelorus is an AI-powered underwriting submission triage prototype.
+
+Core flow:
+1. Paste underwriting guidelines.
+2. Generate structured rules.
+3. Paste a submission.
+4. Extract structured facts.
+5. Evaluate pass/fail against the rules.
+
+## AI Architecture (Claude Only)
+
+All intelligence uses Anthropic Claude.
+
+- `server/lib/ai/anthropic.ts`: Claude client + prompts + strict JSON parsing/validation
+- `server/lib/ai/index.ts`: routing layer for Claude-backed generation/extraction
+
+Primary exported functions:
+- `generateRulesFromGuidelines(guidelineText: string): Promise<Rule[]>`
+- `extractFactsFromSubmission(submissionText: string, rules: Rule[]): Promise<ExtractedFact[]>`
+
+Behavior:
+- `ANTHROPIC_API_KEY` is required.
+- If the key is missing or Claude fails, API endpoints return an error (no fallback parsing).
 
 ## Setup
 
-Make sure to install dependencies:
+### Install
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+### Environment
 
-Start the development server on `http://localhost:3000`:
+Create `.env` with:
 
 ```bash
-# npm
+ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_MODEL=claude-sonnet-4-6
+```
+
+Notes:
+- `ANTHROPIC_API_KEY` enables Claude-backed parsing/extraction.
+- `ANTHROPIC_MODEL` is optional; defaults to `claude-sonnet-4-6`.
+
+### Run
+
+```bash
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Open `http://localhost:3000`.
 
-Build the application for production:
+## API Endpoints
 
-```bash
-# npm
-npm run build
+- `POST /api/rules` -> `{ rules: Rule[] }`
+- `POST /api/facts` -> `{ facts: ExtractedFact[] }`
 
-# pnpm
-pnpm build
+Both endpoints return useful error payloads when AI calls fail.
 
-# yarn
-yarn build
+## Types
 
-# bun
-bun run build
-```
+The existing flexible model is preserved in `app/types/models.ts`:
+- `Rule`
+- `ExtractedFact`
+- `EvaluationResult`
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Rule evaluation remains dynamic (`field`, `operator`, `value`) in `app/utils/ruleEngine.ts`.
