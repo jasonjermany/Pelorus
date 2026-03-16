@@ -25,3 +25,19 @@ export interface EvaluationResult {
   requiresManualReview: boolean
   reason: string
 }
+
+export type SubmissionDecision = 'PASS' | 'REFER' | 'FAIL'
+
+export interface ProcessedSubmission {
+  id: string
+  companyName: string
+  createdAt: string
+  status: SubmissionDecision
+  summary: string
+  guidelinesText: string
+  submissionText: string
+  rules: Rule[]
+  facts: ExtractedFact[]
+  additionalFacts: ExtractedFact[]
+  evaluation: EvaluationResult[]
+}

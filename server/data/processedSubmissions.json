@@ -1,0 +1,2946 @@
+[
+  {
+    "companyName": "SUBMISSION",
+    "status": "REFER",
+    "summary": "1 failed, 4 unknown",
+    "guidelinesText": "UNDERWRITING GUIDELINES – SMALL COMMERCIAL PACKAGE\n\nTARGET CLASSES\n- Casual dining restaurants\n- Coffee shops and cafes\n- Small bakeries\n- Boutique retail stores\n- Florists\n- Small professional offices\n\nBUSINESS REQUIREMENTS\n- Minimum years in business: 3\n- Minimum years with current owner: 2\n- Maximum annual revenue: $5,000,000\n- Maximum employees: 40\n\nPROPERTY REQUIREMENTS\n- Building age must be 40 years or newer OR have updated electrical and plumbing\n- Roof must be less than 20 years old\n- Fire extinguishers required and serviced\n- Smoke detectors required\n- Sprinkler system preferred but not required\n- No structural damage\n\nOCCUPANCY\n- Owner occupied preferred (50% or greater)\n- Multi-tenant buildings acceptable if tenants are low hazard\n- No manufacturing or heavy industrial operations allowed\n\nRESTAURANT REQUIREMENTS\nAcceptable:\n- Casual dining\n- Coffee shops\n- Bakeries\n\nConditions:\n- Deep fryers allowed only with automatic suppression systems\n- Commercial hood suppression system required\n- Liquor sales allowed only if less than 40% of revenue\n\nDECLINE IF\n- Nightclubs\n- Bars where liquor is more than 50% of revenue\n- Hookah lounges\n\nPROPERTY VALUE LIMITS\n- Maximum building value: $3,000,000\n- Maximum contents value: $1,000,000\n- Business interruption coverage allowed\n\nLOSS HISTORY\nAcceptable:\n- Maximum 2 losses within the past 5 years\n- No single loss greater than $100,000\n\nDECLINE IF\n- Fire loss within the past 3 years\n- Pattern of slip and fall claims\n\nINELIGIBLE RISKS\n- Vacant properties\n- Cannabis operations\n- Firearms sales\n- Hazardous chemical storage\n- Nightclubs\n- Adult entertainment businesses\n",
+    "submissionText": "SUBMISSION\n\nInsured Name: Golden Spoon Café LLC\nDBA: Golden Spoon Café\nEntity Type: Limited Liability Company\nYears in Business: 6\nYears with Current Owner: 6\nNAICS Code: 722513 – Limited-Service Restaurants\n\nLOCATION\nRisk Address: 214 Market Street\nCity: Portland\nState: OR\nZIP: 97205\n\nBUILDING INFORMATION\nBuilding Type: Mixed-use building\nYear Built: 1998\nConstruction: Masonry\nRoof: Replaced in 2018\n\nOCCUPANCY\nPrimary Occupancy: Coffee shop / café\nOwner Occupied: 100%\nSecondary Tenants: None\nHours of Operation: 6 AM – 4 PM\nNumber of Employees: 12\n\nOPERATIONS\nAnnual Revenue: $1,200,000\nCooking Operations: Light cooking\nCooking Equipment: Espresso machines, panini press, commercial oven\nDeep Fryer: No\nLiquor Sales: No\n\nPROPERTY COVERAGE REQUESTED\nBuilding Coverage: Not requested (tenant space)\nBusiness Personal Property: $250,000\nBusiness Income: $150,000\n\nLIABILITY COVERAGE\nGeneral Liability Limit: $1,000,000 per occurrence / $2,000,000 aggregate\n\nSAFETY CONTROLS\nFire extinguishers inspected annually\nSmoke detectors installed\nNo open flame cooking\n\nLOSS HISTORY (5 YEARS)\nNo losses reported\n",
+    "rules": [
+      {
+        "id": "rule_001",
+        "sourceText": "Minimum years in business: 3",
+        "field": "years_in_business",
+        "operator": ">=",
+        "value": 3,
+        "normalizedExpression": "years_in_business >= 3"
+      },
+      {
+        "id": "rule_002",
+        "sourceText": "Minimum years with current owner: 2",
+        "field": "years_with_current_owner",
+        "operator": ">=",
+        "value": 2,
+        "normalizedExpression": "years_with_current_owner >= 2"
+      },
+      {
+        "id": "rule_003",
+        "sourceText": "Maximum annual revenue: $5,000,000",
+        "field": "annual_revenue",
+        "operator": "<=",
+        "value": 5000000,
+        "normalizedExpression": "annual_revenue <= 5000000"
+      },
+      {
+        "id": "rule_004",
+        "sourceText": "Maximum employees: 40",
+        "field": "number_of_employees",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "number_of_employees <= 40"
+      },
+      {
+        "id": "rule_005",
+        "sourceText": "Building age must be 40 years or newer",
+        "field": "roof_age_years",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "roof_age_years <= 40"
+      },
+      {
+        "id": "rule_006",
+        "sourceText": "Roof must be less than 20 years old",
+        "field": "roof_age_years",
+        "operator": "<",
+        "value": 20,
+        "normalizedExpression": "roof_age_years < 20"
+      },
+      {
+        "id": "rule_007",
+        "sourceText": "Fire extinguishers required and serviced",
+        "field": "fire_extinguishers_present_and_serviced",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "fire_extinguishers_present_and_serviced = true"
+      },
+      {
+        "id": "rule_008",
+        "sourceText": "Smoke detectors required",
+        "field": "smoke_detectors_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "smoke_detectors_present = true"
+      },
+      {
+        "id": "rule_009",
+        "sourceText": "No structural damage",
+        "field": "structural_damage_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "structural_damage_present = false"
+      },
+      {
+        "id": "rule_010",
+        "sourceText": "Owner occupied preferred (50% or greater)",
+        "field": "occupancy_owner_occupied_pct",
+        "operator": ">=",
+        "value": 50,
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50"
+      },
+      {
+        "id": "rule_011",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "manufacturing_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "manufacturing_operations_present = false"
+      },
+      {
+        "id": "rule_012",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "heavy_industrial_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "heavy_industrial_operations_present = false"
+      },
+      {
+        "id": "rule_013",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "deep_fryer_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "deep_fryer_present = true"
+      },
+      {
+        "id": "rule_014",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "automatic_suppression_system_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "automatic_suppression_system_present = true"
+      },
+      {
+        "id": "rule_015",
+        "sourceText": "Commercial hood suppression system required",
+        "field": "commercial_hood_suppression_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "commercial_hood_suppression_present = true"
+      },
+      {
+        "id": "rule_016",
+        "sourceText": "Liquor sales allowed only if less than 40% of revenue",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<",
+        "value": 40,
+        "normalizedExpression": "liquor_sales_pct_revenue < 40"
+      },
+      {
+        "id": "rule_017",
+        "sourceText": "Bars where liquor is more than 50% of revenue – decline",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<=",
+        "value": 50,
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50"
+      },
+      {
+        "id": "rule_018",
+        "sourceText": "Maximum building value: $3,000,000",
+        "field": "building_value",
+        "operator": "<=",
+        "value": 3000000,
+        "normalizedExpression": "building_value <= 3000000"
+      },
+      {
+        "id": "rule_019",
+        "sourceText": "Maximum contents value: $1,000,000",
+        "field": "contents_value",
+        "operator": "<=",
+        "value": 1000000,
+        "normalizedExpression": "contents_value <= 1000000"
+      },
+      {
+        "id": "rule_020",
+        "sourceText": "Maximum 2 losses within the past 5 years",
+        "field": "loss_count_past_5_years",
+        "operator": "<=",
+        "value": 2,
+        "normalizedExpression": "loss_count_past_5_years <= 2"
+      },
+      {
+        "id": "rule_021",
+        "sourceText": "No single loss greater than $100,000",
+        "field": "largest_single_loss_amount",
+        "operator": "<=",
+        "value": 100000,
+        "normalizedExpression": "largest_single_loss_amount <= 100000"
+      },
+      {
+        "id": "rule_022",
+        "sourceText": "Fire loss within the past 3 years – decline",
+        "field": "fire_loss_past_3_years",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "fire_loss_past_3_years = false"
+      },
+      {
+        "id": "rule_023",
+        "sourceText": "Pattern of slip and fall claims – decline",
+        "field": "slip_and_fall_claim_pattern",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "slip_and_fall_claim_pattern = false"
+      },
+      {
+        "id": "rule_024",
+        "sourceText": "Vacant properties – ineligible",
+        "field": "vacancy_status",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "vacancy_status = false"
+      },
+      {
+        "id": "rule_025",
+        "sourceText": "Cannabis operations – ineligible",
+        "field": "controlled_substances_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "controlled_substances_present = false"
+      },
+      {
+        "id": "rule_026",
+        "sourceText": "Firearms sales – ineligible",
+        "field": "firearms_sales_storage",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "firearms_sales_storage = false"
+      },
+      {
+        "id": "rule_027",
+        "sourceText": "Hazardous chemical storage – ineligible",
+        "field": "hazardous_materials_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hazardous_materials_present = false"
+      },
+      {
+        "id": "rule_028",
+        "sourceText": "Nightclubs – ineligible",
+        "field": "nightclub_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "nightclub_operations_present = false"
+      },
+      {
+        "id": "rule_029",
+        "sourceText": "Adult entertainment businesses – ineligible",
+        "field": "adult_entertainment_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "adult_entertainment_present = false"
+      },
+      {
+        "id": "rule_030",
+        "sourceText": "Hookah lounges – decline",
+        "field": "hookah_lounge_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hookah_lounge_present = false"
+      }
+    ],
+    "facts": [
+      {
+        "field": "years_in_business",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years in Business: 6"
+      },
+      {
+        "field": "years_with_current_owner",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years with Current Owner: 6"
+      },
+      {
+        "field": "annual_revenue",
+        "value": 1200000,
+        "confidence": 1,
+        "sourceSnippet": "Annual Revenue: $1,200,000"
+      },
+      {
+        "field": "number_of_employees",
+        "value": 12,
+        "confidence": 1,
+        "sourceSnippet": "Number of Employees: 12"
+      },
+      {
+        "field": "roof_age_years",
+        "value": 7,
+        "confidence": 0.9,
+        "sourceSnippet": "Roof: Replaced in 2018"
+      },
+      {
+        "field": "fire_extinguishers_present_and_serviced",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Fire extinguishers inspected annually"
+      },
+      {
+        "field": "smoke_detectors_present",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Smoke detectors installed"
+      },
+      {
+        "field": "structural_damage_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "occupancy_owner_occupied_pct",
+        "value": 100,
+        "confidence": 1,
+        "sourceSnippet": "Owner Occupied: 100%"
+      },
+      {
+        "field": "manufacturing_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "heavy_industrial_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "deep_fryer_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Deep Fryer: No"
+      },
+      {
+        "field": "automatic_suppression_system_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "commercial_hood_suppression_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "liquor_sales_pct_revenue",
+        "value": 0,
+        "confidence": 0.95,
+        "sourceSnippet": "Liquor Sales: No"
+      },
+      {
+        "field": "building_value",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "Building Coverage: Not requested (tenant space)"
+      },
+      {
+        "field": "contents_value",
+        "value": 250000,
+        "confidence": 1,
+        "sourceSnippet": "Business Personal Property: $250,000"
+      },
+      {
+        "field": "loss_count_past_5_years",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "largest_single_loss_amount",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "fire_loss_past_3_years",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "slip_and_fall_claim_pattern",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "vacancy_status",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café; Hours of Operation: 6 AM – 4 PM"
+      },
+      {
+        "field": "controlled_substances_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "firearms_sales_storage",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hazardous_materials_present",
+        "value": false,
+        "confidence": 0.9,
+        "sourceSnippet": "No open flame cooking; Light cooking"
+      },
+      {
+        "field": "nightclub_operations_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Hours of Operation: 6 AM – 4 PM; Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "adult_entertainment_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hookah_lounge_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      }
+    ],
+    "additionalFacts": [
+      {
+        "field": "insured_name",
+        "value": "Golden Spoon Café LLC",
+        "confidence": 1,
+        "sourceSnippet": "Insured Name: Golden Spoon Café LLC"
+      },
+      {
+        "field": "dba_trade_name",
+        "value": "Golden Spoon Café",
+        "confidence": 1,
+        "sourceSnippet": "DBA: Golden Spoon Café"
+      },
+      {
+        "field": "risk_address_street",
+        "value": "214 Market Street",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address: 214 Market Street"
+      },
+      {
+        "field": "risk_address_city",
+        "value": "Portland",
+        "confidence": 1,
+        "sourceSnippet": "City: Portland"
+      },
+      {
+        "field": "risk_address_state",
+        "value": "OR",
+        "confidence": 1,
+        "sourceSnippet": "State: OR"
+      },
+      {
+        "field": "risk_address_zip",
+        "value": "97205",
+        "confidence": 1,
+        "sourceSnippet": "ZIP: 97205"
+      },
+      {
+        "field": "year_built",
+        "value": 1998,
+        "confidence": 1,
+        "sourceSnippet": "Year Built: 1998"
+      },
+      {
+        "field": "construction_type",
+        "value": "Masonry",
+        "confidence": 1,
+        "sourceSnippet": "Construction: Masonry"
+      },
+      {
+        "field": "business_income_extra_expense",
+        "value": 150000,
+        "confidence": 1,
+        "sourceSnippet": "Business Income: $150,000"
+      },
+      {
+        "field": "naics_sic_code",
+        "value": "722513",
+        "confidence": 1,
+        "sourceSnippet": "NAICS Code: 722513 – Limited-Service Restaurants"
+      }
+    ],
+    "evaluation": [
+      {
+        "ruleId": "rule_001",
+        "normalizedExpression": "years_in_business >= 3",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_002",
+        "normalizedExpression": "years_with_current_owner >= 2",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_003",
+        "normalizedExpression": "annual_revenue <= 5000000",
+        "actualValue": 1200000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_004",
+        "normalizedExpression": "number_of_employees <= 40",
+        "actualValue": 12,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_005",
+        "normalizedExpression": "roof_age_years <= 40",
+        "actualValue": 7,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_006",
+        "normalizedExpression": "roof_age_years < 20",
+        "actualValue": 7,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_007",
+        "normalizedExpression": "fire_extinguishers_present_and_serviced = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_008",
+        "normalizedExpression": "smoke_detectors_present = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_009",
+        "normalizedExpression": "structural_damage_present = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_010",
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50",
+        "actualValue": 100,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_011",
+        "normalizedExpression": "manufacturing_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_012",
+        "normalizedExpression": "heavy_industrial_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_013",
+        "normalizedExpression": "deep_fryer_present = true",
+        "actualValue": false,
+        "status": "FAIL",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Expected = true"
+      },
+      {
+        "ruleId": "rule_014",
+        "normalizedExpression": "automatic_suppression_system_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_015",
+        "normalizedExpression": "commercial_hood_suppression_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_016",
+        "normalizedExpression": "liquor_sales_pct_revenue < 40",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_017",
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_018",
+        "normalizedExpression": "building_value <= 3000000",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_019",
+        "normalizedExpression": "contents_value <= 1000000",
+        "actualValue": 250000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_020",
+        "normalizedExpression": "loss_count_past_5_years <= 2",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_021",
+        "normalizedExpression": "largest_single_loss_amount <= 100000",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_022",
+        "normalizedExpression": "fire_loss_past_3_years = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_023",
+        "normalizedExpression": "slip_and_fall_claim_pattern = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_024",
+        "normalizedExpression": "vacancy_status = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_025",
+        "normalizedExpression": "controlled_substances_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_026",
+        "normalizedExpression": "firearms_sales_storage = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_027",
+        "normalizedExpression": "hazardous_materials_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_028",
+        "normalizedExpression": "nightclub_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_029",
+        "normalizedExpression": "adult_entertainment_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_030",
+        "normalizedExpression": "hookah_lounge_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      }
+    ],
+    "id": "sub_1773634747981_93jezy",
+    "createdAt": "2026-03-16T04:19:07.981Z"
+  },
+  {
+    "companyName": "SUBMISSION",
+    "status": "REFER",
+    "summary": "1 failed, 7 unknown",
+    "guidelinesText": "UNDERWRITING GUIDELINES – SMALL COMMERCIAL PACKAGE\n\nTARGET CLASSES\n- Casual dining restaurants\n- Coffee shops and cafes\n- Small bakeries\n- Boutique retail stores\n- Florists\n- Small professional offices\n\nBUSINESS REQUIREMENTS\n- Minimum years in business: 3\n- Minimum years with current owner: 2\n- Maximum annual revenue: $5,000,000\n- Maximum employees: 40\n\nPROPERTY REQUIREMENTS\n- Building age must be 40 years or newer OR have updated electrical and plumbing\n- Roof must be less than 20 years old\n- Fire extinguishers required and serviced\n- Smoke detectors required\n- Sprinkler system preferred but not required\n- No structural damage\n\nOCCUPANCY\n- Owner occupied preferred (50% or greater)\n- Multi-tenant buildings acceptable if tenants are low hazard\n- No manufacturing or heavy industrial operations allowed\n\nRESTAURANT REQUIREMENTS\nAcceptable:\n- Casual dining\n- Coffee shops\n- Bakeries\n\nConditions:\n- Deep fryers allowed only with automatic suppression systems\n- Commercial hood suppression system required\n- Liquor sales allowed only if less than 40% of revenue\n\nDECLINE IF\n- Nightclubs\n- Bars where liquor is more than 50% of revenue\n- Hookah lounges\n\nPROPERTY VALUE LIMITS\n- Maximum building value: $3,000,000\n- Maximum contents value: $1,000,000\n- Business interruption coverage allowed\n\nLOSS HISTORY\nAcceptable:\n- Maximum 2 losses within the past 5 years\n- No single loss greater than $100,000\n\nDECLINE IF\n- Fire loss within the past 3 years\n- Pattern of slip and fall claims\n\nINELIGIBLE RISKS\n- Vacant properties\n- Cannabis operations\n- Firearms sales\n- Hazardous chemical storage\n- Nightclubs\n- Adult entertainment businesses",
+    "submissionText": "SUBMISSION\n\nInsured Name: Golden Spoon Café LLC\nDBA: Golden Spoon Café\nEntity Type: Limited Liability Company\nYears in Business: 6\nYears with Current Owner: 6\nNAICS Code: 722513 – Limited-Service Restaurants\n\nLOCATION\nRisk Address: 214 Market Street\nCity: Portland\nState: OR\nZIP: 97205\n\nBUILDING INFORMATION\nBuilding Type: Mixed-use building\nYear Built: 1998\nConstruction: Masonry\nRoof: Replaced in 2018\n\nOCCUPANCY\nPrimary Occupancy: Coffee shop / café\nOwner Occupied: 100%\nSecondary Tenants: None\nHours of Operation: 6 AM – 4 PM\nNumber of Employees: 12\n\nOPERATIONS\nAnnual Revenue: $1,200,000\nCooking Operations: Light cooking\nCooking Equipment: Espresso machines, panini press, commercial oven\nDeep Fryer: No\nLiquor Sales: No\n\nPROPERTY COVERAGE REQUESTED\nBuilding Coverage: Not requested (tenant space)\nBusiness Personal Property: $250,000\nBusiness Income: $150,000\n\nLIABILITY COVERAGE\nGeneral Liability Limit: $1,000,000 per occurrence / $2,000,000 aggregate\n\nSAFETY CONTROLS\nFire extinguishers inspected annually\nSmoke detectors installed\nNo open flame cooking\n\nLOSS HISTORY (5 YEARS)\nNo losses reported\n",
+    "rules": [
+      {
+        "id": "rule_001",
+        "sourceText": "Minimum years in business: 3",
+        "field": "years_in_business",
+        "operator": ">=",
+        "value": 3,
+        "normalizedExpression": "years_in_business >= 3"
+      },
+      {
+        "id": "rule_002",
+        "sourceText": "Minimum years with current owner: 2",
+        "field": "years_with_current_owner",
+        "operator": ">=",
+        "value": 2,
+        "normalizedExpression": "years_with_current_owner >= 2"
+      },
+      {
+        "id": "rule_003",
+        "sourceText": "Maximum annual revenue: $5,000,000",
+        "field": "annual_revenue",
+        "operator": "<=",
+        "value": 5000000,
+        "normalizedExpression": "annual_revenue <= 5000000"
+      },
+      {
+        "id": "rule_004",
+        "sourceText": "Maximum employees: 40",
+        "field": "number_of_employees",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "number_of_employees <= 40"
+      },
+      {
+        "id": "rule_005",
+        "sourceText": "Building age must be 40 years or newer",
+        "field": "roof_age_years",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "roof_age_years <= 40"
+      },
+      {
+        "id": "rule_006",
+        "sourceText": "Roof must be less than 20 years old",
+        "field": "roof_age_years",
+        "operator": "<",
+        "value": 20,
+        "normalizedExpression": "roof_age_years < 20"
+      },
+      {
+        "id": "rule_007",
+        "sourceText": "Fire extinguishers required and serviced",
+        "field": "fire_extinguishers_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "fire_extinguishers_present = true"
+      },
+      {
+        "id": "rule_008",
+        "sourceText": "Fire extinguishers required and serviced",
+        "field": "fire_extinguishers_serviced",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "fire_extinguishers_serviced = true"
+      },
+      {
+        "id": "rule_009",
+        "sourceText": "Smoke detectors required",
+        "field": "smoke_detectors_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "smoke_detectors_present = true"
+      },
+      {
+        "id": "rule_010",
+        "sourceText": "No structural damage",
+        "field": "structural_damage_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "structural_damage_present = false"
+      },
+      {
+        "id": "rule_011",
+        "sourceText": "Owner occupied preferred (50% or greater)",
+        "field": "occupancy_owner_occupied_pct",
+        "operator": ">=",
+        "value": 50,
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50"
+      },
+      {
+        "id": "rule_012",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "manufacturing_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "manufacturing_operations_present = false"
+      },
+      {
+        "id": "rule_013",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "heavy_industrial_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "heavy_industrial_operations_present = false"
+      },
+      {
+        "id": "rule_014",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "deep_fryer_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "deep_fryer_present = true"
+      },
+      {
+        "id": "rule_015",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "automatic_suppression_system_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "automatic_suppression_system_present = true"
+      },
+      {
+        "id": "rule_016",
+        "sourceText": "Commercial hood suppression system required",
+        "field": "commercial_hood_suppression_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "commercial_hood_suppression_present = true"
+      },
+      {
+        "id": "rule_017",
+        "sourceText": "Liquor sales allowed only if less than 40% of revenue",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<",
+        "value": 40,
+        "normalizedExpression": "liquor_sales_pct_revenue < 40"
+      },
+      {
+        "id": "rule_018",
+        "sourceText": "Bars where liquor is more than 50% of revenue - decline",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<=",
+        "value": 50,
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50"
+      },
+      {
+        "id": "rule_019",
+        "sourceText": "Maximum building value: $3,000,000",
+        "field": "building_value",
+        "operator": "<=",
+        "value": 3000000,
+        "normalizedExpression": "building_value <= 3000000"
+      },
+      {
+        "id": "rule_020",
+        "sourceText": "Maximum contents value: $1,000,000",
+        "field": "contents_value",
+        "operator": "<=",
+        "value": 1000000,
+        "normalizedExpression": "contents_value <= 1000000"
+      },
+      {
+        "id": "rule_021",
+        "sourceText": "Maximum 2 losses within the past 5 years",
+        "field": "loss_count_past_5_years",
+        "operator": "<=",
+        "value": 2,
+        "normalizedExpression": "loss_count_past_5_years <= 2"
+      },
+      {
+        "id": "rule_022",
+        "sourceText": "No single loss greater than $100,000",
+        "field": "largest_single_loss_amount",
+        "operator": "<=",
+        "value": 100000,
+        "normalizedExpression": "largest_single_loss_amount <= 100000"
+      },
+      {
+        "id": "rule_023",
+        "sourceText": "Fire loss within the past 3 years - decline",
+        "field": "fire_loss_past_3_years",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "fire_loss_past_3_years = false"
+      },
+      {
+        "id": "rule_024",
+        "sourceText": "Pattern of slip and fall claims - decline",
+        "field": "slip_and_fall_claim_pattern",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "slip_and_fall_claim_pattern = false"
+      },
+      {
+        "id": "rule_025",
+        "sourceText": "Vacant properties - ineligible",
+        "field": "vacancy_status",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "vacancy_status = false"
+      },
+      {
+        "id": "rule_026",
+        "sourceText": "Cannabis operations - ineligible",
+        "field": "controlled_substances_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "controlled_substances_present = false"
+      },
+      {
+        "id": "rule_027",
+        "sourceText": "Firearms sales - ineligible",
+        "field": "firearms_sales_storage",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "firearms_sales_storage = false"
+      },
+      {
+        "id": "rule_028",
+        "sourceText": "Hazardous chemical storage - ineligible",
+        "field": "hazardous_materials_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hazardous_materials_present = false"
+      },
+      {
+        "id": "rule_029",
+        "sourceText": "Nightclubs - ineligible",
+        "field": "nightclub_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "nightclub_operations_present = false"
+      },
+      {
+        "id": "rule_030",
+        "sourceText": "Adult entertainment businesses - ineligible",
+        "field": "adult_entertainment_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "adult_entertainment_present = false"
+      },
+      {
+        "id": "rule_031",
+        "sourceText": "Hookah lounges - decline",
+        "field": "hookah_lounge_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hookah_lounge_present = false"
+      },
+      {
+        "id": "rule_032",
+        "sourceText": "Building age must be 40 years or newer",
+        "field": "building_age_years",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "building_age_years <= 40"
+      },
+      {
+        "id": "rule_033",
+        "sourceText": "Electrical last updated required if building older than 40 years",
+        "field": "electrical_last_updated",
+        "operator": ">",
+        "value": 0,
+        "normalizedExpression": "electrical_last_updated > 0"
+      },
+      {
+        "id": "rule_034",
+        "sourceText": "Plumbing last updated required if building older than 40 years",
+        "field": "plumbing_last_updated",
+        "operator": ">",
+        "value": 0,
+        "normalizedExpression": "plumbing_last_updated > 0"
+      },
+      {
+        "id": "rule_035",
+        "sourceText": "Multi-tenant buildings acceptable if tenants are low hazard",
+        "field": "secondary_occupancy_tenants",
+        "operator": "=",
+        "value": "low_hazard",
+        "normalizedExpression": "secondary_occupancy_tenants = 'low_hazard'"
+      }
+    ],
+    "facts": [
+      {
+        "field": "years_in_business",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years in Business: 6"
+      },
+      {
+        "field": "years_with_current_owner",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years with Current Owner: 6"
+      },
+      {
+        "field": "annual_revenue",
+        "value": 1200000,
+        "confidence": 1,
+        "sourceSnippet": "Annual Revenue: $1,200,000"
+      },
+      {
+        "field": "number_of_employees",
+        "value": 12,
+        "confidence": 1,
+        "sourceSnippet": "Number of Employees: 12"
+      },
+      {
+        "field": "building_age_years",
+        "value": 27,
+        "confidence": 0.95,
+        "sourceSnippet": "Year Built: 1998"
+      },
+      {
+        "field": "roof_age_years",
+        "value": 7,
+        "confidence": 0.95,
+        "sourceSnippet": "Roof: Replaced in 2018"
+      },
+      {
+        "field": "fire_extinguishers_present",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Fire extinguishers inspected annually"
+      },
+      {
+        "field": "fire_extinguishers_serviced",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Fire extinguishers inspected annually"
+      },
+      {
+        "field": "smoke_detectors_present",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Smoke detectors installed"
+      },
+      {
+        "field": "structural_damage_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "occupancy_owner_occupied_pct",
+        "value": 100,
+        "confidence": 1,
+        "sourceSnippet": "Owner Occupied: 100%"
+      },
+      {
+        "field": "manufacturing_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "heavy_industrial_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "deep_fryer_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Deep Fryer: No"
+      },
+      {
+        "field": "automatic_suppression_system_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "commercial_hood_suppression_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "liquor_sales_pct_revenue",
+        "value": 0,
+        "confidence": 0.95,
+        "sourceSnippet": "Liquor Sales: No"
+      },
+      {
+        "field": "building_value",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "Building Coverage: Not requested (tenant space)"
+      },
+      {
+        "field": "contents_value",
+        "value": 250000,
+        "confidence": 1,
+        "sourceSnippet": "Business Personal Property: $250,000"
+      },
+      {
+        "field": "loss_count_past_5_years",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "largest_single_loss_amount",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "fire_loss_past_3_years",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "slip_and_fall_claim_pattern",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "vacancy_status",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Owner Occupied: 100%"
+      },
+      {
+        "field": "controlled_substances_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "firearms_sales_storage",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hazardous_materials_present",
+        "value": false,
+        "confidence": 0.9,
+        "sourceSnippet": "No open flame cooking"
+      },
+      {
+        "field": "nightclub_operations_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Hours of Operation: 6 AM – 4 PM"
+      },
+      {
+        "field": "adult_entertainment_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hookah_lounge_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "electrical_last_updated",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "plumbing_last_updated",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "secondary_occupancy_tenants",
+        "value": null,
+        "confidence": 0.9,
+        "sourceSnippet": "Secondary Tenants: None"
+      }
+    ],
+    "additionalFacts": [
+      {
+        "field": "insured_name",
+        "value": "Golden Spoon Café LLC",
+        "confidence": 1,
+        "sourceSnippet": "Insured Name: Golden Spoon Café LLC"
+      },
+      {
+        "field": "dba_trade_name",
+        "value": "Golden Spoon Café",
+        "confidence": 1,
+        "sourceSnippet": "DBA: Golden Spoon Café"
+      },
+      {
+        "field": "risk_address_street",
+        "value": "214 Market Street",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address: 214 Market Street"
+      },
+      {
+        "field": "risk_address_city",
+        "value": "Portland",
+        "confidence": 1,
+        "sourceSnippet": "City: Portland"
+      },
+      {
+        "field": "risk_address_state",
+        "value": "OR",
+        "confidence": 1,
+        "sourceSnippet": "State: OR"
+      },
+      {
+        "field": "risk_address_zip",
+        "value": "97205",
+        "confidence": 1,
+        "sourceSnippet": "ZIP: 97205"
+      },
+      {
+        "field": "construction_type",
+        "value": "Masonry",
+        "confidence": 1,
+        "sourceSnippet": "Construction: Masonry"
+      },
+      {
+        "field": "year_built",
+        "value": 1998,
+        "confidence": 1,
+        "sourceSnippet": "Year Built: 1998"
+      },
+      {
+        "field": "business_income_extra_expense",
+        "value": 150000,
+        "confidence": 1,
+        "sourceSnippet": "Business Income: $150,000"
+      }
+    ],
+    "evaluation": [
+      {
+        "ruleId": "rule_001",
+        "normalizedExpression": "years_in_business >= 3",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_002",
+        "normalizedExpression": "years_with_current_owner >= 2",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_003",
+        "normalizedExpression": "annual_revenue <= 5000000",
+        "actualValue": 1200000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_004",
+        "normalizedExpression": "number_of_employees <= 40",
+        "actualValue": 12,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_005",
+        "normalizedExpression": "roof_age_years <= 40",
+        "actualValue": 7,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_006",
+        "normalizedExpression": "roof_age_years < 20",
+        "actualValue": 7,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_007",
+        "normalizedExpression": "fire_extinguishers_present = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_008",
+        "normalizedExpression": "fire_extinguishers_serviced = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_009",
+        "normalizedExpression": "smoke_detectors_present = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_010",
+        "normalizedExpression": "structural_damage_present = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_011",
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50",
+        "actualValue": 100,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_012",
+        "normalizedExpression": "manufacturing_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_013",
+        "normalizedExpression": "heavy_industrial_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_014",
+        "normalizedExpression": "deep_fryer_present = true",
+        "actualValue": false,
+        "status": "FAIL",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Expected = true"
+      },
+      {
+        "ruleId": "rule_015",
+        "normalizedExpression": "automatic_suppression_system_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_016",
+        "normalizedExpression": "commercial_hood_suppression_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_017",
+        "normalizedExpression": "liquor_sales_pct_revenue < 40",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_018",
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_019",
+        "normalizedExpression": "building_value <= 3000000",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_020",
+        "normalizedExpression": "contents_value <= 1000000",
+        "actualValue": 250000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_021",
+        "normalizedExpression": "loss_count_past_5_years <= 2",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_022",
+        "normalizedExpression": "largest_single_loss_amount <= 100000",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_023",
+        "normalizedExpression": "fire_loss_past_3_years = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_024",
+        "normalizedExpression": "slip_and_fall_claim_pattern = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_025",
+        "normalizedExpression": "vacancy_status = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_026",
+        "normalizedExpression": "controlled_substances_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_027",
+        "normalizedExpression": "firearms_sales_storage = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_028",
+        "normalizedExpression": "hazardous_materials_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_029",
+        "normalizedExpression": "nightclub_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_030",
+        "normalizedExpression": "adult_entertainment_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_031",
+        "normalizedExpression": "hookah_lounge_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_032",
+        "normalizedExpression": "building_age_years <= 40",
+        "actualValue": 27,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_033",
+        "normalizedExpression": "electrical_last_updated > 0",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_034",
+        "normalizedExpression": "plumbing_last_updated > 0",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_035",
+        "normalizedExpression": "secondary_occupancy_tenants = 'low_hazard'",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      }
+    ],
+    "id": "sub_1773634857387_5e9c9d",
+    "createdAt": "2026-03-16T04:20:57.387Z"
+  },
+  {
+    "companyName": "SUBMISSION",
+    "status": "REFER",
+    "summary": "0 failed, 8 unknown",
+    "guidelinesText": "UNDERWRITING GUIDELINES – SMALL COMMERCIAL PACKAGE\n\nTARGET CLASSES\n- Casual dining restaurants\n- Coffee shops and cafes\n- Small bakeries\n- Boutique retail stores\n- Florists\n- Small professional offices\n\nBUSINESS REQUIREMENTS\n- Minimum years in business: 3\n- Minimum years with current owner: 2\n- Maximum annual revenue: $5,000,000\n- Maximum employees: 40\n\nPROPERTY REQUIREMENTS\n- Building age must be 40 years or newer OR have updated electrical and plumbing\n- Roof must be less than 20 years old\n- Fire extinguishers required and serviced\n- Smoke detectors required\n- Sprinkler system preferred but not required\n- No structural damage\n\nOCCUPANCY\n- Owner occupied preferred (50% or greater)\n- Multi-tenant buildings acceptable if tenants are low hazard\n- No manufacturing or heavy industrial operations allowed\n\nRESTAURANT REQUIREMENTS\nAcceptable:\n- Casual dining\n- Coffee shops\n- Bakeries\n\nConditions:\n- Deep fryers allowed only with automatic suppression systems\n- Commercial hood suppression system required\n- Liquor sales allowed only if less than 40% of revenue\n\nDECLINE IF\n- Nightclubs\n- Bars where liquor is more than 50% of revenue\n- Hookah lounges\n\nPROPERTY VALUE LIMITS\n- Maximum building value: $3,000,000\n- Maximum contents value: $1,000,000\n- Business interruption coverage allowed\n\nLOSS HISTORY\nAcceptable:\n- Maximum 2 losses within the past 5 years\n- No single loss greater than $100,000\n\nDECLINE IF\n- Fire loss within the past 3 years\n- Pattern of slip and fall claims\n\nINELIGIBLE RISKS\n- Vacant properties\n- Cannabis operations\n- Firearms sales\n- Hazardous chemical storage\n- Nightclubs\n- Adult entertainment businesses\n",
+    "submissionText": "SUBMISSION\n\nInsured Name: Golden Spoon Café LLC\nDBA: Golden Spoon Café\nEntity Type: Limited Liability Company\nYears in Business: 6\nYears with Current Owner: 6\nNAICS Code: 722513 – Limited-Service Restaurants\n\nLOCATION\nRisk Address: 214 Market Street\nCity: Portland\nState: OR\nZIP: 97205\n\nBUILDING INFORMATION\nBuilding Type: Mixed-use building\nYear Built: 1998\nConstruction: Masonry\nRoof: Replaced in 2018\n\nOCCUPANCY\nPrimary Occupancy: Coffee shop / café\nOwner Occupied: 100%\nSecondary Tenants: None\nHours of Operation: 6 AM – 4 PM\nNumber of Employees: 12\n\nOPERATIONS\nAnnual Revenue: $1,200,000\nCooking Operations: Light cooking\nCooking Equipment: Espresso machines, panini press, commercial oven\nDeep Fryer: No\nLiquor Sales: No\n\nPROPERTY COVERAGE REQUESTED\nBuilding Coverage: Not requested (tenant space)\nBusiness Personal Property: $250,000\nBusiness Income: $150,000\n\nLIABILITY COVERAGE\nGeneral Liability Limit: $1,000,000 per occurrence / $2,000,000 aggregate\n\nSAFETY CONTROLS\nFire extinguishers inspected annually\nSmoke detectors installed\nNo open flame cooking\n\nLOSS HISTORY (5 YEARS)\nNo losses reported\n",
+    "rules": [
+      {
+        "id": "rule_001",
+        "sourceText": "Minimum years in business: 3",
+        "field": "years_in_business",
+        "operator": ">=",
+        "value": 3,
+        "normalizedExpression": "years_in_business >= 3"
+      },
+      {
+        "id": "rule_002",
+        "sourceText": "Minimum years with current owner: 2",
+        "field": "years_with_current_owner",
+        "operator": ">=",
+        "value": 2,
+        "normalizedExpression": "years_with_current_owner >= 2"
+      },
+      {
+        "id": "rule_003",
+        "sourceText": "Maximum annual revenue: $5,000,000",
+        "field": "annual_revenue",
+        "operator": "<=",
+        "value": 5000000,
+        "normalizedExpression": "annual_revenue <= 5000000"
+      },
+      {
+        "id": "rule_004",
+        "sourceText": "Maximum employees: 40",
+        "field": "number_of_employees",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "number_of_employees <= 40"
+      },
+      {
+        "id": "rule_005",
+        "sourceText": "Building age must be 40 years or newer",
+        "field": "roof_age_years",
+        "operator": "<=",
+        "value": 40,
+        "normalizedExpression": "roof_age_years <= 40"
+      },
+      {
+        "id": "rule_006",
+        "sourceText": "Roof must be less than 20 years old",
+        "field": "roof_age_years",
+        "operator": "<",
+        "value": 20,
+        "normalizedExpression": "roof_age_years < 20"
+      },
+      {
+        "id": "rule_007",
+        "sourceText": "Fire extinguishers required and serviced",
+        "field": "fire_extinguishers_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "fire_extinguishers_present = true"
+      },
+      {
+        "id": "rule_008",
+        "sourceText": "Fire extinguishers required and serviced",
+        "field": "fire_extinguishers_serviced",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "fire_extinguishers_serviced = true"
+      },
+      {
+        "id": "rule_009",
+        "sourceText": "Smoke detectors required",
+        "field": "smoke_detectors_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "smoke_detectors_present = true"
+      },
+      {
+        "id": "rule_010",
+        "sourceText": "No structural damage",
+        "field": "structural_damage_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "structural_damage_present = false"
+      },
+      {
+        "id": "rule_011",
+        "sourceText": "Owner occupied preferred (50% or greater)",
+        "field": "occupancy_owner_occupied_pct",
+        "operator": ">=",
+        "value": 50,
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50"
+      },
+      {
+        "id": "rule_012",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "manufacturing_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "manufacturing_operations_present = false"
+      },
+      {
+        "id": "rule_013",
+        "sourceText": "No manufacturing or heavy industrial operations allowed",
+        "field": "heavy_industrial_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "heavy_industrial_operations_present = false"
+      },
+      {
+        "id": "rule_014",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "deep_fryer_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "deep_fryer_present = true"
+      },
+      {
+        "id": "rule_015",
+        "sourceText": "Deep fryers allowed only with automatic suppression systems",
+        "field": "automatic_suppression_system_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "automatic_suppression_system_present = true"
+      },
+      {
+        "id": "rule_016",
+        "sourceText": "Commercial hood suppression system required",
+        "field": "commercial_hood_suppression_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "commercial_hood_suppression_present = true"
+      },
+      {
+        "id": "rule_017",
+        "sourceText": "Liquor sales allowed only if less than 40% of revenue",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<",
+        "value": 40,
+        "normalizedExpression": "liquor_sales_pct_revenue < 40"
+      },
+      {
+        "id": "rule_018",
+        "sourceText": "Bars where liquor is more than 50% of revenue - DECLINE",
+        "field": "liquor_sales_pct_revenue",
+        "operator": "<=",
+        "value": 50,
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50"
+      },
+      {
+        "id": "rule_019",
+        "sourceText": "Maximum building value: $3,000,000",
+        "field": "building_value",
+        "operator": "<=",
+        "value": 3000000,
+        "normalizedExpression": "building_value <= 3000000"
+      },
+      {
+        "id": "rule_020",
+        "sourceText": "Maximum contents value: $1,000,000",
+        "field": "contents_value",
+        "operator": "<=",
+        "value": 1000000,
+        "normalizedExpression": "contents_value <= 1000000"
+      },
+      {
+        "id": "rule_021",
+        "sourceText": "Maximum 2 losses within the past 5 years",
+        "field": "loss_count_past_5_years",
+        "operator": "<=",
+        "value": 2,
+        "normalizedExpression": "loss_count_past_5_years <= 2"
+      },
+      {
+        "id": "rule_022",
+        "sourceText": "No single loss greater than $100,000",
+        "field": "largest_single_loss_amount",
+        "operator": "<=",
+        "value": 100000,
+        "normalizedExpression": "largest_single_loss_amount <= 100000"
+      },
+      {
+        "id": "rule_023",
+        "sourceText": "Fire loss within the past 3 years - DECLINE",
+        "field": "fire_loss_past_3_years",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "fire_loss_past_3_years = false"
+      },
+      {
+        "id": "rule_024",
+        "sourceText": "Pattern of slip and fall claims - DECLINE",
+        "field": "slip_and_fall_claim_pattern",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "slip_and_fall_claim_pattern = false"
+      },
+      {
+        "id": "rule_025",
+        "sourceText": "Vacant properties - INELIGIBLE",
+        "field": "vacancy_status",
+        "operator": "=",
+        "value": "occupied",
+        "normalizedExpression": "vacancy_status = 'occupied'"
+      },
+      {
+        "id": "rule_026",
+        "sourceText": "Cannabis operations - INELIGIBLE",
+        "field": "controlled_substances_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "controlled_substances_present = false"
+      },
+      {
+        "id": "rule_027",
+        "sourceText": "Firearms sales - INELIGIBLE",
+        "field": "firearms_sales_storage",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "firearms_sales_storage = false"
+      },
+      {
+        "id": "rule_028",
+        "sourceText": "Hazardous chemical storage - INELIGIBLE",
+        "field": "hazardous_materials_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hazardous_materials_present = false"
+      },
+      {
+        "id": "rule_029",
+        "sourceText": "Nightclubs - INELIGIBLE",
+        "field": "nightclub_operations_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "nightclub_operations_present = false"
+      },
+      {
+        "id": "rule_030",
+        "sourceText": "Adult entertainment businesses - INELIGIBLE",
+        "field": "adult_entertainment_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "adult_entertainment_present = false"
+      },
+      {
+        "id": "rule_031",
+        "sourceText": "Hookah lounges - DECLINE",
+        "field": "hookah_lounge_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "hookah_lounge_present = false"
+      },
+      {
+        "id": "rule_032",
+        "sourceText": "Multi-tenant buildings acceptable if tenants are low hazard",
+        "field": "secondary_occupancy_tenants",
+        "operator": "=",
+        "value": "low_hazard",
+        "normalizedExpression": "secondary_occupancy_tenants = 'low_hazard'"
+      },
+      {
+        "id": "rule_033",
+        "sourceText": "Business interruption coverage allowed",
+        "field": "business_income_extra_expense",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "business_income_extra_expense = true"
+      },
+      {
+        "id": "rule_034",
+        "sourceText": "Building age must be 40 years or newer OR have updated electrical",
+        "field": "electrical_last_updated",
+        "operator": ">=",
+        "value": 1984,
+        "normalizedExpression": "electrical_last_updated >= 1984"
+      },
+      {
+        "id": "rule_035",
+        "sourceText": "Building age must be 40 years or newer OR have updated plumbing",
+        "field": "plumbing_last_updated",
+        "operator": ">=",
+        "value": 1984,
+        "normalizedExpression": "plumbing_last_updated >= 1984"
+      }
+    ],
+    "facts": [
+      {
+        "field": "years_in_business",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years in Business: 6"
+      },
+      {
+        "field": "years_with_current_owner",
+        "value": 6,
+        "confidence": 1,
+        "sourceSnippet": "Years with Current Owner: 6"
+      },
+      {
+        "field": "annual_revenue",
+        "value": 1200000,
+        "confidence": 1,
+        "sourceSnippet": "Annual Revenue: $1,200,000"
+      },
+      {
+        "field": "number_of_employees",
+        "value": 12,
+        "confidence": 1,
+        "sourceSnippet": "Number of Employees: 12"
+      },
+      {
+        "field": "roof_age_years",
+        "value": 6,
+        "confidence": 0.95,
+        "sourceSnippet": "Roof: Replaced in 2018"
+      },
+      {
+        "field": "fire_extinguishers_present",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Fire extinguishers inspected annually"
+      },
+      {
+        "field": "fire_extinguishers_serviced",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Fire extinguishers inspected annually"
+      },
+      {
+        "field": "smoke_detectors_present",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Smoke detectors installed"
+      },
+      {
+        "field": "structural_damage_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "occupancy_owner_occupied_pct",
+        "value": 100,
+        "confidence": 1,
+        "sourceSnippet": "Owner Occupied: 100%"
+      },
+      {
+        "field": "manufacturing_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "heavy_industrial_operations_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "deep_fryer_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Deep Fryer: No"
+      },
+      {
+        "field": "automatic_suppression_system_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "commercial_hood_suppression_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "liquor_sales_pct_revenue",
+        "value": 0,
+        "confidence": 0.95,
+        "sourceSnippet": "Liquor Sales: No"
+      },
+      {
+        "field": "building_value",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "Building Coverage: Not requested (tenant space)"
+      },
+      {
+        "field": "contents_value",
+        "value": 250000,
+        "confidence": 1,
+        "sourceSnippet": "Business Personal Property: $250,000"
+      },
+      {
+        "field": "loss_count_past_5_years",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "largest_single_loss_amount",
+        "value": 0,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "fire_loss_past_3_years",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "slip_and_fall_claim_pattern",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "No losses reported"
+      },
+      {
+        "field": "vacancy_status",
+        "value": "occupied",
+        "confidence": 1,
+        "sourceSnippet": "Owner Occupied: 100%"
+      },
+      {
+        "field": "controlled_substances_present",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "firearms_sales_storage",
+        "value": false,
+        "confidence": 0.95,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hazardous_materials_present",
+        "value": false,
+        "confidence": 0.9,
+        "sourceSnippet": "Light cooking; Espresso machines, panini press, commercial oven"
+      },
+      {
+        "field": "nightclub_operations_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Hours of Operation: 6 AM – 4 PM"
+      },
+      {
+        "field": "adult_entertainment_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "hookah_lounge_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Primary Occupancy: Coffee shop / café"
+      },
+      {
+        "field": "secondary_occupancy_tenants",
+        "value": null,
+        "confidence": 0.9,
+        "sourceSnippet": "Secondary Tenants: None"
+      },
+      {
+        "field": "business_income_extra_expense",
+        "value": true,
+        "confidence": 1,
+        "sourceSnippet": "Business Income: $150,000"
+      },
+      {
+        "field": "electrical_last_updated",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      },
+      {
+        "field": "plumbing_last_updated",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": ""
+      }
+    ],
+    "additionalFacts": [
+      {
+        "field": "insured_name",
+        "value": "Golden Spoon Café LLC",
+        "confidence": 1,
+        "sourceSnippet": "Insured Name: Golden Spoon Café LLC"
+      },
+      {
+        "field": "dba_trade_name",
+        "value": "Golden Spoon Café",
+        "confidence": 1,
+        "sourceSnippet": "DBA: Golden Spoon Café"
+      },
+      {
+        "field": "risk_address_street",
+        "value": "214 Market Street",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address: 214 Market Street"
+      },
+      {
+        "field": "risk_address_city",
+        "value": "Portland",
+        "confidence": 1,
+        "sourceSnippet": "City: Portland"
+      },
+      {
+        "field": "risk_address_state",
+        "value": "OR",
+        "confidence": 1,
+        "sourceSnippet": "State: OR"
+      },
+      {
+        "field": "risk_address_zip",
+        "value": "97205",
+        "confidence": 1,
+        "sourceSnippet": "ZIP: 97205"
+      },
+      {
+        "field": "year_built",
+        "value": 1998,
+        "confidence": 1,
+        "sourceSnippet": "Year Built: 1998"
+      },
+      {
+        "field": "construction_type",
+        "value": "Masonry",
+        "confidence": 1,
+        "sourceSnippet": "Construction: Masonry"
+      },
+      {
+        "field": "naics_sic_code",
+        "value": "722513",
+        "confidence": 1,
+        "sourceSnippet": "NAICS Code: 722513 – Limited-Service Restaurants"
+      },
+      {
+        "field": "entity_type",
+        "value": "Limited Liability Company",
+        "confidence": 1,
+        "sourceSnippet": "Entity Type: Limited Liability Company"
+      }
+    ],
+    "evaluation": [
+      {
+        "ruleId": "rule_001",
+        "normalizedExpression": "years_in_business >= 3",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_002",
+        "normalizedExpression": "years_with_current_owner >= 2",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_003",
+        "normalizedExpression": "annual_revenue <= 5000000",
+        "actualValue": 1200000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_004",
+        "normalizedExpression": "number_of_employees <= 40",
+        "actualValue": 12,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_005",
+        "normalizedExpression": "roof_age_years <= 40",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_006",
+        "normalizedExpression": "roof_age_years < 20",
+        "actualValue": 6,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_007",
+        "normalizedExpression": "fire_extinguishers_present = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_008",
+        "normalizedExpression": "fire_extinguishers_serviced = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_009",
+        "normalizedExpression": "smoke_detectors_present = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_010",
+        "normalizedExpression": "structural_damage_present = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_011",
+        "normalizedExpression": "occupancy_owner_occupied_pct >= 50",
+        "actualValue": 100,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_012",
+        "normalizedExpression": "manufacturing_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_013",
+        "normalizedExpression": "heavy_industrial_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_014",
+        "normalizedExpression": "deep_fryer_present = true",
+        "actualValue": false,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Conditional rule requires manual review."
+      },
+      {
+        "ruleId": "rule_015",
+        "normalizedExpression": "automatic_suppression_system_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_016",
+        "normalizedExpression": "commercial_hood_suppression_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_017",
+        "normalizedExpression": "liquor_sales_pct_revenue < 40",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_018",
+        "normalizedExpression": "liquor_sales_pct_revenue <= 50",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_019",
+        "normalizedExpression": "building_value <= 3000000",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_020",
+        "normalizedExpression": "contents_value <= 1000000",
+        "actualValue": 250000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_021",
+        "normalizedExpression": "loss_count_past_5_years <= 2",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_022",
+        "normalizedExpression": "largest_single_loss_amount <= 100000",
+        "actualValue": 0,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_023",
+        "normalizedExpression": "fire_loss_past_3_years = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_024",
+        "normalizedExpression": "slip_and_fall_claim_pattern = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_025",
+        "normalizedExpression": "vacancy_status = 'occupied'",
+        "actualValue": "occupied",
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_026",
+        "normalizedExpression": "controlled_substances_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_027",
+        "normalizedExpression": "firearms_sales_storage = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_028",
+        "normalizedExpression": "hazardous_materials_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_029",
+        "normalizedExpression": "nightclub_operations_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_030",
+        "normalizedExpression": "adult_entertainment_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_031",
+        "normalizedExpression": "hookah_lounge_present = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_032",
+        "normalizedExpression": "secondary_occupancy_tenants = 'low_hazard'",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": true,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_033",
+        "normalizedExpression": "business_income_extra_expense = true",
+        "actualValue": true,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_034",
+        "normalizedExpression": "electrical_last_updated >= 1984",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_035",
+        "normalizedExpression": "plumbing_last_updated >= 1984",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      }
+    ],
+    "id": "sub_1773635124587_j67fib",
+    "createdAt": "2026-03-16T04:25:24.587Z"
+  },
+  {
+    "companyName": "Main Street Retail LLC",
+    "status": "REFER",
+    "summary": "3 failed, 8 unknown",
+    "guidelinesText": "Sample Property Underwriting Guidelines\nPelorus Demo Carrier – Property Program\nThe following underwriting guidelines outline the eligibility criteria for commercial property submissions.\nThese rules are used to triage incoming submissions and determine whether a risk is acceptable, refer,\nor decline.\n1. Roof age must be less than 20 years.\n2. Total insured value must not exceed $1,000,000.\n3. Property must be owner-occupied.\n4. Maximum two claims in the past five years.\n5. Buildings constructed before 1900 are ineligible.\n6. Vacant properties for more than 60 days are ineligible.\n7. Sprinkler systems required for buildings larger than 25,000 square feet.\n8. Properties located in FEMA Flood Zone A or V require underwriting referral.\n9. Restaurants with deep fryer operations require automatic fire suppression systems.\n10. Properties within 1 mile of the coastline require underwriting referral.\nExample Fact Acceptable Range\nRoof Age (Years) < 20\nTotal Insured Value ≤ $1,000,000\nClaims (Last 5 Years) ≤ 2\nOwner Occupancy Required\n\n-- 1 of 1 --",
+    "submissionText": "Commercial Property Insurance Submission\nBroker Submission Package – Property Risk\nThe following information represents a broker-submitted commercial property risk for underwriting\nreview.\nField Value\nInsured Name Main Street Retail LLC\nDBA / Trade Name Main Street Market\nRisk Address — Street 123 Main St\nRisk Address — City Columbus\nRisk Address — State OH\nRisk Address — ZIP 43215\nYears in Business 12\nEntity Type LLC\nNAICS / SIC Code 445110 (Supermarkets and Grocery Stores)\nPrimary Occupancy Class Retail Grocery\nNumber of Employees 18\nAnnual Revenue $2,400,000\nTotal Insured Value (TIV) $850,000\nBuilding Value $600,000\nContents Value $250,000\nNumber of Buildings 1\nNumber of Stories 1\nTotal Square Footage 12,500\nYear Built 1988\nConstruction Type Masonry\nRoof Updated 2001\nRoof Material Asphalt Shingle\nRoof Condition Good\nPlumbing Last Updated 2010\nElectrical Last Updated 2015\nElectrical Amperage 200\n\n-- 1 of 2 --\n\nHVAC Last Updated 2016\nHeating Type Gas Furnace\nSprinkler System Present No\nFire Alarm Present Yes\nDistance to Fire Station (miles) 1.4\nHydrant Within 1000 Feet Yes\nNumber of Losses — 5 Year 1\nLargest Single Loss — Amount $18,000\nLargest Single Loss — Cause Water damage from pipe leak\nPrior Carrier Travelers\nCurrent Annual Premium $7,800\nVacancy Status No\n\n-- 2 of 2 --",
+    "rules": [
+      {
+        "id": "rule_001",
+        "sourceText": "Roof age must be less than 20 years.",
+        "field": "roof_age_years",
+        "operator": "<",
+        "value": 20,
+        "normalizedExpression": "roof_age_years < 20"
+      },
+      {
+        "id": "rule_002",
+        "sourceText": "Total insured value must not exceed $1,000,000.",
+        "field": "total_insured_value",
+        "operator": "<=",
+        "value": 1000000,
+        "normalizedExpression": "total_insured_value <= 1000000"
+      },
+      {
+        "id": "rule_003",
+        "sourceText": "Property must be owner-occupied.",
+        "field": "occupancy_owner_occupied_pct",
+        "operator": "=",
+        "value": 100,
+        "normalizedExpression": "occupancy_owner_occupied_pct = 100"
+      },
+      {
+        "id": "rule_004",
+        "sourceText": "Maximum two claims in the past five years.",
+        "field": "claims_last_5_years",
+        "operator": "<=",
+        "value": 2,
+        "normalizedExpression": "claims_last_5_years <= 2"
+      },
+      {
+        "id": "rule_005",
+        "sourceText": "Buildings constructed before 1900 are ineligible.",
+        "field": "year_built",
+        "operator": ">=",
+        "value": 1900,
+        "normalizedExpression": "year_built >= 1900"
+      },
+      {
+        "id": "rule_006",
+        "sourceText": "Vacant properties for more than 60 days are ineligible.",
+        "field": "vacancy_status",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "vacancy_status = false"
+      },
+      {
+        "id": "rule_007",
+        "sourceText": "Vacant properties for more than 60 days are ineligible.",
+        "field": "vacancy_duration",
+        "operator": "<=",
+        "value": 60,
+        "normalizedExpression": "vacancy_duration <= 60"
+      },
+      {
+        "id": "rule_008",
+        "sourceText": "Sprinkler systems required for buildings larger than 25,000 square feet.",
+        "field": "total_square_footage",
+        "operator": "<=",
+        "value": 25000,
+        "normalizedExpression": "total_square_footage <= 25000"
+      },
+      {
+        "id": "rule_009",
+        "sourceText": "Sprinkler systems required for buildings larger than 25,000 square feet.",
+        "field": "sprinkler_system_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "sprinkler_system_present = true"
+      },
+      {
+        "id": "rule_010",
+        "sourceText": "Properties located in FEMA Flood Zone A or V require underwriting referral.",
+        "field": "fema_flood_zone_a",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "fema_flood_zone_a = false"
+      },
+      {
+        "id": "rule_011",
+        "sourceText": "Properties located in FEMA Flood Zone A or V require underwriting referral.",
+        "field": "fema_flood_zone_v",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "fema_flood_zone_v = false"
+      },
+      {
+        "id": "rule_012",
+        "sourceText": "Restaurants with deep fryer operations require automatic fire suppression systems.",
+        "field": "deep_fryer_present",
+        "operator": "=",
+        "value": false,
+        "normalizedExpression": "deep_fryer_present = false"
+      },
+      {
+        "id": "rule_013",
+        "sourceText": "Restaurants with deep fryer operations require automatic fire suppression systems.",
+        "field": "automatic_fire_suppression_present",
+        "operator": "=",
+        "value": true,
+        "normalizedExpression": "automatic_fire_suppression_present = true"
+      },
+      {
+        "id": "rule_014",
+        "sourceText": "Properties within 1 mile of the coastline require underwriting referral.",
+        "field": "distance_to_coastline_miles",
+        "operator": ">=",
+        "value": 1,
+        "normalizedExpression": "distance_to_coastline_miles >= 1"
+      },
+      {
+        "id": "rule_015",
+        "sourceText": "Roof Age (Years) < 20",
+        "field": "roof_age_years",
+        "operator": "<",
+        "value": 20,
+        "normalizedExpression": "roof_age_years < 20"
+      },
+      {
+        "id": "rule_016",
+        "sourceText": "Total Insured Value <= $1,000,000",
+        "field": "total_insured_value",
+        "operator": "<=",
+        "value": 1000000,
+        "normalizedExpression": "total_insured_value <= 1000000"
+      },
+      {
+        "id": "rule_017",
+        "sourceText": "Claims (Last 5 Years) <= 2",
+        "field": "claims_last_5_years",
+        "operator": "<=",
+        "value": 2,
+        "normalizedExpression": "claims_last_5_years <= 2"
+      },
+      {
+        "id": "rule_018",
+        "sourceText": "Owner Occupancy Required",
+        "field": "occupancy_owner_occupied_pct",
+        "operator": "=",
+        "value": 100,
+        "normalizedExpression": "occupancy_owner_occupied_pct = 100"
+      }
+    ],
+    "facts": [
+      {
+        "field": "roof_age_years",
+        "value": 24,
+        "confidence": 0.95,
+        "sourceSnippet": "Roof Updated 2001 — calculated from 2001 to approximately 2025 = 24 years"
+      },
+      {
+        "field": "total_insured_value",
+        "value": 850000,
+        "confidence": 1,
+        "sourceSnippet": "Total Insured Value (TIV) $850,000"
+      },
+      {
+        "field": "occupancy_owner_occupied_pct",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No explicit owner-occupancy percentage stated in submission"
+      },
+      {
+        "field": "claims_last_5_years",
+        "value": 1,
+        "confidence": 1,
+        "sourceSnippet": "Number of Losses — 5 Year 1"
+      },
+      {
+        "field": "year_built",
+        "value": 1988,
+        "confidence": 1,
+        "sourceSnippet": "Year Built 1988"
+      },
+      {
+        "field": "vacancy_status",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Vacancy Status No"
+      },
+      {
+        "field": "vacancy_duration",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "Vacancy Status No — property is not vacant, duration not applicable"
+      },
+      {
+        "field": "total_square_footage",
+        "value": 12500,
+        "confidence": 1,
+        "sourceSnippet": "Total Square Footage 12,500"
+      },
+      {
+        "field": "sprinkler_system_present",
+        "value": false,
+        "confidence": 1,
+        "sourceSnippet": "Sprinkler System Present No"
+      },
+      {
+        "field": "fema_flood_zone_a",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No FEMA flood zone information provided in submission"
+      },
+      {
+        "field": "fema_flood_zone_v",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No FEMA flood zone information provided in submission"
+      },
+      {
+        "field": "deep_fryer_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No explicit mention of deep fryer operations in submission"
+      },
+      {
+        "field": "automatic_fire_suppression_present",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No explicit mention of automatic fire suppression system in submission"
+      },
+      {
+        "field": "distance_to_coastline_miles",
+        "value": null,
+        "confidence": 0,
+        "sourceSnippet": "No coastline distance information provided in submission"
+      }
+    ],
+    "additionalFacts": [
+      {
+        "field": "insured_name",
+        "value": "Main Street Retail LLC",
+        "confidence": 1,
+        "sourceSnippet": "Insured Name Main Street Retail LLC"
+      },
+      {
+        "field": "dba_trade_name",
+        "value": "Main Street Market",
+        "confidence": 1,
+        "sourceSnippet": "DBA / Trade Name Main Street Market"
+      },
+      {
+        "field": "risk_address_street",
+        "value": "123 Main St",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address — Street 123 Main St"
+      },
+      {
+        "field": "risk_address_city",
+        "value": "Columbus",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address — City Columbus"
+      },
+      {
+        "field": "risk_address_state",
+        "value": "OH",
+        "confidence": 1,
+        "sourceSnippet": "Risk Address — State OH"
+      },
+      {
+        "field": "building_value",
+        "value": 600000,
+        "confidence": 1,
+        "sourceSnippet": "Building Value $600,000"
+      },
+      {
+        "field": "construction_type",
+        "value": "Masonry",
+        "confidence": 1,
+        "sourceSnippet": "Construction Type Masonry"
+      },
+      {
+        "field": "largest_single_loss_cause",
+        "value": "Water damage from pipe leak",
+        "confidence": 1,
+        "sourceSnippet": "Largest Single Loss — Cause Water damage from pipe leak"
+      }
+    ],
+    "evaluation": [
+      {
+        "ruleId": "rule_001",
+        "normalizedExpression": "roof_age_years < 20",
+        "actualValue": 24,
+        "status": "FAIL",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Expected < 20"
+      },
+      {
+        "ruleId": "rule_002",
+        "normalizedExpression": "total_insured_value <= 1000000",
+        "actualValue": 850000,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_003",
+        "normalizedExpression": "occupancy_owner_occupied_pct = 100",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_004",
+        "normalizedExpression": "claims_last_5_years <= 2",
+        "actualValue": 1,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_005",
+        "normalizedExpression": "year_built >= 1900",
+        "actualValue": 1988,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_006",
+        "normalizedExpression": "vacancy_status = false",
+        "actualValue": false,
+        "status": "PASS",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_007",
+        "normalizedExpression": "vacancy_duration <= 60",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": true,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_008",
+        "normalizedExpression": "total_square_footage <= 25000",
+        "actualValue": 12500,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_009",
+        "normalizedExpression": "sprinkler_system_present = true",
+        "actualValue": false,
+        "status": "FAIL",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Expected = true"
+      },
+      {
+        "ruleId": "rule_010",
+        "normalizedExpression": "fema_flood_zone_a = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_011",
+        "normalizedExpression": "fema_flood_zone_v = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_012",
+        "normalizedExpression": "deep_fryer_present = false",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_013",
+        "normalizedExpression": "automatic_fire_suppression_present = true",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_014",
+        "normalizedExpression": "distance_to_coastline_miles >= 1",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      },
+      {
+        "ruleId": "rule_015",
+        "normalizedExpression": "roof_age_years < 20",
+        "actualValue": 24,
+        "status": "FAIL",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Expected < 20"
+      },
+      {
+        "ruleId": "rule_016",
+        "normalizedExpression": "total_insured_value <= 1000000",
+        "actualValue": 850000,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_017",
+        "normalizedExpression": "claims_last_5_years <= 2",
+        "actualValue": 1,
+        "status": "PASS",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Meets rule"
+      },
+      {
+        "ruleId": "rule_018",
+        "normalizedExpression": "occupancy_owner_occupied_pct = 100",
+        "actualValue": null,
+        "status": "UNKNOWN",
+        "isHardDecline": false,
+        "requiresManualReview": false,
+        "reason": "Missing fact"
+      }
+    ],
+    "id": "sub_1773635641074_8sa9p2",
+    "createdAt": "2026-03-16T04:34:01.074Z"
+  }
+]

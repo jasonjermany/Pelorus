@@ -1,351 +1,155 @@
-﻿<template>
+<template>
   <div class="min-h-screen bg-surface-50">
     <header class="border-b border-primary-700/20 bg-primary-700">
-      <div class="mx-auto max-w-6xl px-6 pt-10 pb-8">
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 class="text-3xl font-semibold text-white">Pelorus</h1>
-              <p class="mt-2 max-w-2xl text-lg text-slate-100">
-                AI-powered submission triage for underwriters.
-              </p>
-              <p class="mt-2 text-sm text-slate-200">
-                Convert underwriting guidelines into structured rules, extract facts from submissions, and instantly see pass/fail results.
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-white">
-                MVP Prototype
-              </span>
-            </div>
-          </div>
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-6">
+        <div>
+          <h1 class="text-2xl font-semibold text-white">Pelorus Dashboard</h1>
+          <p class="mt-1 text-sm text-slate-200">Processed submissions and underwriting outcomes.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <NuxtLink to="/dashboard" class="rounded-md border border-accent-500/40 bg-accent-500 px-3 py-1 text-xs font-semibold text-white">
+            Dashboard
+          </NuxtLink>
+          <NuxtLink to="/dev" class="rounded-md border border-slate-200/50 bg-white px-3 py-1 text-xs font-semibold text-primary-700 hover:bg-slate-100">
+            Dev Console
+          </NuxtLink>
         </div>
       </div>
     </header>
 
-    <main class="mx-auto max-w-6xl px-6 pb-16 pt-16">
-      <div class="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-h-[4.5rem]">
-              <h2 class="text-xl font-semibold text-primary-700">Underwriting Guidelines</h2>
-              <p class="mt-1 text-sm text-slate-600">
-                Paste your underwriting guidelines below and generate structured rules.
-              </p>
-            </div>
-            <Badge variant="info">Step 1</Badge>
+    <main class="mx-auto max-w-6xl px-6 py-10">
+      <section class="overflow-hidden rounded-2xl border border-primary-700/15 bg-white shadow-card">
+        <div class="flex items-center justify-between border-b border-primary-700/10 px-6 py-4">
+          <div>
+            <h2 class="text-2xl font-semibold text-primary-700">All Submissions</h2>
+            <p class="mt-1 text-xs text-slate-500">Click a case to open its full underwriting detail view.</p>
           </div>
-
-          <textarea
-            v-model="guidelines"
-            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
-          />
-
-          <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button :variant="isGeneratingRules ? 'accent' : 'primary'" :disabled="isGeneratingRules" @click="onGenerateRules">{{ isGeneratingRules ? 'Generating...' : 'Generate Rules' }}</Button>
-            <Button variant="secondary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
-              {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload File' }}
-            </Button>
-            <Button variant="secondary" @click="resetGuidelines">Reset</Button>
-          </div>
-          <input
-            ref="guidelinesFileInput"
-            type="file"
-            class="hidden"
-            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            @change="onGuidelinesFileSelected"
-          />
-          <p v-if="guidelinesUploadNote" class="mt-3 text-sm text-success-700">
-            {{ guidelinesUploadNote }}
-          </p>
-          <p v-if="guidelinesUploadError" class="mt-3 text-sm text-danger-700">
-            {{ guidelinesUploadError }}
-          </p>
-          <p v-if="generateError" class="mt-3 text-sm text-danger-700">
-            {{ generateError }}
-          </p>
-
-          <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Structured Rules</h3>
-            <p class="mt-1 text-xs text-slate-500">Rules generated from your guidelines. Each rule is evaluated against extracted facts.</p>
-
-            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!rules.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                Generate rules to see them appear here.
-              </div>
-
-              <div v-else class="space-y-3">
-                <div
-                  v-for="rule in rules"
-                  :key="rule.id"
-                  class="rounded-xl border border-primary-700/15 bg-white p-4 shadow-sm"
-                >
-                  <div class="flex items-start justify-between gap-3">
-                    <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ rule.normalizedExpression }}</p>
-                      <p class="mt-1 text-xs text-slate-500">{{ rule.sourceText }}</p>
-                    </div>
-                    <span class="rounded-full bg-primary-700/10 px-3 py-1 text-xs font-semibold text-primary-700">
-                      {{ rule.field }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-h-[4.5rem]">
-              <h2 class="text-xl font-semibold text-primary-700">Submission Input</h2>
-              <p class="mt-1 text-sm text-slate-600">
-                Paste a broker submission and extract facts for evaluation.
-              </p>
-            </div>
-            <Badge variant="info">Step 2</Badge>
-          </div>
-
-          <textarea
-            v-model="submission"
-            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
-          />
-
-          <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button
-              variant="accent"
-              :disabled="isAnalyzing || !rules.length"
-              @click="onAnalyzeSubmission"
+          <div class="flex items-center gap-2">
+            <NuxtLink
+              to="/dev"
+              class="rounded-full border border-accent-500/40 bg-accent-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-600"
             >
-              {{ isAnalyzing ? 'Analyzing...' : 'Analyze Submission' }}
-            </Button>
-            <Button variant="secondary" :disabled="isExtractingSubmissionFile" @click="triggerSubmissionFileUpload">
-              {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload File' }}
-            </Button>
-            <Button variant="secondary" @click="resetSubmission">Reset</Button>
+              + Add Case
+            </NuxtLink>
+            <button
+              class="rounded-full border border-primary-700/30 bg-white px-4 py-2 text-sm font-semibold text-primary-700 transition hover:bg-primary-700/5"
+              :disabled="isLoading"
+              @click="loadSubmissions"
+            >
+              {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+            </button>
           </div>
-          <input
-            ref="submissionFileInput"
-            type="file"
-            class="hidden"
-            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            @change="onSubmissionFileSelected"
-          />
-          <p v-if="submissionUploadNote" class="mt-3 text-sm text-success-700">
-            {{ submissionUploadNote }}
-          </p>
-          <p v-if="submissionUploadError" class="mt-3 text-sm text-danger-700">
-            {{ submissionUploadError }}
-          </p>
-          <p v-if="analyzeError" class="mt-3 text-sm text-danger-700">
-            {{ analyzeError }}
-          </p>
+        </div>
 
-          <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Extracted Facts</h3>
-            <p class="mt-1 text-xs text-slate-500">
-              Facts extracted from the submission that are used to evaluate each rule.
-            </p>
+        <p v-if="errorMessage" class="px-6 pt-4 text-sm text-danger-700">{{ errorMessage }}</p>
 
-            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!facts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                Analyze a submission to see extracted facts.
-              </div>
+        <div v-if="isLoading && !submissions.length" class="px-6 py-10 text-sm text-slate-600">
+          Loading submissions...
+        </div>
 
-              <div v-else class="space-y-3">
-                <div
-                  v-for="fact in facts"
-                  :key="fact.field"
-                  class="rounded-xl border border-primary-700/15 bg-white p-4 shadow-sm"
-                >
-                  <div class="flex items-start justify-between gap-3">
-                    <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ fact.field }}</p>
-                      <p class="mt-1 text-xs text-slate-500">
-                        {{ fact.sourceSnippet || 'Extracted from submission' }}
-                      </p>
-                    </div>
-                    <Badge :variant="factConfidenceVariant(fact.confidence)">
-                      {{ (fact.confidence * 100).toFixed(0) }}% confidence
-                    </Badge>
-                  </div>
-                  <p class="mt-3 text-sm text-slate-700">
-                    <span class="font-medium">Value:</span> {{ displayFactValue(fact.value) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div v-else-if="!submissions.length" class="px-6 py-10 text-sm text-slate-600">
+          No processed submissions yet. Use the <NuxtLink to="/dev" class="text-accent-600 underline">Dev Console</NuxtLink> to run an analysis.
+        </div>
 
-          <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Additional Signals</h3>
-            <p class="mt-1 text-xs text-slate-500">
-              Important underwriting facts detected by AI outside the current rule set.
-            </p>
-
-            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!additionalFacts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                No additional signals detected.
-              </div>
-
-              <div v-else class="space-y-3">
-                <div
-                  v-for="fact in additionalFacts"
-                  :key="`additional-${fact.field}-${fact.sourceSnippet || ''}`"
-                  class="rounded-xl border border-primary-700/15 bg-white p-4 shadow-sm"
-                >
-                  <div class="flex items-start justify-between gap-3">
-                    <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ fact.field }}</p>
-                      <p class="mt-1 text-xs text-slate-500">
-                        {{ fact.sourceSnippet || 'Extracted from submission' }}
-                      </p>
-                    </div>
-                    <Badge :variant="factConfidenceVariant(fact.confidence)">
-                      {{ (fact.confidence * 100).toFixed(0) }}% confidence
-                    </Badge>
-                  </div>
-                  <p class="mt-3 text-sm text-slate-700">
-                    <span class="font-medium">Value:</span> {{ displayFactValue(fact.value) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div class="mt-10">
-        <Card>
-          <div class="flex flex-col gap-4">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h2 class="text-xl font-semibold text-primary-700">Evaluation Report</h2>
-                <p class="mt-1 text-sm text-slate-600">
-                  See how the submission compares to your underwriting guidelines.
-                </p>
-              </div>
-              <div class="flex items-center gap-3">
-                <span
-                  class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
-                  :class="{
-                    'bg-success-500/15 text-success-700': overallStatus === 'PASS',
-                    'bg-danger-500/15 text-danger-700': overallStatus === 'FAIL',
-                    'bg-accent-500/15 text-accent-600': overallStatus === 'REFER',
-                  }"
-                >
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full text-left">
+            <thead>
+              <tr class="border-b border-primary-700/10 text-xs uppercase tracking-wide text-primary-700/70">
+                <th class="px-6 py-3 font-semibold">Company</th>
+                <th class="px-6 py-3 font-semibold">Outcome</th>
+                <th class="px-6 py-3 font-semibold">Rule Health</th>
+                <th class="px-6 py-3 font-semibold">Next Step</th>
+                <th class="px-6 py-3 font-semibold">Date Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="item in pagedSubmissions"
+                :key="item.id"
+                class="cursor-pointer border-b border-primary-700/10 text-sm transition hover:bg-surface-100"
+                @click="goToSubmission(item.id)"
+              >
+                <td class="px-6 py-4">
+                  <p class="font-semibold text-slate-900">{{ item.companyName }}</p>
+                  <p class="mt-1 text-xs text-slate-500">{{ item.summary }}</p>
+                </td>
+                <td class="px-6 py-4">
                   <span
-                    class="h-2.5 w-2.5 rounded-full"
+                    class="rounded-full px-3 py-1 text-xs font-semibold"
                     :class="{
-                      'bg-success-500': overallStatus === 'PASS',
-                      'bg-danger-500': overallStatus === 'FAIL',
-                      'bg-accent-500': overallStatus === 'REFER',
+                      'bg-success-500/15 text-success-700': item.status === 'PASS',
+                      'bg-accent-500/15 text-accent-600': item.status === 'REFER',
+                      'bg-danger-500/15 text-danger-700': item.status === 'FAIL',
                     }"
-                  />
-                  Submission Result: {{ overallStatus }}
-                </span>
+                  >
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-slate-700">
+                    <p><span class="font-semibold text-danger-700">{{ failedCount(item) }}</span> failed</p>
+                    <p><span class="font-semibold text-accent-600">{{ unknownCount(item) }}</span> unknown</p>
+                    <p><span class="font-semibold text-success-700">{{ passedCount(item) }}</span> passed</p>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-sm font-semibold text-primary-700">{{ nextStepLabel(item) }}</p>
+                  <p class="mt-1 text-xs text-slate-500">{{ issueSummary(item) }}</p>
+                </td>
+                <td class="px-6 py-4 text-slate-600">
+                  {{ formatDate(item.createdAt) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-                <Button variant="ghost" :disabled="!canCopyJson" @click="copyReport">
-                  Copy JSON
-                </Button>
-              </div>
-            </div>
-
-            <div class="grid gap-6 lg:grid-cols-3">
-              <div>
-                <h3 class="text-sm font-semibold text-primary-700">Failed Rules</h3>
-                <div class="mt-3 space-y-3">
-                  <div v-if="failedResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                    No failed rules.
-                  </div>
-                  <div v-for="result in failedResults" :key="result.ruleId" class="rounded-xl border border-danger-200 bg-danger-50 p-4">
-                    <p class="text-sm font-semibold text-danger-800">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Hard decline: {{ result.isHardDecline ? 'Yes' : 'No' }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Reason: {{ result.reason }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 class="text-sm font-semibold text-primary-700">Unknown Rules</h3>
-                <div class="mt-3 space-y-3">
-                  <div v-if="unknownResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                    No unknown rules.
-                  </div>
-                  <div v-for="result in unknownResults" :key="result.ruleId" class="rounded-xl border border-accent-500/30 bg-accent-500/10 p-4">
-                    <p class="text-sm font-semibold text-accent-600">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-accent-600">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-accent-600">Reason: {{ result.reason }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 class="text-sm font-semibold text-primary-700">Passed Rules</h3>
-                <div class="mt-3 space-y-3">
-                  <div v-if="passedResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                    No rules have passed yet.
-                  </div>
-                  <div v-for="result in passedResults" :key="result.ruleId" class="rounded-xl border border-success-200 bg-success-50 p-4">
-                    <p class="text-sm font-semibold text-success-800">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-success-700">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-success-700">Reason: {{ result.reason }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div v-if="submissions.length > pageSize" class="flex items-center justify-between border-t border-primary-700/10 px-6 py-4">
+          <button
+            class="rounded-md border border-primary-700/30 px-3 py-1 text-sm font-semibold text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
+            :disabled="currentPage === 1"
+            @click="currentPage--"
+          >
+            Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              class="h-8 w-8 rounded-md text-sm font-semibold"
+              :class="page === currentPage ? 'bg-accent-500/20 text-accent-600' : 'text-primary-700 hover:bg-primary-700/10'"
+              @click="currentPage = page"
+            >
+              {{ page }}
+            </button>
           </div>
-        </Card>
-      </div>
+          <button
+            class="rounded-md border border-primary-700/30 px-3 py-1 text-sm font-semibold text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
+            :disabled="currentPage === totalPages"
+            @click="currentPage++"
+          >
+            Next
+          </button>
+        </div>
+      </section>
     </main>
   </div>
 </template>
+
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Card from '~/components/ui/Card.vue'
-import Button from '~/components/ui/Button.vue'
-import Badge from '~/components/ui/Badge.vue'
-import type { Rule, ExtractedFact, EvaluationResult } from '~/types/models'
-import { evaluateRules } from '~/utils/ruleEngine'
+import { computed, onMounted, ref } from 'vue'
+import type { ProcessedSubmission } from '~/types/models'
 
-const defaultGuidelines = ''
-
-const defaultSubmission = ''
-
-const guidelines = ref(defaultGuidelines)
-const submission = ref(defaultSubmission)
-
-const rules = ref<Rule[]>([])
-const facts = ref<ExtractedFact[]>([])
-const additionalFacts = ref<ExtractedFact[]>([])
-const evaluation = ref<EvaluationResult[]>([])
-
-type RulesApiResponse = {
-  rules: Rule[]
+type ListSubmissionsResponse = {
+  submissions: ProcessedSubmission[]
 }
 
-type FactsApiResponse = {
-  facts: ExtractedFact[]
-  additionalFacts?: ExtractedFact[]
-}
-
-type ExtractTextApiResponse = {
-  text: string
-}
-
-const isGeneratingRules = ref(false)
-const isAnalyzing = ref(false)
-const isExtractingGuidelinesFile = ref(false)
-const isExtractingSubmissionFile = ref(false)
-const generateError = ref<string | null>(null)
-const analyzeError = ref<string | null>(null)
-const guidelinesUploadError = ref<string | null>(null)
-const submissionUploadError = ref<string | null>(null)
-const guidelinesUploadNote = ref<string | null>(null)
-const submissionUploadNote = ref<string | null>(null)
-const guidelinesFileInput = ref<HTMLInputElement | null>(null)
-const submissionFileInput = ref<HTMLInputElement | null>(null)
+const submissions = ref<ProcessedSubmission[]>([])
+const isLoading = ref(false)
+const errorMessage = ref<string | null>(null)
+const currentPage = ref(1)
+const pageSize = 8
+const router = useRouter()
 
 const getErrorMessage = (error: unknown) => {
   if (error && typeof error === 'object') {
@@ -359,185 +163,57 @@ const getErrorMessage = (error: unknown) => {
   return 'Request failed.'
 }
 
-const clearAnalysisState = () => {
-  facts.value = []
-  additionalFacts.value = []
-  evaluation.value = []
+const formatDate = (iso: string) => {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  return date.toLocaleDateString()
 }
 
-const clearGuidelinesUploadState = () => {
-  guidelinesUploadError.value = null
-  guidelinesUploadNote.value = null
+const failedCount = (item: ProcessedSubmission) => item.evaluation.filter((entry) => entry.status === 'FAIL').length
+const unknownCount = (item: ProcessedSubmission) => item.evaluation.filter((entry) => entry.status === 'UNKNOWN').length
+
+const passedCount = (item: ProcessedSubmission) => item.evaluation.filter((entry) => entry.status === 'PASS').length
+
+const nextStepLabel = (item: ProcessedSubmission) => {
+  if (item.status === 'FAIL') return 'Do Not Bind'
+  if (item.status === 'REFER') return 'Underwriter Review'
+  return 'Ready to Quote'
 }
 
-const clearSubmissionUploadState = () => {
-  submissionUploadError.value = null
-  submissionUploadNote.value = null
+const issueSummary = (item: ProcessedSubmission) => {
+  const failed = failedCount(item)
+  const unknown = unknownCount(item)
+  if (item.status === 'PASS') return 'No blocking issues detected.'
+  if (item.status === 'FAIL') return `${failed} blocking rule issue(s).`
+  if (unknown > 0) return `${unknown} unknown item(s) need clarification.`
+  return `${failed} rule variance(s) need review.`
 }
 
-const extractTextFromFile = async (file: File): Promise<string> => {
-  const formData = new FormData()
-  formData.append('file', file)
-  const response = await $fetch<ExtractTextApiResponse>('/api/extract-text', {
-    method: 'POST',
-    body: formData,
-  })
-  return response.text
-}
-
-const triggerGuidelinesFileUpload = () => {
-  if (isExtractingGuidelinesFile.value) return
-  guidelinesFileInput.value?.click()
-}
-
-const triggerSubmissionFileUpload = () => {
-  if (isExtractingSubmissionFile.value) return
-  submissionFileInput.value?.click()
-}
-
-const onGuidelinesFileSelected = async (event: Event) => {
-  const input = event.target as HTMLInputElement | null
-  const file = input?.files?.[0]
-  if (!file) return
-
-  clearGuidelinesUploadState()
-  isExtractingGuidelinesFile.value = true
-  try {
-    const extractedText = await extractTextFromFile(file)
-    if (!extractedText.trim()) {
-      throw new Error('No readable text was found in the file.')
-    }
-    guidelines.value = extractedText
-    guidelinesUploadNote.value = 'Extracted text loaded from file.'
-  } catch (error) {
-    guidelinesUploadError.value = getErrorMessage(error)
-  } finally {
-    isExtractingGuidelinesFile.value = false
-    if (input) input.value = ''
-  }
-}
-
-const onSubmissionFileSelected = async (event: Event) => {
-  const input = event.target as HTMLInputElement | null
-  const file = input?.files?.[0]
-  if (!file) return
-
-  clearSubmissionUploadState()
-  isExtractingSubmissionFile.value = true
-  try {
-    const extractedText = await extractTextFromFile(file)
-    if (!extractedText.trim()) {
-      throw new Error('No readable text was found in the file.')
-    }
-    submission.value = extractedText
-    submissionUploadNote.value = 'Extracted text loaded from file.'
-  } catch (error) {
-    submissionUploadError.value = getErrorMessage(error)
-  } finally {
-    isExtractingSubmissionFile.value = false
-    if (input) input.value = ''
-  }
-}
-
-const onGenerateRules = async () => {
-  isGeneratingRules.value = true
-  generateError.value = null
-  clearAnalysisState()
-  try {
-    const response = await $fetch<RulesApiResponse>('/api/rules', {
-      method: 'POST',
-      body: { guidelineText: guidelines.value },
-    })
-    rules.value = response.rules
-  } catch (error) {
-    rules.value = []
-    clearAnalysisState()
-    generateError.value = getErrorMessage(error)
-  } finally {
-    isGeneratingRules.value = false
-  }
-}
-
-const onAnalyzeSubmission = async () => {
-  isAnalyzing.value = true
-  analyzeError.value = null
-  evaluation.value = []
-  try {
-    const response = await $fetch<FactsApiResponse>('/api/facts', {
-      method: 'POST',
-      body: { submissionText: submission.value, rules: rules.value },
-    })
-
-    facts.value = response.facts
-    additionalFacts.value = response.additionalFacts ?? []
-    evaluation.value = evaluateRules(rules.value, facts.value)
-  } catch (error) {
-    facts.value = []
-    additionalFacts.value = []
-    analyzeError.value = getErrorMessage(error)
-  } finally {
-    isAnalyzing.value = false
-  }
-}
-
-const resetGuidelines = () => {
-  guidelines.value = defaultGuidelines
-  rules.value = []
-  clearAnalysisState()
-  clearGuidelinesUploadState()
-  generateError.value = null
-  analyzeError.value = null
-}
-
-const resetSubmission = () => {
-  submission.value = defaultSubmission
-  clearAnalysisState()
-  clearSubmissionUploadState()
-  analyzeError.value = null
-}
-
-const displayFactValue = (value: any) => {
-  if (value === null || value === undefined) return 'N/A'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  return value
-}
-
-const factConfidenceVariant = (confidence: number) => {
-  if (confidence > 0.8) return 'success'
-  if (confidence > 0.5) return 'info'
-  return 'neutral'
-}
-
-const results = computed(() => evaluation.value)
-const failedResults = computed(() => results.value.filter((r) => r.status === 'FAIL'))
-const unknownResults = computed(() => results.value.filter((r) => r.status === 'UNKNOWN'))
-const passedResults = computed(() => results.value.filter((r) => r.status === 'PASS'))
-
-const overallStatus = computed(() => {
-  if (!results.value.length) return 'N/A'
-  const hasHardDeclineFail = failedResults.value.some((r) => r.isHardDecline)
-  if (hasHardDeclineFail) return 'FAIL'
-
-  const hasUnknown = unknownResults.value.length > 0
-  const hasManualReview = results.value.some((r) => r.requiresManualReview)
-  if (hasUnknown || hasManualReview) return 'REFER'
-
-  return 'PASS'
+const totalPages = computed(() => Math.max(1, Math.ceil(submissions.value.length / pageSize)))
+const pagedSubmissions = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return submissions.value.slice(start, start + pageSize)
 })
 
-const canCopyJson = computed(() => rules.value.length > 0 && facts.value.length > 0)
-
-const copyReport = async () => {
-  const payload = {
-    guidelines: guidelines.value,
-    rules: rules.value,
-    submission: submission.value,
-    facts: facts.value,
-    additionalFacts: additionalFacts.value,
-    evaluation: evaluation.value,
-    overallStatus: overallStatus.value,
-  }
-  await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
+const goToSubmission = (id: string) => {
+  router.push(`/submissions/${id}`)
 }
 
+const loadSubmissions = async () => {
+  isLoading.value = true
+  errorMessage.value = null
+  try {
+    const response = await $fetch<ListSubmissionsResponse>('/api/submissions')
+    submissions.value = response.submissions
+    if (currentPage.value > totalPages.value) {
+      currentPage.value = totalPages.value
+    }
+  } catch (error) {
+    errorMessage.value = getErrorMessage(error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(loadSubmissions)
 </script>
