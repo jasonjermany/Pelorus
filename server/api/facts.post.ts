@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
   const rules = Array.isArray(body?.rules) ? body.rules : []
 
   try {
-    const facts = await extractFactsFromSubmission(submissionText, rules)
-    return { facts }
+    const extraction = await extractFactsFromSubmission(submissionText, rules)
+    return extraction
   } catch (error) {
     throw createError({
       statusCode: 500,

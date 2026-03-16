@@ -15,6 +15,8 @@ All intelligence uses Anthropic Claude.
 
 - `server/lib/ai/anthropic.ts`: Claude client + prompts + strict JSON parsing/validation
 - `server/lib/ai/index.ts`: routing layer for Claude-backed generation/extraction
+- `server/data/factCatalog.json`: optional catalog of known underwriting facts for normalization
+- `server/utils/factCatalog.ts`: catalog loaders (`loadFactCatalog`, `getFactKeys`)
 
 Primary exported functions:
 - `generateRulesFromGuidelines(guidelineText: string): Promise<Rule[]>`
@@ -23,6 +25,7 @@ Primary exported functions:
 Behavior:
 - `ANTHROPIC_API_KEY` is required.
 - If the key is missing or Claude fails, API endpoints return an error (no fallback parsing).
+- If the fact catalog is missing/empty, AI extraction still works with dynamic field naming.
 
 ## Setup
 

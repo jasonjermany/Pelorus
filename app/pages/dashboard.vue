@@ -146,6 +146,42 @@
               </div>
             </div>
           </div>
+
+          <div class="mt-6">
+            <h3 class="text-sm font-semibold text-primary-700">Additional Signals</h3>
+            <p class="mt-1 text-xs text-slate-500">
+              Important underwriting facts detected by AI outside the current rule set.
+            </p>
+
+            <div class="mt-4 space-y-3">
+              <div v-if="!additionalFacts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+                No additional signals detected.
+              </div>
+
+              <div v-else class="space-y-3">
+                <div
+                  v-for="fact in additionalFacts"
+                  :key="`additional-${fact.field}-${fact.sourceSnippet || ''}`"
+                  class="rounded-xl border border-primary-700/15 bg-white p-4 shadow-sm"
+                >
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <p class="text-sm font-semibold text-slate-900">{{ fact.field }}</p>
+                      <p class="mt-1 text-xs text-slate-500">
+                        {{ fact.sourceSnippet || 'Extracted from submission' }}
+                      </p>
+                    </div>
+                    <Badge :variant="factConfidenceVariant(fact.confidence)">
+                      {{ (fact.confidence * 100).toFixed(0) }}% confidence
+                    </Badge>
+                  </div>
+                  <p class="mt-3 text-sm text-slate-700">
+                    <span class="font-medium">Value:</span> {{ displayFactValue(fact.value) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
 
@@ -236,6 +272,7 @@ const submission = ref(defaultSubmission)
 
 const rules = ref<Rule[]>([])
 const facts = ref<ExtractedFact[]>([])
+const additionalFacts = ref<ExtractedFact[]>([])
 const evaluation = ref<EvaluationResult[]>([])
 
 type RulesApiResponse = {
@@ -244,6 +281,7 @@ type RulesApiResponse = {
 
 type FactsApiResponse = {
   facts: ExtractedFact[]
+  additionalFacts?: ExtractedFact[]
 }
 
 const isGeneratingRules = ref(false)
@@ -267,6 +305,7 @@ const onGenerateRules = async () => {
   isGeneratingRules.value = true
   generateError.value = null
   facts.value = []
+  additionalFacts.value = []
   evaluation.value = []
   try {
     const response = await $fetch<RulesApiResponse>('/api/rules', {
@@ -276,6 +315,7 @@ const onGenerateRules = async () => {
     rules.value = response.rules
   } catch (error) {
     rules.value = []
+    additionalFacts.value = []
     generateError.value = getErrorMessage(error)
   } finally {
     isGeneratingRules.value = false
@@ -293,9 +333,11 @@ const onAnalyzeSubmission = async () => {
     })
 
     facts.value = response.facts
+    additionalFacts.value = response.additionalFacts ?? []
     evaluation.value = evaluateRules(rules.value, facts.value)
   } catch (error) {
     facts.value = []
+    additionalFacts.value = []
     analyzeError.value = getErrorMessage(error)
   } finally {
     isAnalyzing.value = false
@@ -306,6 +348,7 @@ const resetGuidelines = () => {
   guidelines.value = defaultGuidelines
   rules.value = []
   facts.value = []
+  additionalFacts.value = []
   evaluation.value = []
   generateError.value = null
   analyzeError.value = null
@@ -314,6 +357,7 @@ const resetGuidelines = () => {
 const resetSubmission = () => {
   submission.value = defaultSubmission
   facts.value = []
+  additionalFacts.value = []
   evaluation.value = []
   analyzeError.value = null
 }
@@ -355,6 +399,7 @@ const copyReport = async () => {
     rules: rules.value,
     submission: submission.value,
     facts: facts.value,
+    additionalFacts: additionalFacts.value,
     evaluation: evaluation.value,
     overallStatus: overallStatus.value,
   }

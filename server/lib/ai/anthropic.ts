@@ -1,9 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { ExtractedFact, Operator, Rule } from '~/types/models'
+import { getFactKeys, loadFactCatalog } from '../../utils/factCatalog'
 
 const DEFAULT_MODEL = 'claude-sonnet-4-6'
 
 type ClaudeJsonArray = unknown[]
+type ClaudeJsonObject = Record<string, unknown>
+
+export type FactExtractionResult = {
+  facts: ExtractedFact[]
+  additionalFacts: ExtractedFact[]
+}
 
 function isOperator(value: unknown): value is Operator {
   return value === '<' || value === '<=' || value === '>' || value === '>=' || value === '='
@@ -45,6 +52,27 @@ function parseJsonArray(text: string): ClaudeJsonArray {
   }
 
   throw new Error('Claude response was not a valid JSON array.')
+}
+
+function parseJsonObject(text: string): ClaudeJsonObject {
+  const cleaned = stripCodeFences(text)
+
+  try {
+    const parsed = JSON.parse(cleaned)
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as ClaudeJsonObject
+  } catch {
+    // Try to salvage JSON object from noisy output.
+  }
+
+  const start = cleaned.indexOf('{')
+  const end = cleaned.lastIndexOf('}')
+  if (start >= 0 && end > start) {
+    const candidate = cleaned.slice(start, end + 1)
+    const parsed = JSON.parse(candidate)
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as ClaudeJsonObject
+  }
+
+  throw new Error('Claude response was not a valid JSON object.')
 }
 
 function validateRules(raw: ClaudeJsonArray): Rule[] {
@@ -126,6 +154,9 @@ function getModel() {
 export async function generateRulesWithClaude(guidelineText: string): Promise<Rule[]> {
   const client = getClient()
   const model = getModel()
+  const catalog = await loadFactCatalog()
+  const factKeys = getFactKeys(catalog)
+  const factCatalogContext = factKeys.length ? factKeys.join('\n') : '(empty catalog)'
 
   const prompt = [
     'Convert underwriting guidelines into structured JSON rules.',
@@ -137,8 +168,12 @@ export async function generateRulesWithClaude(guidelineText: string): Promise<Ru
     '- Normalize field to snake_case.',
     '- Infer operator from language.',
     '- Preserve original source text for each rule in sourceText.',
+    '- When possible, map extracted rule fields to one of the known fact keys provided in the fact catalog.',
     '- Do not invent rules.',
     '- Do not include any keys outside schema.',
+    '',
+    'Fact Catalog Keys:',
+    factCatalogContext,
     '',
     'Guidelines text:',
     guidelineText,
@@ -156,25 +191,43 @@ export async function generateRulesWithClaude(guidelineText: string): Promise<Ru
   return validateRules(parsed)
 }
 
-export async function extractFactsWithClaude(submissionText: string, rules: Rule[]): Promise<ExtractedFact[]> {
+export async function extractFactsWithClaude(submissionText: string, rules: Rule[]): Promise<FactExtractionResult> {
   const client = getClient()
   const model = getModel()
+  const catalog = await loadFactCatalog()
+  const factKeys = getFactKeys(catalog)
+  const factCatalogContext = factKeys.length ? factKeys.join('\n') : '(empty catalog)'
 
   const prompt = [
-    'Extract submission facts for the provided underwriting rule fields.',
-    'Return ONLY a JSON array. No markdown. No prose.',
-    'Schema for each item:',
-    '{ "field": string, "value": string|number|boolean|null, "confidence": number, "sourceSnippet": string }',
-    'Requirements:',
-    '- Extract only fields required by the provided rules.',
-    '- Use rule field names exactly as the target schema.',
+    'Extract facts from submission text for underwriting evaluation.',
+    'Return ONLY a JSON object. No markdown. No prose.',
+    'Output schema:',
+    '{',
+    '  "facts": [ { "field": string, "value": string|number|boolean|null, "confidence": number, "sourceSnippet": string } ],',
+    '  "additionalFacts": [ { "field": string, "value": string|number|boolean|null, "confidence": number, "sourceSnippet": string } ]',
+    '}',
+    'Requirements for "facts":',
+    '- Extract fields required by the provided rules.',
+    '- Use the rule fields as target schema, but prefer known catalog keys when there is a close semantic match.',
+    '- If no catalog key matches, you may create a new normalized snake_case field.',
     '- If evidence is missing, set value to null and confidence to 0.',
+    '- Include short sourceSnippet when possible.',
+    '',
+    'Requirements for "additionalFacts":',
+    '- Include important underwriting-relevant facts not already represented in "facts".',
+    '- Only include facts with strong supporting evidence in submission text.',
+    '- Keep this list concise (0-8 items).',
+    '- Use normalized snake_case field names.',
+    '',
+    'Global rules:',
     '- Do not guess unsupported facts.',
-    '- Include a short sourceSnippet when possible.',
     '- Do not include keys outside schema.',
     '',
     'Rules JSON:',
     JSON.stringify(rules),
+    '',
+    'Fact Catalog Keys:',
+    factCatalogContext,
     '',
     'Submission text:',
     submissionText,
@@ -188,6 +241,13 @@ export async function extractFactsWithClaude(submissionText: string, rules: Rule
   })
 
   const text = toTextContent(response.content)
-  const parsed = parseJsonArray(text)
-  return validateFacts(parsed)
+  const parsed = parseJsonObject(text)
+
+  const rawFacts = Array.isArray(parsed.facts) ? parsed.facts : []
+  const rawAdditionalFacts = Array.isArray(parsed.additionalFacts) ? parsed.additionalFacts : []
+
+  return {
+    facts: validateFacts(rawFacts),
+    additionalFacts: validateFacts(rawAdditionalFacts),
+  }
 }
