@@ -43,9 +43,24 @@
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
             <Button :variant="isGeneratingRules ? 'accent' : 'primary'" :disabled="isGeneratingRules" @click="onGenerateRules">{{ isGeneratingRules ? 'Generating...' : 'Generate Rules' }}</Button>
+            <Button variant="secondary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
+              {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload File' }}
+            </Button>
             <Button variant="secondary" @click="resetGuidelines">Reset</Button>
-            <Button variant="ghost" @click="loadExampleGuidelines">Load Example</Button>
           </div>
+          <input
+            ref="guidelinesFileInput"
+            type="file"
+            class="hidden"
+            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            @change="onGuidelinesFileSelected"
+          />
+          <p v-if="guidelinesUploadNote" class="mt-3 text-sm text-success-700">
+            {{ guidelinesUploadNote }}
+          </p>
+          <p v-if="guidelinesUploadError" class="mt-3 text-sm text-danger-700">
+            {{ guidelinesUploadError }}
+          </p>
           <p v-if="generateError" class="mt-3 text-sm text-danger-700">
             {{ generateError }}
           </p>
@@ -104,9 +119,24 @@
             >
               {{ isAnalyzing ? 'Analyzing...' : 'Analyze Submission' }}
             </Button>
+            <Button variant="secondary" :disabled="isExtractingSubmissionFile" @click="triggerSubmissionFileUpload">
+              {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload File' }}
+            </Button>
             <Button variant="secondary" @click="resetSubmission">Reset</Button>
-            <Button variant="ghost" @click="loadExampleSubmission">Load Example</Button>
           </div>
+          <input
+            ref="submissionFileInput"
+            type="file"
+            class="hidden"
+            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            @change="onSubmissionFileSelected"
+          />
+          <p v-if="submissionUploadNote" class="mt-3 text-sm text-success-700">
+            {{ submissionUploadNote }}
+          </p>
+          <p v-if="submissionUploadError" class="mt-3 text-sm text-danger-700">
+            {{ submissionUploadError }}
+          </p>
           <p v-if="analyzeError" class="mt-3 text-sm text-danger-700">
             {{ analyzeError }}
           </p>
@@ -272,23 +302,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import Card from '~/components/ui/Card.vue'
 import Button from '~/components/ui/Button.vue'
 import Badge from '~/components/ui/Badge.vue'
 import type { Rule, ExtractedFact, EvaluationResult } from '~/types/models'
 import { evaluateRules } from '~/utils/ruleEngine'
 
-const defaultGuidelines = `Roof age must be less than 20 years
-Maximum insured property value: $1,000,000
-No more than 2 claims in the past 5 years
-Home must be owner-occupied`
+const defaultGuidelines = ''
 
-const defaultSubmission = `Property address: 123 Main St
-Roof installed: 2001
-Insured value: $850,000
-Claims in last 5 years: 1
-Occupancy: Owner occupied`
+const defaultSubmission = ''
 
 const guidelines = ref(defaultGuidelines)
 const submission = ref(defaultSubmission)
@@ -307,10 +330,22 @@ type FactsApiResponse = {
   additionalFacts?: ExtractedFact[]
 }
 
+type ExtractTextApiResponse = {
+  text: string
+}
+
 const isGeneratingRules = ref(false)
 const isAnalyzing = ref(false)
+const isExtractingGuidelinesFile = ref(false)
+const isExtractingSubmissionFile = ref(false)
 const generateError = ref<string | null>(null)
 const analyzeError = ref<string | null>(null)
+const guidelinesUploadError = ref<string | null>(null)
+const submissionUploadError = ref<string | null>(null)
+const guidelinesUploadNote = ref<string | null>(null)
+const submissionUploadNote = ref<string | null>(null)
+const guidelinesFileInput = ref<HTMLInputElement | null>(null)
+const submissionFileInput = ref<HTMLInputElement | null>(null)
 
 const getErrorMessage = (error: unknown) => {
   if (error && typeof error === 'object') {
@@ -328,6 +363,80 @@ const clearAnalysisState = () => {
   facts.value = []
   additionalFacts.value = []
   evaluation.value = []
+}
+
+const clearGuidelinesUploadState = () => {
+  guidelinesUploadError.value = null
+  guidelinesUploadNote.value = null
+}
+
+const clearSubmissionUploadState = () => {
+  submissionUploadError.value = null
+  submissionUploadNote.value = null
+}
+
+const extractTextFromFile = async (file: File): Promise<string> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await $fetch<ExtractTextApiResponse>('/api/extract-text', {
+    method: 'POST',
+    body: formData,
+  })
+  return response.text
+}
+
+const triggerGuidelinesFileUpload = () => {
+  if (isExtractingGuidelinesFile.value) return
+  guidelinesFileInput.value?.click()
+}
+
+const triggerSubmissionFileUpload = () => {
+  if (isExtractingSubmissionFile.value) return
+  submissionFileInput.value?.click()
+}
+
+const onGuidelinesFileSelected = async (event: Event) => {
+  const input = event.target as HTMLInputElement | null
+  const file = input?.files?.[0]
+  if (!file) return
+
+  clearGuidelinesUploadState()
+  isExtractingGuidelinesFile.value = true
+  try {
+    const extractedText = await extractTextFromFile(file)
+    if (!extractedText.trim()) {
+      throw new Error('No readable text was found in the file.')
+    }
+    guidelines.value = extractedText
+    guidelinesUploadNote.value = 'Extracted text loaded from file.'
+  } catch (error) {
+    guidelinesUploadError.value = getErrorMessage(error)
+  } finally {
+    isExtractingGuidelinesFile.value = false
+    if (input) input.value = ''
+  }
+}
+
+const onSubmissionFileSelected = async (event: Event) => {
+  const input = event.target as HTMLInputElement | null
+  const file = input?.files?.[0]
+  if (!file) return
+
+  clearSubmissionUploadState()
+  isExtractingSubmissionFile.value = true
+  try {
+    const extractedText = await extractTextFromFile(file)
+    if (!extractedText.trim()) {
+      throw new Error('No readable text was found in the file.')
+    }
+    submission.value = extractedText
+    submissionUploadNote.value = 'Extracted text loaded from file.'
+  } catch (error) {
+    submissionUploadError.value = getErrorMessage(error)
+  } finally {
+    isExtractingSubmissionFile.value = false
+    if (input) input.value = ''
+  }
 }
 
 const onGenerateRules = async () => {
@@ -375,6 +484,7 @@ const resetGuidelines = () => {
   guidelines.value = defaultGuidelines
   rules.value = []
   clearAnalysisState()
+  clearGuidelinesUploadState()
   generateError.value = null
   analyzeError.value = null
 }
@@ -382,15 +492,8 @@ const resetGuidelines = () => {
 const resetSubmission = () => {
   submission.value = defaultSubmission
   clearAnalysisState()
+  clearSubmissionUploadState()
   analyzeError.value = null
-}
-
-const loadExampleGuidelines = () => {
-  guidelines.value = defaultGuidelines
-}
-
-const loadExampleSubmission = () => {
-  submission.value = defaultSubmission
 }
 
 const displayFactValue = (value: any) => {
@@ -437,7 +540,4 @@ const copyReport = async () => {
   await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
 }
 
-onMounted(() => {
-  onGenerateRules()
-})
 </script>

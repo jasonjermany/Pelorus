@@ -60,8 +60,30 @@ Open `http://localhost:3000`.
 
 - `POST /api/rules` -> `{ rules: Rule[] }`
 - `POST /api/facts` -> `{ facts: ExtractedFact[] }`
+- `POST /api/extract-text` -> `{ text: string }` from a single uploaded file (`.pdf`, `.docx`, `.txt`)
 
 Both endpoints return useful error payloads when AI calls fail.
+
+## File Upload (Lightweight Extraction)
+
+The dashboard supports optional file upload for both:
+- Underwriting Guidelines
+- Submission Input
+
+Supported formats:
+- PDF (`.pdf`)
+- DOCX (`.docx`)
+- TXT (`.txt`)
+
+Flow:
+1. Upload a file in either section.
+2. Server extracts raw text (`/api/extract-text`).
+3. Extracted text is inserted into the existing textarea.
+4. User can edit and then manually click `Generate Rules` or `Analyze Submission`.
+
+Notes:
+- No OCR is included.
+- Scanned/image PDFs may return: "Unable to extract text from this PDF. It may be scanned or image-based."
 
 ## Types
 
