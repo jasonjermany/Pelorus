@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-surface-50">
     <header class="border-b border-primary-700/20 bg-primary-700">
       <div class="mx-auto max-w-6xl px-6 pt-10 pb-8">
@@ -54,7 +54,7 @@
             <h3 class="text-sm font-semibold text-primary-700">Structured Rules</h3>
             <p class="mt-1 text-xs text-slate-500">Rules generated from your guidelines. Each rule is evaluated against extracted facts.</p>
 
-            <div class="mt-4 space-y-3">
+            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
               <div v-if="!rules.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
                 Generate rules to see them appear here.
               </div>
@@ -117,7 +117,7 @@
               Facts extracted from the submission that are used to evaluate each rule.
             </p>
 
-            <div class="mt-4 space-y-3">
+            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
               <div v-if="!facts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
                 Analyze a submission to see extracted facts.
               </div>
@@ -200,10 +200,18 @@
                   class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                   :class="{
                     'bg-success-500/15 text-success-700': overallStatus === 'PASS',
-                    'bg-danger-500/15 text-danger-700': overallStatus === 'REFER',
+                    'bg-danger-500/15 text-danger-700': overallStatus === 'FAIL',
+                    'bg-accent-500/15 text-accent-600': overallStatus === 'REFER',
                   }"
                 >
-                  <span class="h-2.5 w-2.5 rounded-full" :class="{ 'bg-success-500': overallStatus === 'PASS', 'bg-danger-500': overallStatus === 'REFER' }" />
+                  <span
+                    class="h-2.5 w-2.5 rounded-full"
+                    :class="{
+                      'bg-success-500': overallStatus === 'PASS',
+                      'bg-danger-500': overallStatus === 'FAIL',
+                      'bg-accent-500': overallStatus === 'REFER',
+                    }"
+                  />
                   Submission Result: {{ overallStatus }}
                 </span>
 
@@ -213,17 +221,32 @@
               </div>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid gap-6 lg:grid-cols-3">
               <div>
                 <h3 class="text-sm font-semibold text-primary-700">Failed Rules</h3>
                 <div class="mt-3 space-y-3">
                   <div v-if="failedResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
-                    All rules passed.
+                    No failed rules.
                   </div>
                   <div v-for="result in failedResults" :key="result.ruleId" class="rounded-xl border border-danger-200 bg-danger-50 p-4">
                     <p class="text-sm font-semibold text-danger-800">{{ result.normalizedExpression }}</p>
                     <p class="mt-1 text-xs text-danger-700">Actual: {{ displayFactValue(result.actualValue) }}</p>
+                    <p class="mt-1 text-xs text-danger-700">Hard decline: {{ result.isHardDecline ? 'Yes' : 'No' }}</p>
                     <p class="mt-1 text-xs text-danger-700">Reason: {{ result.reason }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-sm font-semibold text-primary-700">Unknown Rules</h3>
+                <div class="mt-3 space-y-3">
+                  <div v-if="unknownResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+                    No unknown rules.
+                  </div>
+                  <div v-for="result in unknownResults" :key="result.ruleId" class="rounded-xl border border-accent-500/30 bg-accent-500/10 p-4">
+                    <p class="text-sm font-semibold text-accent-600">{{ result.normalizedExpression }}</p>
+                    <p class="mt-1 text-xs text-accent-600">Actual: {{ displayFactValue(result.actualValue) }}</p>
+                    <p class="mt-1 text-xs text-accent-600">Reason: {{ result.reason }}</p>
                   </div>
                 </div>
               </div>
@@ -371,7 +394,7 @@ const loadExampleSubmission = () => {
 }
 
 const displayFactValue = (value: any) => {
-  if (value === null || value === undefined) return '—'
+  if (value === null || value === undefined) return 'â€”'
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   return value
 }
@@ -383,12 +406,20 @@ const factConfidenceVariant = (confidence: number) => {
 }
 
 const results = computed(() => evaluation.value)
-const failedResults = computed(() => results.value.filter((r) => !r.passed))
-const passedResults = computed(() => results.value.filter((r) => r.passed))
+const failedResults = computed(() => results.value.filter((r) => r.status === 'FAIL'))
+const unknownResults = computed(() => results.value.filter((r) => r.status === 'UNKNOWN'))
+const passedResults = computed(() => results.value.filter((r) => r.status === 'PASS'))
 
 const overallStatus = computed(() => {
   if (!results.value.length) return '—'
-  return failedResults.value.length > 0 ? 'REFER' : 'PASS'
+  const hasHardDeclineFail = failedResults.value.some((r) => r.isHardDecline)
+  if (hasHardDeclineFail) return 'FAIL'
+
+  const hasUnknown = unknownResults.value.length > 0
+  const hasManualReview = results.value.some((r) => r.requiresManualReview)
+  if (hasUnknown || hasManualReview) return 'REFER'
+
+  return 'PASS'
 })
 
 const canCopyJson = computed(() => rules.value.length > 0 && facts.value.length > 0)
@@ -410,5 +441,7 @@ onMounted(() => {
   onGenerateRules()
 })
 </script>
+
+
 
 

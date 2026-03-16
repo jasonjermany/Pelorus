@@ -1,32 +1,113 @@
 import type { Rule, ExtractedFact, EvaluationResult } from '~/types/models'
 
-function compareValues(operator: string, expected: number | boolean | string, actual: number | boolean | string | null) {
-  if (actual === null) return false
+type RuleStatus = EvaluationResult['status']
+
+function normalizeOperator(operator: string): string {
+  if (operator === '==') return '='
+  return operator
+}
+
+function stripWrappingQuotes(value: string): string {
+  const trimmed = value.trim()
+  if ((trimmed.startsWith("'") && trimmed.endsWith("'")) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
+
+function parseBooleanValue(value: number | boolean | string): boolean | null {
+  if (typeof value === 'boolean') return value
+  const normalized = String(value).trim().toLowerCase()
+  if (normalized === 'true' || normalized === 'yes' || normalized === 'y') return true
+  if (normalized === 'false' || normalized === 'no' || normalized === 'n') return false
+  return null
+}
+
+function classifyRuleDeclineStrength(rule: Rule): { isHardDecline: boolean; requiresManualReview: boolean } {
+  const haystack = `${rule.sourceText} ${rule.normalizedExpression}`.toLowerCase()
+
+  const isHardDecline =
+    /\b(decline|ineligible|prohibit|not\s+allowed|disqualif|must\s+not|no\s+)\b/.test(haystack)
+  const requiresManualReview = /\b(prefer|preferred|manual\s+review|refer)\b/.test(haystack)
+
+  return { isHardDecline, requiresManualReview }
+}
+
+function compareValues(
+  operator: string,
+  expected: number | boolean | string,
+  actual: number | boolean | string | null,
+): { status: RuleStatus; reason: string } {
+  if (actual === null || (typeof actual === 'string' && actual.trim().length === 0)) {
+    return { status: 'UNKNOWN', reason: 'Missing fact' }
+  }
+
+  const normalizedOperator = normalizeOperator(operator)
+  const supportedOperators = ['<', '<=', '>', '>=', '=', '!=']
+  if (!supportedOperators.includes(normalizedOperator)) {
+    return { status: 'UNKNOWN', reason: `Unsupported operator: ${operator}` }
+  }
+
+  const normalizedActual = actual
 
   if (typeof expected === 'boolean') {
-    if (typeof actual !== 'boolean') return false
-    return operator === '=' ? actual === expected : false
+    const actualBoolean = parseBooleanValue(normalizedActual)
+    if (actualBoolean === null) {
+      return { status: 'UNKNOWN', reason: 'Ambiguous boolean fact value' }
+    }
+
+    const passed = normalizedOperator === '=' ? actualBoolean === expected : actualBoolean !== expected
+    return {
+      status: passed ? 'PASS' : 'FAIL',
+      reason: passed ? 'Meets rule' : `Expected ${normalizedOperator} ${expected}`,
+    }
   }
 
-  const actualNumber = typeof actual === 'number' ? actual : Number(actual)
+  const actualNumber = typeof normalizedActual === 'number' ? normalizedActual : Number(normalizedActual)
   const expectedNumber = typeof expected === 'number' ? expected : Number(expected)
 
-  if (!Number.isFinite(actualNumber) || !Number.isFinite(expectedNumber)) return false
+  const isNumericComparison = ['<', '<=', '>', '>='].includes(normalizedOperator)
 
-  switch (operator) {
-    case '<':
-      return actualNumber < expectedNumber
-    case '<=':
-      return actualNumber <= expectedNumber
-    case '>':
-      return actualNumber > expectedNumber
-    case '>=':
-      return actualNumber >= expectedNumber
-    case '=':
-      return actualNumber === expectedNumber
-    default:
-      return false
+  if (isNumericComparison) {
+    if (!Number.isFinite(actualNumber) || !Number.isFinite(expectedNumber)) {
+      return { status: 'UNKNOWN', reason: 'Fact value is not numeric' }
+    }
+    const passed =
+      normalizedOperator === '<'
+        ? actualNumber < expectedNumber
+        : normalizedOperator === '<='
+        ? actualNumber <= expectedNumber
+        : normalizedOperator === '>'
+        ? actualNumber > expectedNumber
+        : actualNumber >= expectedNumber
+
+    return {
+      status: passed ? 'PASS' : 'FAIL',
+      reason: passed ? 'Meets rule' : `Expected ${normalizedOperator} ${expected}`,
+    }
   }
+
+  if (normalizedOperator === '=' || normalizedOperator === '!=') {
+    let passed = false
+
+    if (Number.isFinite(actualNumber) && Number.isFinite(expectedNumber)) {
+      passed = normalizedOperator === '=' ? actualNumber === expectedNumber : actualNumber !== expectedNumber
+      return {
+        status: passed ? 'PASS' : 'FAIL',
+        reason: passed ? 'Meets rule' : `Expected ${normalizedOperator} ${expected}`,
+      }
+    }
+
+    const actualString = stripWrappingQuotes(String(normalizedActual)).toLowerCase()
+    const expectedString = stripWrappingQuotes(String(expected)).toLowerCase()
+    passed = normalizedOperator === '=' ? actualString === expectedString : actualString !== expectedString
+    return {
+      status: passed ? 'PASS' : 'FAIL',
+      reason: passed ? 'Meets rule' : `Expected ${normalizedOperator} ${expected}`,
+    }
+  }
+
+  return { status: 'UNKNOWN', reason: `Unsupported operator: ${operator}` }
 }
 
 export function evaluateRules(rules: Rule[], facts: ExtractedFact[]): EvaluationResult[] {
@@ -35,20 +116,17 @@ export function evaluateRules(rules: Rule[], facts: ExtractedFact[]): Evaluation
   for (const rule of rules) {
     const fact = facts.find((f) => f.field === rule.field)
     const actualValue = fact?.value ?? null
-
-    const passed = compareValues(rule.operator, rule.value, actualValue)
-    const reason = passed
-      ? 'Meets rule'
-      : actualValue === null
-      ? 'Missing fact'
-      : `Expected ${rule.operator} ${rule.value}`
+    const evaluation = compareValues(rule.operator, rule.value, actualValue)
+    const severity = classifyRuleDeclineStrength(rule)
 
     results.push({
       ruleId: rule.id,
       normalizedExpression: rule.normalizedExpression,
       actualValue,
-      passed,
-      reason,
+      status: evaluation.status,
+      isHardDecline: severity.isHardDecline,
+      requiresManualReview: severity.requiresManualReview,
+      reason: evaluation.reason,
     })
   }
 

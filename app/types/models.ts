@@ -20,7 +20,9 @@ export interface EvaluationResult {
   ruleId: string
   normalizedExpression: string
   actualValue: number | boolean | string | null
-  passed: boolean
+  status: 'PASS' | 'FAIL' | 'UNKNOWN'
+  isHardDecline: boolean
+  requiresManualReview: boolean
   reason: string
 }
 
