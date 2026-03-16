@@ -20,7 +20,7 @@ All intelligence uses Anthropic Claude.
 
 Primary exported functions:
 - `generateRulesFromGuidelines(guidelineText: string): Promise<Rule[]>`
-- `extractFactsFromSubmission(submissionText: string, rules: Rule[]): Promise<ExtractedFact[]>`
+- `extractFactsFromSubmission(submissionText: string, rules: Rule[]): Promise<{ facts: ExtractedFact[]; additionalFacts: ExtractedFact[] }>`
 
 Behavior:
 - `ANTHROPIC_API_KEY` is required.

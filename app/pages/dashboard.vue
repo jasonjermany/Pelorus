@@ -23,7 +23,7 @@
       </div>
     </header>
 
-    <main class="mx-auto max-w-6xl px-6 pb-16">
+    <main class="mx-auto max-w-6xl px-6 pb-16 pt-16">
       <div class="grid gap-6 lg:grid-cols-2">
         <Card>
           <div class="flex items-start justify-between gap-4">
@@ -38,7 +38,7 @@
 
           <textarea
             v-model="guidelines"
-            class="mt-4 h-40 w-full resize-none rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
+            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
           />
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
@@ -93,7 +93,7 @@
 
           <textarea
             v-model="submission"
-            class="mt-4 h-40 w-full resize-none rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
+            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
           />
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
@@ -153,7 +153,7 @@
               Important underwriting facts detected by AI outside the current rule set.
             </p>
 
-            <div class="mt-4 space-y-3">
+            <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
               <div v-if="!additionalFacts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
                 No additional signals detected.
               </div>
@@ -324,12 +324,16 @@ const getErrorMessage = (error: unknown) => {
   return 'Request failed.'
 }
 
-const onGenerateRules = async () => {
-  isGeneratingRules.value = true
-  generateError.value = null
+const clearAnalysisState = () => {
   facts.value = []
   additionalFacts.value = []
   evaluation.value = []
+}
+
+const onGenerateRules = async () => {
+  isGeneratingRules.value = true
+  generateError.value = null
+  clearAnalysisState()
   try {
     const response = await $fetch<RulesApiResponse>('/api/rules', {
       method: 'POST',
@@ -338,7 +342,7 @@ const onGenerateRules = async () => {
     rules.value = response.rules
   } catch (error) {
     rules.value = []
-    additionalFacts.value = []
+    clearAnalysisState()
     generateError.value = getErrorMessage(error)
   } finally {
     isGeneratingRules.value = false
@@ -370,18 +374,14 @@ const onAnalyzeSubmission = async () => {
 const resetGuidelines = () => {
   guidelines.value = defaultGuidelines
   rules.value = []
-  facts.value = []
-  additionalFacts.value = []
-  evaluation.value = []
+  clearAnalysisState()
   generateError.value = null
   analyzeError.value = null
 }
 
 const resetSubmission = () => {
   submission.value = defaultSubmission
-  facts.value = []
-  additionalFacts.value = []
-  evaluation.value = []
+  clearAnalysisState()
   analyzeError.value = null
 }
 
@@ -394,7 +394,7 @@ const loadExampleSubmission = () => {
 }
 
 const displayFactValue = (value: any) => {
-  if (value === null || value === undefined) return 'â€”'
+  if (value === null || value === undefined) return 'N/A'
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   return value
 }
@@ -411,7 +411,7 @@ const unknownResults = computed(() => results.value.filter((r) => r.status === '
 const passedResults = computed(() => results.value.filter((r) => r.status === 'PASS'))
 
 const overallStatus = computed(() => {
-  if (!results.value.length) return '—'
+  if (!results.value.length) return 'N/A'
   const hasHardDeclineFail = failedResults.value.some((r) => r.isHardDecline)
   if (hasHardDeclineFail) return 'FAIL'
 
@@ -441,7 +441,3 @@ onMounted(() => {
   onGenerateRules()
 })
 </script>
-
-
-
-

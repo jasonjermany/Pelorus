@@ -41,6 +41,14 @@ function formatRuleValue(value: string | number | boolean): string {
   return String(value)
 }
 
+function toSnakeCase(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+}
+
 function toTextContent(content: Array<{ type: string; text?: string }>): string {
   return content
     .filter((item) => item.type === 'text')
@@ -144,7 +152,7 @@ function validateRules(raw: ClaudeJsonArray): Rule[] {
     }
 
     const candidate = item as Record<string, unknown>
-    const field = typeof candidate.field === 'string' ? candidate.field.trim() : ''
+    const field = typeof candidate.field === 'string' ? toSnakeCase(candidate.field) : ''
     const operator = normalizeOperator(candidate.operator)
     const value = candidate.value
     const sourceText = typeof candidate.sourceText === 'string' ? candidate.sourceText.trim() : ''
@@ -192,7 +200,7 @@ function validateFacts(raw: ClaudeJsonArray): ExtractedFact[] {
     }
 
     const candidate = item as Record<string, unknown>
-    const field = typeof candidate.field === 'string' ? candidate.field.trim() : ''
+    const field = typeof candidate.field === 'string' ? toSnakeCase(candidate.field) : ''
     const value = candidate.value
     const sourceSnippet = typeof candidate.sourceSnippet === 'string' ? candidate.sourceSnippet : undefined
 

@@ -41,7 +41,8 @@
   { "factKey": "below_grade_square_footage", "displayName": "Below-Grade Square Footage", "dataType": "number", "category": "property" },
   { "factKey": "attached_detached_structures", "displayName": "Attached / Detached Structures", "dataType": "string", "category": "property" },
 
-  { "factKey": "roof_year_or_age", "displayName": "Roof Year / Age", "dataType": "number", "category": "systems" },
+  { "factKey": "roof_year_updated", "displayName": "Roof Year Updated", "dataType": "number", "category": "systems" },
+  { "factKey": "roof_age_years", "displayName": "Roof Age (Years)", "dataType": "number", "category": "systems" },
   { "factKey": "roof_material", "displayName": "Roof Material", "dataType": "string", "category": "systems" },
   { "factKey": "roof_shape", "displayName": "Roof Shape", "dataType": "string", "category": "systems" },
   { "factKey": "roof_condition", "displayName": "Roof Condition", "dataType": "string", "category": "systems" },

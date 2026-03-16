@@ -25,14 +25,3 @@ export interface EvaluationResult {
   requiresManualReview: boolean
   reason: string
 }
-
-export interface GuidelineSet {
-  id: string
-  name: string
-  rules: Rule[]
-}
-
-export interface Submission {
-  id: string
-  rawText: string
-}
