@@ -8,11 +8,71 @@ const FACTS_MAX_TOKENS = 1600
 
 type ClaudeJsonArray = unknown[]
 type ClaudeJsonObject = Record<string, unknown>
+type JsonSchema = Record<string, unknown>
 
 export type FactExtractionResult = {
   facts: ExtractedFact[]
   additionalFacts: ExtractedFact[]
 }
+
+const RULES_JSON_SCHEMA = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      sourceText: { type: 'string' },
+      field: { type: 'string' },
+      operator: { type: 'string', enum: ['<', '<=', '>', '>=', '='] },
+      value: {
+        anyOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+      },
+      normalizedExpression: { type: 'string' },
+    },
+    required: ['id', 'sourceText', 'field', 'operator', 'value', 'normalizedExpression'],
+    additionalProperties: false,
+  },
+} as const
+
+const FACTS_JSON_SCHEMA = {
+  type: 'object',
+  properties: {
+    facts: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          field: { type: 'string' },
+          value: {
+            anyOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'null' }],
+          },
+          confidence: { type: 'number' },
+          sourceSnippet: { type: 'string' },
+        },
+        required: ['field', 'value', 'confidence', 'sourceSnippet'],
+        additionalProperties: false,
+      },
+    },
+    additionalFacts: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          field: { type: 'string' },
+          value: {
+            anyOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'null' }],
+          },
+          confidence: { type: 'number' },
+          sourceSnippet: { type: 'string' },
+        },
+        required: ['field', 'value', 'confidence', 'sourceSnippet'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['facts', 'additionalFacts'],
+  additionalProperties: false,
+} as const
 
 function isOperator(value: unknown): value is Operator {
   return value === '<' || value === '<=' || value === '>' || value === '>=' || value === '='
@@ -54,6 +114,32 @@ function toTextContent(content: Array<{ type: string; text?: string }>): string 
     .filter((item) => item.type === 'text')
     .map((item) => item.text || '')
     .join('\n')
+}
+
+function hasOutputConfigJson(value: unknown): value is { output: unknown } {
+  return Boolean(value) && typeof value === 'object' && 'output' in (value as Record<string, unknown>)
+}
+
+async function createJsonSchemaMessage(
+  client: Anthropic,
+  model: string,
+  maxTokens: number,
+  prompt: string,
+  schema: JsonSchema,
+) {
+  // SDK typings may lag API support for `output_config`; keep the cast centralized here.
+  return client.messages.create({
+    model,
+    max_tokens: maxTokens,
+    temperature: 0,
+    messages: [{ role: 'user', content: prompt }],
+    output_config: {
+      format: {
+        type: 'json_schema',
+        schema,
+      },
+    },
+  } as any)
 }
 
 function stripCodeFences(text: string): string {
@@ -290,18 +376,13 @@ export async function generateRulesWithClaude(guidelineText: string): Promise<Ru
 
   logClaudeRequest('rules', model, prompt)
 
-  const response = await client.messages.create({
-    model,
-    max_tokens: RULES_MAX_TOKENS,
-    temperature: 0,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  const response = await createJsonSchemaMessage(client, model, RULES_MAX_TOKENS, prompt, RULES_JSON_SCHEMA as JsonSchema)
   console.info(
     `[Claude Response Meta][rules] stop_reason=${String(response.stop_reason)} input_tokens=${response.usage?.input_tokens ?? 'n/a'} output_tokens=${response.usage?.output_tokens ?? 'n/a'}`,
   )
 
   const text = toTextContent(response.content)
-  const parsed = parseJsonArray(text)
+  const parsed = hasOutputConfigJson(response) ? (response.output as ClaudeJsonArray) : parseJsonArray(text)
   logClaudeResponse('rules', text, parsed)
   const validated = tryValidateRules(parsed)
 
@@ -333,18 +414,21 @@ export async function generateRulesWithClaude(guidelineText: string): Promise<Ru
 
   logClaudeRequest('rules', model, repairPrompt)
 
-  const repairResponse = await client.messages.create({
+  const repairResponse = await createJsonSchemaMessage(
+    client,
     model,
-    max_tokens: RULES_MAX_TOKENS,
-    temperature: 0,
-    messages: [{ role: 'user', content: repairPrompt }],
-  })
+    RULES_MAX_TOKENS,
+    repairPrompt,
+    RULES_JSON_SCHEMA as JsonSchema,
+  )
   console.info(
     `[Claude Response Meta][rules-repair] stop_reason=${String(repairResponse.stop_reason)} input_tokens=${repairResponse.usage?.input_tokens ?? 'n/a'} output_tokens=${repairResponse.usage?.output_tokens ?? 'n/a'}`,
   )
 
   const repairText = toTextContent(repairResponse.content)
-  const repairParsed = parseJsonArray(repairText)
+  const repairParsed = hasOutputConfigJson(repairResponse)
+    ? (repairResponse.output as ClaudeJsonArray)
+    : parseJsonArray(repairText)
   logClaudeResponse('rules', repairText, repairParsed)
   return validateRules(repairParsed)
 }
@@ -393,18 +477,13 @@ export async function extractFactsWithClaude(submissionText: string, rules: Rule
 
   logClaudeRequest('facts', model, prompt)
 
-  const response = await client.messages.create({
-    model,
-    max_tokens: FACTS_MAX_TOKENS,
-    temperature: 0,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  const response = await createJsonSchemaMessage(client, model, FACTS_MAX_TOKENS, prompt, FACTS_JSON_SCHEMA as JsonSchema)
   console.info(
     `[Claude Response Meta][facts] stop_reason=${String(response.stop_reason)} input_tokens=${response.usage?.input_tokens ?? 'n/a'} output_tokens=${response.usage?.output_tokens ?? 'n/a'}`,
   )
 
   const text = toTextContent(response.content)
-  const parsed = parseJsonObject(text)
+  const parsed = hasOutputConfigJson(response) ? (response.output as ClaudeJsonObject) : parseJsonObject(text)
   logClaudeResponse('facts', text, parsed)
 
   const rawFacts = Array.isArray(parsed.facts) ? parsed.facts : []
