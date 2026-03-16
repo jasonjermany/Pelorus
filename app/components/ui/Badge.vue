@@ -1,5 +1,5 @@
 <template>
-  <span :class="badgeClass" class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold">
+  <span :class="badgeClass" class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold">
     <slot />
   </span>
 </template>

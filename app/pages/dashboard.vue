@@ -27,7 +27,7 @@
       <div class="grid gap-6 lg:grid-cols-2">
         <Card>
           <div class="flex items-start justify-between gap-4">
-            <div>
+            <div class="min-h-[4.5rem]">
               <h2 class="text-xl font-semibold text-primary-700">Underwriting Guidelines</h2>
               <p class="mt-1 text-sm text-slate-600">
                 Paste your underwriting guidelines below and generate structured rules.
@@ -82,7 +82,7 @@
 
         <Card>
           <div class="flex items-start justify-between gap-4">
-            <div>
+            <div class="min-h-[4.5rem]">
               <h2 class="text-xl font-semibold text-primary-700">Submission Input</h2>
               <p class="mt-1 text-sm text-slate-600">
                 Paste a broker submission and extract facts for evaluation.
