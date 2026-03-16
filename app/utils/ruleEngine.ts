@@ -28,7 +28,9 @@ function classifyRuleDeclineStrength(rule: Rule): { isHardDecline: boolean; requ
 
   const isHardDecline =
     /\b(decline|ineligible|prohibit|not\s+allowed|disqualif|must\s+not|no\s+)\b/.test(haystack)
-  const requiresManualReview = /\b(prefer|preferred|manual\s+review|refer)\b/.test(haystack)
+  const requiresManualReview =
+    /\b(prefer|preferred|manual\s+review|refer)\b/.test(haystack) ||
+    /\ballowed\s+only\s+with\b|\bonly\s+if\b|\bprovided\s+that\b|\bunless\b|\bif\b/.test(haystack)
 
   return { isHardDecline, requiresManualReview }
 }
@@ -118,15 +120,23 @@ export function evaluateRules(rules: Rule[], facts: ExtractedFact[]): Evaluation
     const actualValue = fact?.value ?? null
     const evaluation = compareValues(rule.operator, rule.value, actualValue)
     const severity = classifyRuleDeclineStrength(rule)
+    const status =
+      severity.requiresManualReview && evaluation.status === 'FAIL'
+        ? 'UNKNOWN'
+        : evaluation.status
+    const reason =
+      severity.requiresManualReview && evaluation.status === 'FAIL'
+        ? 'Conditional rule requires manual review.'
+        : evaluation.reason
 
     results.push({
       ruleId: rule.id,
       normalizedExpression: rule.normalizedExpression,
       actualValue,
-      status: evaluation.status,
+      status,
       isHardDecline: severity.isHardDecline,
       requiresManualReview: severity.requiresManualReview,
-      reason: evaluation.reason,
+      reason,
     })
   }
 
