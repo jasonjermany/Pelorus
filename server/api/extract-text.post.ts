@@ -1,4 +1,7 @@
 import { extname } from 'node:path'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 function normalizeText(text: string): string {
   return text
@@ -103,7 +106,15 @@ export default defineEventHandler(async (event) => {
     }
 
     if (extension === '.xlsx' || extension === '.xls') {
-      const xlsxModule = await import('xlsx')
+      const xlsxModule = require('xlsx') as {
+        read: (data: Buffer, options: { type: 'buffer' }) => {
+          SheetNames: string[]
+          Sheets: Record<string, unknown>
+        }
+        utils: {
+          sheet_to_json: <T>(sheet: unknown, options: { header: number; raw: boolean }) => T[]
+        }
+      }
       const workbook = xlsxModule.read(buffer, { type: 'buffer' })
       const sheetBlocks: string[] = []
 
