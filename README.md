@@ -60,7 +60,7 @@ Open `http://localhost:3000`.
 
 - `POST /api/rules` -> `{ rules: Rule[] }`
 - `POST /api/facts` -> `{ facts: ExtractedFact[] }`
-- `POST /api/extract-text` -> `{ text: string }` from a single uploaded file (`.pdf`, `.docx`, `.txt`)
+- `POST /api/extract-text` -> `{ text: string }` from one or more uploaded files (`.pdf`, `.docx`, `.xlsx`, `.xls`, `.txt`)
 
 Both endpoints return useful error payloads when AI calls fail.
 
@@ -73,11 +73,13 @@ The dashboard supports optional file upload for both:
 Supported formats:
 - PDF (`.pdf`)
 - DOCX (`.docx`)
+- XLSX (`.xlsx`)
+- XLS (`.xls`)
 - TXT (`.txt`)
 
 Flow:
-1. Upload a file in either section.
-2. Server extracts raw text (`/api/extract-text`).
+1. Upload one or more files in either section.
+2. Server extracts raw text from each file and combines it (`/api/extract-text`).
 3. Extracted text is inserted into the existing textarea.
 4. User can edit and then manually click `Generate Rules` or `Analyze Submission`.
 

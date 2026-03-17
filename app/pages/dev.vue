@@ -47,7 +47,7 @@
           <div class="mt-4 flex flex-wrap items-center gap-3">
             <Button :variant="isGeneratingRules ? 'accent' : 'primary'" :disabled="isGeneratingRules" @click="onGenerateRules">{{ isGeneratingRules ? 'Generating...' : 'Generate Rules' }}</Button>
             <Button variant="secondary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
-              {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload File' }}
+              {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload Files' }}
             </Button>
             <Button variant="secondary" @click="resetGuidelines">Reset</Button>
           </div>
@@ -55,7 +55,8 @@
             ref="guidelinesFileInput"
             type="file"
             class="hidden"
-            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            multiple
+            accept=".pdf,.docx,.xlsx,.xls,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             @change="onGuidelinesFileSelected"
           />
           <p v-if="guidelinesUploadNote" class="mt-3 text-sm text-success-700">
@@ -123,7 +124,7 @@
               {{ isAnalyzing ? 'Analyzing...' : 'Analyze Submission' }}
             </Button>
             <Button variant="secondary" :disabled="isExtractingSubmissionFile" @click="triggerSubmissionFileUpload">
-              {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload File' }}
+              {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload Files' }}
             </Button>
             <Button variant="secondary" @click="resetSubmission">Reset</Button>
           </div>
@@ -131,7 +132,8 @@
             ref="submissionFileInput"
             type="file"
             class="hidden"
-            accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            multiple
+            accept=".pdf,.docx,.xlsx,.xls,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             @change="onSubmissionFileSelected"
           />
           <p v-if="submissionUploadNote" class="mt-3 text-sm text-success-700">
@@ -341,6 +343,7 @@ type FactsApiResponse = {
 
 type ExtractTextApiResponse = {
   text: string
+  filesProcessed?: number
 }
 
 type SaveSubmissionApiResponse = {
@@ -453,14 +456,16 @@ const saveProcessedSubmission = async (
   saveNote.value = `Saved to dashboard as ${response.submission.companyName}.`
 }
 
-const extractTextFromFile = async (file: File): Promise<string> => {
+const extractTextFromFiles = async (files: File[]): Promise<ExtractTextApiResponse> => {
   const formData = new FormData()
-  formData.append('file', file)
+  for (const file of files) {
+    formData.append('file', file)
+  }
   const response = await $fetch<ExtractTextApiResponse>('/api/extract-text', {
     method: 'POST',
     body: formData,
   })
-  return response.text
+  return response
 }
 
 const triggerGuidelinesFileUpload = () => {
@@ -475,18 +480,20 @@ const triggerSubmissionFileUpload = () => {
 
 const onGuidelinesFileSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement | null
-  const file = input?.files?.[0]
-  if (!file) return
+  const files = Array.from(input?.files ?? [])
+  if (!files.length) return
 
   clearGuidelinesUploadState()
   isExtractingGuidelinesFile.value = true
   try {
-    const extractedText = await extractTextFromFile(file)
+    const response = await extractTextFromFiles(files)
+    const extractedText = response.text
     if (!extractedText.trim()) {
       throw new Error('No readable text was found in the file.')
     }
     guidelines.value = extractedText
-    guidelinesUploadNote.value = 'Extracted text loaded from file.'
+    const count = response.filesProcessed ?? files.length
+    guidelinesUploadNote.value = `Extracted text loaded from ${count} file${count === 1 ? '' : 's'}.`
   } catch (error) {
     guidelinesUploadError.value = getErrorMessage(error)
   } finally {
@@ -497,18 +504,20 @@ const onGuidelinesFileSelected = async (event: Event) => {
 
 const onSubmissionFileSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement | null
-  const file = input?.files?.[0]
-  if (!file) return
+  const files = Array.from(input?.files ?? [])
+  if (!files.length) return
 
   clearSubmissionUploadState()
   isExtractingSubmissionFile.value = true
   try {
-    const extractedText = await extractTextFromFile(file)
+    const response = await extractTextFromFiles(files)
+    const extractedText = response.text
     if (!extractedText.trim()) {
       throw new Error('No readable text was found in the file.')
     }
     submission.value = extractedText
-    submissionUploadNote.value = 'Extracted text loaded from file.'
+    const count = response.filesProcessed ?? files.length
+    submissionUploadNote.value = `Extracted text loaded from ${count} file${count === 1 ? '' : 's'}.`
   } catch (error) {
     submissionUploadError.value = getErrorMessage(error)
   } finally {

@@ -12,17 +12,14 @@ function getUnsupportedTypeError() {
     statusCode: 400,
     statusMessage: 'Unsupported file type',
     data: {
-      message: 'Unsupported file type. Please upload PDF, DOCX, or TXT.',
+      message: 'Unsupported file type. Please upload PDF, DOCX, XLSX, XLS, or TXT.',
     },
   })
 }
 
 export default defineEventHandler(async (event) => {
-  try {
-    const parts = await readMultipartFormData(event)
-    const filePart = parts?.find((part) => part.filename && part.data)
-
-    if (!filePart || !filePart.filename) {
+  const extractTextFromPart = async (filePart: { filename?: string; data: Uint8Array }) => {
+    if (!filePart.filename) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Missing file',
@@ -42,11 +39,11 @@ export default defineEventHandler(async (event) => {
           statusCode: 422,
           statusMessage: 'Empty file',
           data: {
-            message: 'No readable text was found in the file.',
+            message: `No readable text was found in ${filePart.filename}.`,
           },
         })
       }
-      return { text }
+      return text
     }
 
     if (extension === '.pdf') {
@@ -79,12 +76,12 @@ export default defineEventHandler(async (event) => {
           statusCode: 422,
           statusMessage: 'No readable PDF text',
           data: {
-            message: 'Unable to extract text from this PDF. It may be scanned or image-based.',
+            message: `Unable to extract text from ${filePart.filename}. It may be scanned or image-based.`,
           },
         })
       }
 
-      return { text }
+      return text
     }
 
     if (extension === '.docx') {
@@ -97,15 +94,96 @@ export default defineEventHandler(async (event) => {
           statusCode: 422,
           statusMessage: 'Empty DOCX',
           data: {
-            message: 'No readable text was found in the file.',
+            message: `No readable text was found in ${filePart.filename}.`,
           },
         })
       }
 
-      return { text }
+      return text
+    }
+
+    if (extension === '.xlsx' || extension === '.xls') {
+      const xlsxModule = await import('xlsx')
+      const workbook = xlsxModule.read(buffer, { type: 'buffer' })
+      const sheetBlocks: string[] = []
+
+      for (const sheetName of workbook.SheetNames) {
+        const sheet = workbook.Sheets[sheetName]
+        if (!sheet) continue
+
+        const rows = xlsxModule.utils.sheet_to_json<(string | number | boolean | null)[]>(sheet, {
+          header: 1,
+          raw: false,
+        })
+
+        const rowLines = rows
+          .map((row) =>
+            (row || [])
+              .map((cell) => (cell === null || cell === undefined ? '' : String(cell).trim()))
+              .join('\t')
+              .trim(),
+          )
+          .filter(Boolean)
+
+        if (rowLines.length) {
+          sheetBlocks.push(`Sheet: ${sheetName}\n${rowLines.join('\n')}`)
+        }
+      }
+
+      const text = normalizeText(sheetBlocks.join('\n\n'))
+      if (!text) {
+        throw createError({
+          statusCode: 422,
+          statusMessage: 'Empty Excel file',
+          data: {
+            message: `No readable text was found in ${filePart.filename}.`,
+          },
+        })
+      }
+      return text
     }
 
     throw getUnsupportedTypeError()
+  }
+
+  try {
+    const parts = await readMultipartFormData(event)
+    const fileParts = (parts || []).filter((part) => part.filename && part.data)
+
+    if (!fileParts.length) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Missing file',
+        data: {
+          message: 'Please upload a file to extract text.',
+        },
+      })
+    }
+
+    const texts: string[] = []
+    for (const part of fileParts) {
+      const text = await extractTextFromPart({
+        filename: part.filename,
+        data: part.data,
+      })
+      texts.push(text)
+    }
+
+    const combined = normalizeText(texts.join('\n\n'))
+    if (!combined) {
+      throw createError({
+        statusCode: 422,
+        statusMessage: 'Empty extraction',
+        data: {
+          message: 'No readable text was found in the uploaded files.',
+        },
+      })
+    }
+
+    return {
+      text: combined,
+      filesProcessed: fileParts.length,
+    }
   } catch (error) {
     if (error && typeof error === 'object' && 'statusCode' in (error as Record<string, unknown>)) {
       throw error
