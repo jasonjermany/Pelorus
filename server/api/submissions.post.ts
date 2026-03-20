@@ -62,6 +62,7 @@ export default defineEventHandler(async (event) => {
 
     return { submission: saved }
   } catch (error) {
+    console.error('Error in submissions.post.ts:', error)
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to save submission',

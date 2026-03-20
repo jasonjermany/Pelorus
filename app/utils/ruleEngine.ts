@@ -35,11 +35,38 @@ function classifyRuleDeclineStrength(rule: Rule): { isHardDecline: boolean; requ
   return { isHardDecline, requiresManualReview }
 }
 
+function compareValuesIn(
+  values: string[],
+  actual: number | boolean | string | null,
+): { status: RuleStatus; reason: string } {
+  if (actual === null || (typeof actual === 'string' && actual.trim().length === 0)) {
+    return { status: 'UNKNOWN', reason: 'Missing fact' }
+  }
+  const actualStr = String(actual).trim().toLowerCase()
+  const actualNum = Number(actual)
+  const passed = values.some((v) => {
+    if (v.trim().toLowerCase() === actualStr) return true
+    // Also try numeric comparison for fields like iso_ppc_rating
+    const vNum = Number(v)
+    if (Number.isFinite(vNum) && Number.isFinite(actualNum)) return vNum === actualNum
+    return false
+  })
+  return {
+    status: passed ? 'PASS' : 'FAIL',
+    reason: passed ? 'Meets rule' : `Expected one of: ${values.join(', ')}`,
+  }
+}
+
 function compareValues(
   operator: string,
   expected: number | boolean | string,
   actual: number | boolean | string | null,
+  values?: string[],
 ): { status: RuleStatus; reason: string } {
+  if (operator === 'in') {
+    return compareValuesIn(values ?? [], actual)
+  }
+
   if (actual === null || (typeof actual === 'string' && actual.trim().length === 0)) {
     return { status: 'UNKNOWN', reason: 'Missing fact' }
   }
@@ -112,14 +139,57 @@ function compareValues(
   return { status: 'UNKNOWN', reason: `Unsupported operator: ${operator}` }
 }
 
+function evaluateConditions(
+  conditions: Rule['conditions'],
+  facts: ExtractedFact[],
+): 'PASS' | 'FAIL' | 'UNKNOWN' {
+  if (!conditions || conditions.length === 0) return 'PASS'
+  for (const cond of conditions) {
+    const fact = facts.find((f) => f.field === cond.field)
+    const result = compareValues(cond.operator, cond.value, fact?.value ?? null, cond.values)
+    if (result.status === 'FAIL') return 'FAIL'
+    if (result.status === 'UNKNOWN') return 'UNKNOWN'
+  }
+  return 'PASS'
+}
+
 export function evaluateRules(rules: Rule[], facts: ExtractedFact[]): EvaluationResult[] {
   const results: EvaluationResult[] = []
 
   for (const rule of rules) {
+    const severity = classifyRuleDeclineStrength(rule)
     const fact = facts.find((f) => f.field === rule.field)
     const actualValue = fact?.value ?? null
-    const evaluation = compareValues(rule.operator, rule.value, actualValue)
-    const severity = classifyRuleDeclineStrength(rule)
+
+    const conditionStatus = evaluateConditions(rule.conditions, facts)
+    if (conditionStatus === 'FAIL') {
+      // Conditions not met — rule does not apply to this submission
+      results.push({
+        ruleId: rule.id,
+        normalizedExpression: rule.normalizedExpression,
+        actualValue,
+        status: 'N/A',
+        isHardDecline: false,
+        requiresManualReview: false,
+        reason: 'Conditions not met — rule does not apply.',
+      })
+      continue
+    }
+    if (conditionStatus === 'UNKNOWN') {
+      // Cannot determine if rule applies
+      results.push({
+        ruleId: rule.id,
+        normalizedExpression: rule.normalizedExpression,
+        actualValue,
+        status: 'UNKNOWN',
+        isHardDecline: false,
+        requiresManualReview: true,
+        reason: 'Cannot determine if rule conditions are met.',
+      })
+      continue
+    }
+
+    const evaluation = compareValues(rule.operator, rule.value, actualValue, rule.values)
     const status =
       severity.requiresManualReview && evaluation.status === 'FAIL'
         ? 'UNKNOWN'

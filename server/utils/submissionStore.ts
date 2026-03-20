@@ -8,7 +8,8 @@ async function ensureStoreFile() {
   await mkdir(dirname(STORE_PATH), { recursive: true })
   try {
     await readFile(STORE_PATH, 'utf8')
-  } catch {
+  } catch (error) {
+    console.error('Error ensuring store file in submissionStore.ts:', error)
     await writeFile(STORE_PATH, '[]', 'utf8')
   }
 }
@@ -19,7 +20,8 @@ async function readAll(): Promise<ProcessedSubmission[]> {
   try {
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? (parsed as ProcessedSubmission[]) : []
-  } catch {
+  } catch (error) {
+    console.error('Error parsing JSON in submissionStore.ts readAll:', error)
     return []
   }
 }

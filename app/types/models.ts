@@ -1,4 +1,11 @@
-export type Operator = '<' | '<=' | '>' | '>=' | '='
+export type Operator = '<' | '<=' | '>' | '>=' | '=' | 'in'
+
+export interface RuleCondition {
+  field: string
+  operator: Operator
+  value: number | boolean | string
+  values?: string[]
+}
 
 export interface Rule {
   id: string
@@ -6,7 +13,9 @@ export interface Rule {
   field: string
   operator: Operator
   value: number | boolean | string
+  values?: string[]
   normalizedExpression: string
+  conditions?: RuleCondition[]
 }
 
 export interface ExtractedFact {
@@ -20,7 +29,7 @@ export interface EvaluationResult {
   ruleId: string
   normalizedExpression: string
   actualValue: number | boolean | string | null
-  status: 'PASS' | 'FAIL' | 'UNKNOWN'
+  status: 'PASS' | 'FAIL' | 'UNKNOWN' | 'N/A'
   isHardDecline: boolean
   requiresManualReview: boolean
   reason: string

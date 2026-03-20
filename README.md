@@ -58,17 +58,14 @@ Open `http://localhost:3000`.
 
 ## API Endpoints
 
-- `POST /api/rules` -> `{ rules: Rule[] }`
-- `POST /api/facts` -> `{ facts: ExtractedFact[] }`
-- `POST /api/extract-text` -> `{ text: string }` from one or more uploaded files (`.pdf`, `.docx`, `.xlsx`, `.xls`, `.txt`)
+- `POST /api/rules` -> `{ rules: Rule[], provider: string, filesProcessed?: number }`
+- `POST /api/facts` -> `{ facts: ExtractedFact[], additionalFacts? ExtractedFact[] }`
 
-Both endpoints return useful error payloads when AI calls fail.
+All endpoints return useful error payloads when AI calls fail.
 
-## File Upload (Lightweight Extraction)
+## File Upload Support
 
-The dashboard supports optional file upload for both:
-- Underwriting Guidelines
-- Submission Input
+The `/api/rules` endpoint supports file uploads for guideline processing:
 
 Supported formats:
 - PDF (`.pdf`)
@@ -77,15 +74,16 @@ Supported formats:
 - XLS (`.xls`)
 - TXT (`.txt`)
 
-Flow:
-1. Upload one or more files in either section.
-2. Server extracts raw text from each file and combines it (`/api/extract-text`).
-3. Extracted text is inserted into the existing textarea.
-4. User can edit and then manually click `Generate Rules` or `Analyze Submission`.
+Flow (Guidelines):
+1. Upload one or more guideline files or paste guideline text.
+2. Files are parsed by Reducto and text is extracted.
+3. Extracted/pasted text is sent to Claude to generate rules.
+4. Rules are returned structurally validated and renumbered.
 
 Notes:
 - No OCR is included.
-- Scanned/image PDFs may return: "Unable to extract text from this PDF. It may be scanned or image-based."
+- Requires `REDUCTO_API_KEY` environment variable for file uploads.
+- Scanned/image-only PDFs may return limited text.
 
 ## Types
 

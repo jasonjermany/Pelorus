@@ -1,5 +1,5 @@
 import type { Rule } from '~/types/models'
-import { extractFactsWithClaude, generateRulesWithClaude, type FactExtractionResult } from './anthropic'
+import { generateRulesFromGuidelineChunks, extractFactsWithClaude, type FactExtractionResult } from './anthropic'
 
 function hasAnthropicKey() {
   const config = useRuntimeConfig()
@@ -19,7 +19,7 @@ export async function generateRulesFromGuidelines(guidelineText: string): Promis
     throw new Error('ANTHROPIC_API_KEY is required to generate rules.')
   }
 
-  return generateRulesWithClaude(guidelineText)
+  return generateRulesFromGuidelineChunks([guidelineText])
 }
 
 export async function extractFactsFromSubmission(submissionText: string, rules: Rule[]): Promise<FactExtractionResult> {

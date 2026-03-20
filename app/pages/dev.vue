@@ -33,20 +33,14 @@
             <div class="min-h-[4.5rem]">
               <h2 class="text-xl font-semibold text-primary-700">Underwriting Guidelines</h2>
               <p class="mt-1 text-sm text-slate-600">
-                Paste your underwriting guidelines below and generate structured rules.
+                Upload guidelines files to generate structured rules.
               </p>
             </div>
             <Badge variant="info">Step 1</Badge>
           </div>
 
-          <textarea
-            v-model="guidelines"
-            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
-          />
-
           <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button :variant="isGeneratingRules ? 'accent' : 'primary'" :disabled="isGeneratingRules" @click="onGenerateRules">{{ isGeneratingRules ? 'Generating...' : 'Generate Rules' }}</Button>
-            <Button variant="secondary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
+            <Button variant="primary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
               {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload Files' }}
             </Button>
             <Button variant="secondary" @click="resetGuidelines">Reset</Button>
@@ -65,10 +59,6 @@
           <p v-if="guidelinesUploadError" class="mt-3 text-sm text-danger-700">
             {{ guidelinesUploadError }}
           </p>
-          <p v-if="generateError" class="mt-3 text-sm text-danger-700">
-            {{ generateError }}
-          </p>
-
           <div class="mt-6">
             <h3 class="text-sm font-semibold text-primary-700">Structured Rules</h3>
             <p class="mt-1 text-xs text-slate-500">Rules generated from your guidelines. Each rule is evaluated against extracted facts.</p>
@@ -104,26 +94,14 @@
             <div class="min-h-[4.5rem]">
               <h2 class="text-xl font-semibold text-primary-700">Submission Input</h2>
               <p class="mt-1 text-sm text-slate-600">
-                Paste a broker submission and extract facts for evaluation.
+                Upload a submission file to extract facts and evaluate rules.
               </p>
             </div>
             <Badge variant="info">Step 2</Badge>
           </div>
 
-          <textarea
-            v-model="submission"
-            class="mt-4 h-40 w-full resize-y rounded-xl border border-primary-700/20 bg-white px-4 py-3 text-sm leading-relaxed text-slate-900 shadow-sm focus:border-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-700/20"
-          />
-
           <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button
-              variant="accent"
-              :disabled="isAnalyzing || !rules.length"
-              @click="onAnalyzeSubmission"
-            >
-              {{ isAnalyzing ? 'Analyzing...' : 'Analyze Submission' }}
-            </Button>
-            <Button variant="secondary" :disabled="isExtractingSubmissionFile" @click="triggerSubmissionFileUpload">
+            <Button variant="accent" :disabled="isExtractingSubmissionFile || isAnalyzing || !rules.length" @click="triggerSubmissionFileUpload">
               {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload Files' }}
             </Button>
             <Button variant="secondary" @click="resetSubmission">Reset</Button>
@@ -262,7 +240,7 @@
               </div>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-3">
+            <div class="grid gap-6 lg:grid-cols-4">
               <div>
                 <h3 class="text-sm font-semibold text-primary-700">Failed Rules</h3>
                 <div class="mt-3 space-y-3">
@@ -305,6 +283,19 @@
                   </div>
                 </div>
               </div>
+
+              <div>
+                <h3 class="text-sm font-semibold text-slate-400">Not Applicable</h3>
+                <div class="mt-3 space-y-3">
+                  <div v-if="naResults.length === 0" class="rounded-xl border border-dashed border-slate-200 bg-surface-100 p-6 text-sm text-slate-500">
+                    No skipped rules.
+                  </div>
+                  <div v-for="result in naResults" :key="result.ruleId" class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p class="text-sm font-semibold text-slate-500">{{ result.normalizedExpression }}</p>
+                    <p class="mt-1 text-xs text-slate-400">{{ result.reason }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </Card>
@@ -320,12 +311,8 @@ import Badge from '~/components/ui/Badge.vue'
 import type { Rule, ExtractedFact, EvaluationResult, ProcessedSubmission, SubmissionDecision } from '~/types/models'
 import { evaluateRules } from '~/utils/ruleEngine'
 
-const defaultGuidelines = ''
-
-const defaultSubmission = ''
-
-const guidelines = ref(defaultGuidelines)
-const submission = ref(defaultSubmission)
+const guidelines = ref('')
+const submission = ref('')
 
 const rules = ref<Rule[]>([])
 const facts = ref<ExtractedFact[]>([])
@@ -334,33 +321,29 @@ const evaluation = ref<EvaluationResult[]>([])
 
 type RulesApiResponse = {
   rules: Rule[]
+  filesProcessed?: number
+  provider?: string
 }
 
 type FactsApiResponse = {
   facts: ExtractedFact[]
   additionalFacts?: ExtractedFact[]
-}
-
-type ExtractTextApiResponse = {
-  text: string
-  filesProcessed?: number
+  submissionText?: string
 }
 
 type SaveSubmissionApiResponse = {
   submission: ProcessedSubmission
 }
 
-const isGeneratingRules = ref(false)
 const isAnalyzing = ref(false)
 const isExtractingGuidelinesFile = ref(false)
 const isExtractingSubmissionFile = ref(false)
-const generateError = ref<string | null>(null)
 const analyzeError = ref<string | null>(null)
 const saveError = ref<string | null>(null)
 const saveNote = ref<string | null>(null)
 const guidelinesUploadError = ref<string | null>(null)
-const submissionUploadError = ref<string | null>(null)
 const guidelinesUploadNote = ref<string | null>(null)
+const submissionUploadError = ref<string | null>(null)
 const submissionUploadNote = ref<string | null>(null)
 const guidelinesFileInput = ref<HTMLInputElement | null>(null)
 const submissionFileInput = ref<HTMLInputElement | null>(null)
@@ -388,14 +371,10 @@ const clearGuidelinesUploadState = () => {
   guidelinesUploadNote.value = null
 }
 
-const clearSubmissionUploadState = () => {
-  submissionUploadError.value = null
-  submissionUploadNote.value = null
-}
-
 const summarizeEvaluation = (results: EvaluationResult[]) => {
-  const failed = results.filter((item) => item.status === 'FAIL').length
-  const unknown = results.filter((item) => item.status === 'UNKNOWN').length
+  const active = results.filter((r) => r.status !== 'N/A')
+  const failed = active.filter((item) => item.status === 'FAIL').length
+  const unknown = active.filter((item) => item.status === 'UNKNOWN').length
   if (failed === 0 && unknown === 0) return 'No blocking issues.'
   return `${failed} failed, ${unknown} unknown`
 }
@@ -420,10 +399,11 @@ const deriveCompanyName = (
 }
 
 const computeSubmissionDecision = (results: EvaluationResult[]): SubmissionDecision => {
-  const hasHardDeclineFail = results.some((result) => result.status === 'FAIL' && result.isHardDecline)
+  const active = results.filter((r) => r.status !== 'N/A')
+  const hasHardDeclineFail = active.some((result) => result.status === 'FAIL' && result.isHardDecline)
   if (hasHardDeclineFail) return 'FAIL'
-  const hasUnknown = results.some((result) => result.status === 'UNKNOWN')
-  const hasManualReview = results.some((result) => result.requiresManualReview)
+  const hasUnknown = active.some((result) => result.status === 'UNKNOWN')
+  const hasManualReview = active.some((result) => result.requiresManualReview)
   if (hasUnknown || hasManualReview) return 'REFER'
   return 'PASS'
 }
@@ -456,12 +436,12 @@ const saveProcessedSubmission = async (
   saveNote.value = `Saved to dashboard as ${response.submission.companyName}.`
 }
 
-const extractTextFromFiles = async (files: File[]): Promise<ExtractTextApiResponse> => {
+const generateRulesFromFiles = async (files: File[]): Promise<RulesApiResponse> => {
   const formData = new FormData()
   for (const file of files) {
     formData.append('file', file)
   }
-  const response = await $fetch<ExtractTextApiResponse>('/api/extract-text', {
+  const response = await $fetch<RulesApiResponse>('/api/rules', {
     method: 'POST',
     body: formData,
   })
@@ -473,11 +453,6 @@ const triggerGuidelinesFileUpload = () => {
   guidelinesFileInput.value?.click()
 }
 
-const triggerSubmissionFileUpload = () => {
-  if (isExtractingSubmissionFile.value) return
-  submissionFileInput.value?.click()
-}
-
 const onGuidelinesFileSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement | null
   const files = Array.from(input?.files ?? [])
@@ -486,15 +461,14 @@ const onGuidelinesFileSelected = async (event: Event) => {
   clearGuidelinesUploadState()
   isExtractingGuidelinesFile.value = true
   try {
-    const response = await extractTextFromFiles(files)
-    const extractedText = response.text
-    if (!extractedText.trim()) {
-      throw new Error('No readable text was found in the file.')
-    }
-    guidelines.value = extractedText
+    const response = await generateRulesFromFiles(files)
+    rules.value = response.rules
+    clearAnalysisState()
     const count = response.filesProcessed ?? files.length
-    guidelinesUploadNote.value = `Extracted text loaded from ${count} file${count === 1 ? '' : 's'}.`
+    guidelinesUploadNote.value = `Generated ${response.rules.length} rules from ${count} file${count === 1 ? '' : 's'} via ${response.provider || 'reducto'}.`
   } catch (error) {
+    rules.value = []
+    clearAnalysisState()
     guidelinesUploadError.value = getErrorMessage(error)
   } finally {
     isExtractingGuidelinesFile.value = false
@@ -502,65 +476,43 @@ const onGuidelinesFileSelected = async (event: Event) => {
   }
 }
 
+const triggerSubmissionFileUpload = () => {
+  if (isExtractingSubmissionFile.value || isAnalyzing.value) return
+  submissionFileInput.value?.click()
+}
+
 const onSubmissionFileSelected = async (event: Event) => {
   const input = event.target as HTMLInputElement | null
   const files = Array.from(input?.files ?? [])
   if (!files.length) return
 
-  clearSubmissionUploadState()
-  isExtractingSubmissionFile.value = true
-  try {
-    const response = await extractTextFromFiles(files)
-    const extractedText = response.text
-    if (!extractedText.trim()) {
-      throw new Error('No readable text was found in the file.')
-    }
-    submission.value = extractedText
-    const count = response.filesProcessed ?? files.length
-    submissionUploadNote.value = `Extracted text loaded from ${count} file${count === 1 ? '' : 's'}.`
-  } catch (error) {
-    submissionUploadError.value = getErrorMessage(error)
-  } finally {
-    isExtractingSubmissionFile.value = false
-    if (input) input.value = ''
-  }
-}
-
-const onGenerateRules = async () => {
-  isGeneratingRules.value = true
-  generateError.value = null
-  clearAnalysisState()
-  try {
-    const response = await $fetch<RulesApiResponse>('/api/rules', {
-      method: 'POST',
-      body: { guidelineText: guidelines.value },
-    })
-    rules.value = response.rules
-  } catch (error) {
-    rules.value = []
-    clearAnalysisState()
-    generateError.value = getErrorMessage(error)
-  } finally {
-    isGeneratingRules.value = false
-  }
-}
-
-const onAnalyzeSubmission = async () => {
-  isAnalyzing.value = true
-  analyzeError.value = null
+  submissionUploadError.value = null
+  submissionUploadNote.value = null
   saveError.value = null
   saveNote.value = null
+  isExtractingSubmissionFile.value = true
+  isAnalyzing.value = true
   evaluation.value = []
+
   try {
+    const formData = new FormData()
+    for (const file of files) {
+      formData.append('file', file)
+    }
+    formData.append('rules', JSON.stringify(rules.value))
+
     const response = await $fetch<FactsApiResponse>('/api/facts', {
       method: 'POST',
-      body: { submissionText: submission.value, rules: rules.value },
+      body: formData,
     })
 
     facts.value = response.facts
     additionalFacts.value = response.additionalFacts ?? []
+    submission.value = response.submissionText ?? ''
+
     const evaluated = evaluateRules(rules.value, response.facts)
     evaluation.value = evaluated
+    submissionUploadNote.value = `Analyzed ${files.length} file${files.length === 1 ? '' : 's'}.`
 
     try {
       await saveProcessedSubmission(response.facts, response.additionalFacts ?? [], evaluated)
@@ -570,30 +522,32 @@ const onAnalyzeSubmission = async () => {
   } catch (error) {
     facts.value = []
     additionalFacts.value = []
-    analyzeError.value = getErrorMessage(error)
+    submissionUploadError.value = getErrorMessage(error)
   } finally {
+    isExtractingSubmissionFile.value = false
     isAnalyzing.value = false
+    if (input) input.value = ''
   }
 }
 
 const resetGuidelines = () => {
-  guidelines.value = defaultGuidelines
+  guidelines.value = ''
   rules.value = []
   clearAnalysisState()
   clearGuidelinesUploadState()
-  generateError.value = null
   analyzeError.value = null
   saveError.value = null
   saveNote.value = null
 }
 
 const resetSubmission = () => {
-  submission.value = defaultSubmission
+  submission.value = ''
   clearAnalysisState()
-  clearSubmissionUploadState()
   analyzeError.value = null
   saveError.value = null
   saveNote.value = null
+  submissionUploadError.value = null
+  submissionUploadNote.value = null
 }
 
 const displayFactValue = (value: any) => {
@@ -612,6 +566,7 @@ const results = computed(() => evaluation.value)
 const failedResults = computed(() => results.value.filter((r) => r.status === 'FAIL'))
 const unknownResults = computed(() => results.value.filter((r) => r.status === 'UNKNOWN'))
 const passedResults = computed(() => results.value.filter((r) => r.status === 'PASS'))
+const naResults = computed(() => results.value.filter((r) => r.status === 'N/A'))
 
 const overallStatus = computed(() => {
   if (!results.value.length) return 'N/A'
