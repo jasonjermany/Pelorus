@@ -29,7 +29,7 @@
             <input
               ref="fileInput"
               type="file"
-              accept=".pdf,.docx,.txt"
+              accept=".pdf,.docx,.txt,.xlsx,.xls"
               multiple
               class="w-full text-sm text-slate-600"
               @change="onFileSelected"

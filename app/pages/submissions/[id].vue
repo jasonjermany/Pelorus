@@ -158,7 +158,10 @@
           <div v-else-if="activeTab === 'Guidelines'">
             <div class="overflow-hidden rounded-xl border border-primary-700/15 bg-white shadow-sm">
               <div class="border-b border-primary-700/10 px-5 py-3">
-                <p class="text-xs text-slate-500">{{ verdict.guideline_checks?.length ?? 0 }} checks performed</p>
+                <p class="text-xs text-slate-500">
+                  <span v-if="verdict.guideline_checks?.length">{{ verdict.guideline_checks.length }} check{{ verdict.guideline_checks.length !== 1 ? 's' : '' }} require attention</span>
+                  <span v-else class="text-success-700">All checks passed</span>
+                </p>
               </div>
               <table class="min-w-full text-left text-sm">
                 <thead>

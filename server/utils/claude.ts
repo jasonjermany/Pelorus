@@ -10,15 +10,15 @@ export async function evaluateSubmission(submission: {
   extracted_fields?: Record<string, unknown> | null
 }) {
   const t0 = Date.now()
-  const submissionText = submission.raw_text.slice(0, 8000)
+  const submissionText = submission.raw_text
 
-  const tr = Date.now()
+  const t_rag = Date.now()
   const { pinned, similar } = await getRelevantChunks(submission.org_id, submissionText)
-  console.log(`[claude] 1/3 rag: ${Date.now() - tr}ms → ${pinned.length} pinned, ${similar.length} similar`)
+  console.log(`[eval] rag          ${Date.now() - t_rag}ms  (${pinned.length} pinned, ${similar.length} similar)`)
 
   const hardStopsText = pinned.map((c: any) => `• ${c.content.slice(0, 120)}`).join('\n')
   const guidelinesText = similar
-    .map((c: any) => `[Page ${c.page}]\n${c.content.slice(0, 800)}`)
+    .map((c: any) => `[Page ${c.page}]\n${c.content}`)
     .join('\n\n---\n\n')
 
   // Build mandatory check list from stored hard stops (deterministic — derived from DB)
@@ -42,6 +42,44 @@ ${submissionText}
 Evaluate this submission against the guidelines above.
 Return ONLY a JSON object — no other text, no markdown, no backticks.
 
+HARD STOP STATUS RULES — apply these to every check, no exceptions:
+
+Assign "fail" when:
+- The condition is explicitly confirmed present in any submitted document
+- Any document mentions the condition existed, even if claimed remediated,
+  unless this submission contains written professional certification of
+  complete removal meeting program standards
+- The submission discloses materials or systems from an era when the
+  prohibited condition was common, without confirming the specific
+  safe type currently present
+
+Assign "review" when:
+- The condition cannot be confirmed absent from all portions of all buildings
+- Any system, material, or condition is described with vague language such
+  as "original", "predating modern standards", "unconfirmed", or similar
+- The submission does not explicitly address this condition at all
+- Claimed remediation exists but written professional documentation
+  confirming complete resolution is not included in this submission
+- The building age or location creates reasonable risk that the condition
+  may be present, even if not disclosed
+
+Assign "pass" only when all of the following are true:
+- The condition is explicitly confirmed absent from all portions of
+  all buildings in the submission
+- Confirmation comes from a named professional report, inspection
+  certificate, or explicit documented statement
+- No document in the submission mentions or implies the condition
+  may have existed or currently exists
+
+GENERAL RULES:
+- "It was fixed" without supporting documentation = "review", not "pass"
+- Any mention of a condition in any document = at minimum "review"
+- Silence on a condition for an older building = "review", not "pass"
+- Partial remediation of a building does not satisfy whole-building requirements
+- Program approvals not yet obtained = "review", not "pass"
+- Geographic or age-based risk factors warrant "review" even without
+  explicit disclosure
+
 You MUST evaluate ALL of the following checks. These are derived from this carrier's actual guidelines.
 Do not add checks. Do not remove checks. Do not rename checks. Evaluate every single one.
 
@@ -52,6 +90,9 @@ For each check:
 - status "pass" = clearly not present in submission
 - status "review" = unclear or cannot confirm from submission
 - status "fail" = confirmed present → triggers DECLINE or referral
+
+Only include checks with status "review" or "fail" in guideline_checks.
+Do NOT include passing checks — omit them entirely to keep the response concise.
 
 {
   "decision": "PROCEED" | "REFER" | "DECLINE",
@@ -67,37 +108,37 @@ For each check:
   },
   "recommendation": {
     "summary": "<one sentence>",
-    "action_items": ["<item 1>", "<item 2>", "<item 3>", "<item 4>"]
+    "action_items": ["<action — 1 sentence max>"]
   },
   "flags": [
     {
-      "title": "<short label>",
+      "title": "<short label — 6 words max>",
       "type": "CONDITION" | "VERIFY",
-      "explanation": "<what the issue is>",
-      "action_required": "<what the underwriter must do>",
+      "explanation": "<what the issue is — 2 sentences max>",
+      "action_required": "<what the underwriter must do — 1 sentence>",
       "cited_section": "<guideline section reference>"
     }
   ],
   "favorable_factors": ["<factor 1>", "<factor 2>"],
+  "insights": {
+    "pattern_recognition": "<AI pattern analysis of this risk — 2-3 sentences>",
+    "market_context": "<prior carrier and market context — 2-3 sentences>",
+    "consistency_check": "<cross-document consistency observations — 2-3 sentences>",
+    "coverage_gap": "<missing coverages or gaps to flag — 2-3 sentences>"
+  },
+  "missing_info": [
+    {
+      "label": "<short label — 5 words max>",
+      "description": "<1 sentence — what is needed and why>"
+    }
+  ],
   "guideline_checks": [
     {
       "rule": "<exact rule name from the mandatory list above>",
       "required": "<what the guideline requires — one sentence>",
       "submitted": "<what the submission says about this — one sentence>",
-      "status": "pass" | "review" | "fail",
+      "status": "review" | "fail",
       "cited_section": "<section reference>"
-    }
-  ],
-  "insights": {
-    "pattern_recognition": "<AI pattern analysis>",
-    "market_context": "<prior carrier / market context>",
-    "consistency_check": "<cross-document consistency>",
-    "coverage_gap": "<any missing coverages to flag>"
-  },
-  "missing_info": [
-    {
-      "label": "<short label>",
-      "description": "<what is needed and why>"
     }
   ],
   "risk_profile": {
@@ -124,30 +165,30 @@ For each check:
 DECISION RULES — follow exactly, no judgment:
 - If ANY guideline_check has status "fail" → decision MUST be "DECLINE"
 - If ANY guideline_check has status "review" → decision MUST be "REFER"
-- If ALL guideline_checks have status "pass" → decision is "PROCEED"
+- If ALL checks pass (guideline_checks is empty) → decision is "PROCEED"
 Apply these rules mechanically. Do not override them with judgment.
 
 FLAG RULES:
 - CONDITION flag = check has status "fail" or requires resolution before binding
 - VERIFY flag = check has status "review" or needs confirmation
 - flags: max 6 items
-- missing_info: max 5 items
 - action_items: max 4 items
 - favorable_factors: max 4 items`
 
-  console.log(`[claude] 2/3 prompt: ${prompt.length} chars (~${Math.round(prompt.length / 4)} tokens)`)
+  console.log(`[eval] prompt       ${prompt.length} chars (~${Math.round(prompt.length / 4)} tokens)`)
 
-  const tc = Date.now()
+  const t_api = Date.now()
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     max_tokens: 16000,
     temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
-  console.log(`[claude] 3/3 api call: ${Date.now() - tc}ms`)
-  console.log(`[claude] total: ${Date.now() - t0}ms`)
+  console.log(`[eval] claude api   ${Date.now() - t_api}ms`)
 
   const text = (response.content[0] as any).text as string
+  console.log(`[eval] output chars  ${text.length}`)
+  console.log(`[eval] output tokens ~${Math.round(text.length / 4)}`)
   const clean = text.replace(/```json|```/g, '').trim()
 
   if (response.stop_reason === 'max_tokens') {
@@ -159,17 +200,30 @@ FLAG RULES:
   try {
     const verdict = JSON.parse(clean)
 
-    // Override composite_score with deterministic calculation from check results
+    // Override composite_score with decision-banded calculation
+    // guideline_checks only contains review/fail — infer pass count from total pinned
     const checks = verdict.guideline_checks ?? []
-    const total = checks.length
-    if (total > 0) {
-      const passCount = checks.filter((c: any) => c.status === 'pass').length
-      const reviewCount = checks.filter((c: any) => c.status === 'review').length
-      const failCount = checks.filter((c: any) => c.status === 'fail').length
-      const rawScore = (passCount * 1.0 + reviewCount * 0.5 + failCount * 0.0) / total
-      verdict.composite_score = Math.round(rawScore * 100)
-      console.log(`[claude] score: ${verdict.composite_score} (${passCount}p/${reviewCount}r/${failCount}f of ${total} checks)`)
+    const failCount = checks.filter((c: any) => c.status === 'fail').length
+    const reviewCount = checks.filter((c: any) => c.status === 'review').length
+    const totalChecks = pinned.length
+    const passCount = Math.max(0, totalChecks - failCount - reviewCount)
+
+    let score: number
+    if (failCount > 0) {
+      score = Math.max(0, 25 - (failCount - 1) * 8)
+    } else if (reviewCount > 0) {
+      const reviewRatio = reviewCount / totalChecks
+      score = Math.round(74 - (reviewRatio * 34))
+      score = Math.max(40, Math.min(74, score))
+    } else {
+      score = Math.round(80 + (passCount / totalChecks) * 20)
+      score = Math.min(100, score)
     }
+
+    verdict.composite_score = score
+    console.log(`[eval] score        ${score}  (${passCount}p/${reviewCount}r/${failCount}f of ${totalChecks}) → ${verdict.decision}`)
+
+    console.log(`[eval] total        ${Date.now() - t0}ms`)
 
     return verdict
   } catch (e) {
@@ -203,37 +257,41 @@ ${allChunksText}`
   const estimatedOutputTokens = Math.ceil(allChunksText.length / 20)
   const maxTokens = Math.min(8000, Math.max(4000, estimatedOutputTokens))
 
+  const t0 = Date.now()
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     max_tokens: maxTokens,
     temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
+  console.log(`[hardstops] claude api   ${Date.now() - t0}ms`)
 
   if (response.stop_reason === 'max_tokens') {
-    console.warn('[claude] hard stop extraction truncated — retrying with 8000 tokens')
+    console.warn('[hardstops] truncated — retrying with 8000 tokens')
 
+    const t1 = Date.now()
     const retryResponse = await anthropic.messages.create({
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
       max_tokens: 8000,
       temperature: 0,
       messages: [{ role: 'user', content: prompt }],
     })
+    console.log(`[hardstops] retry api    ${Date.now() - t1}ms`)
 
     const retryText = (retryResponse.content[0] as any).text as string
     const retryStripped = retryText.replace(/```json|```/g, '').trim()
     const retryMatch = retryStripped.match(/\[[\s\S]*\]/)
 
     if (!retryMatch) {
-      console.warn('[claude] hard stop retry: still no JSON array found')
+      console.warn('[hardstops] retry: no JSON array found')
       return []
     }
     try {
       const result = JSON.parse(retryMatch[0])
-      console.log(`[claude] hard stop retry succeeded: ${result.length} stops`)
+      console.log(`[hardstops] retry ok     ${result.length} stops`)
       return result
     } catch (e) {
-      console.warn('[claude] hard stop retry: JSON parse failed')
+      console.warn('[hardstops] retry: JSON parse failed')
       return []
     }
   }
@@ -243,21 +301,17 @@ ${allChunksText}`
   const match = stripped.match(/\[[\s\S]*\]/)
 
   if (!match) {
-    console.warn('[claude] hard stop extraction: no JSON array found')
-    console.warn('[claude] raw response:', stripped.slice(0, 500))
+    console.warn('[hardstops] no JSON array found in response')
+    console.warn('[hardstops] raw:', stripped.slice(0, 500))
     return []
   }
 
   try {
     const hardStops = JSON.parse(match[0])
-    if (hardStops.length < 10) {
-      console.warn(`[claude] suspiciously few hard stops: ${hardStops.length}`)
-    }
-    console.log(`[claude] hard stop extraction: ${hardStops.length} stops found`)
+    console.log(`[hardstops] extracted    ${hardStops.length} stops  (total ${Date.now() - t0}ms)`)
     return hardStops
   } catch (e) {
-    console.warn('[claude] hard stop extraction: JSON parse failed')
-    console.warn('[claude] matched text:', match[0].slice(0, 500))
+    console.warn('[hardstops] JSON parse failed')
     return []
   }
 }

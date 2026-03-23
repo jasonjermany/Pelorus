@@ -10,9 +10,7 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
     .eq('is_pinned', true)
     .order('chunk_index', { ascending: true })
 
-  if (pinnedError) {
-    console.error('[rag] pinned chunk fetch error:', pinnedError)
-  }
+  if (pinnedError) throw new Error(`[rag] pinned chunk fetch error: ${pinnedError.message}`)
 
   // Embed submission text + similarity search for relevant chunks
   const vector = await embed(submissionText)
@@ -22,9 +20,7 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
     match_count: 6,
   })
 
-  if (similarError) {
-    console.error('[rag] similarity search error:', similarError)
-  }
+  if (similarError) throw new Error(`[rag] similarity search error: ${similarError.message}`)
 
   return { pinned: pinned ?? [], similar: similar ?? [] }
 }

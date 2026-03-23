@@ -7,7 +7,7 @@ export async function embed(text: string): Promise<number[]> {
     },
     body: JSON.stringify({
       model: 'voyage-law-2',
-      input: text.slice(0, 16000),
+      input: text,
     }),
   })
 

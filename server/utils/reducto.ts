@@ -15,17 +15,13 @@ const PIPELINE_GUIDELINES = 'k97515keq0d8ysbq4bz3edryas83c0an'
 export const PIPELINE_SUBMISSIONS = 'k974b6rdszkw7yxyf9e3jpp27h83dx2f'
 
 export async function parseFileToChunks(fileBuffer: Buffer, filename: string, pipelineId = PIPELINE_GUIDELINES): Promise<ReductoChunk[]> {
-  const t0 = Date.now()
   const uploadFile = await toFile(fileBuffer, filename)
   const upload = await reducto.upload({ file: uploadFile })
-  console.log(`[reducto] upload "${filename}" (${(fileBuffer.length / 1024).toFixed(1)} KB) → ${Date.now() - t0}ms`)
 
-  const t1 = Date.now()
   const parseResponse = await reducto.pipeline.run({
     input: upload.file_id,
     pipeline_id: pipelineId,
   })
-  console.log(`[reducto] parse "${filename}" → ${Date.now() - t1}ms`)
 
   const parseResult = (parseResponse as any).result?.parse?.result
   if (!parseResult) {
@@ -35,20 +31,16 @@ export async function parseFileToChunks(fileBuffer: Buffer, filename: string, pi
   let chunks: ReductoChunk[]
 
   if (parseResult.type === 'url') {
-    // Large doc — chunks stored at S3 URL
     const res = await fetch(parseResult.url)
     if (!res.ok) throw new Error(`Failed to fetch Reducto result from S3: ${res.status}`)
     const data = await res.json() as any
-    console.log(`[reducto] S3 data keys:`, Object.keys(data), `chunks type:`, typeof data.chunks, `isArray:`, Array.isArray(data.chunks), `length:`, data.chunks?.length)
     chunks = data.chunks
   } else if (Array.isArray(parseResult.chunks)) {
-    // Direct chunks (pipeline or small doc)
     chunks = parseResult.chunks
   } else {
     throw new Error(`Unexpected Reducto result shape: ${JSON.stringify(parseResult).slice(0, 200)}`)
   }
 
-  console.log(`[reducto] "${filename}" → ${chunks.length} chunks, total ${Date.now() - t0}ms`)
   return chunks
 }
 
