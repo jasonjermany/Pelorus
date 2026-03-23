@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ['@vue/devtools-core', '@vue/devtools-kit'],
     },
+    server: {
+      allowedHosts: ['laming-aerogenically-roxana.ngrok-free.dev']
+    }
   },
   runtimeConfig: {
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,

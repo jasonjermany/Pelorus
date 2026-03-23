@@ -9,17 +9,26 @@ export async function evaluateSubmission(submission: {
   raw_text: string
   extracted_fields?: Record<string, unknown> | null
 }) {
-  const submissionText = submission.raw_text.slice(0, 12000)
-  const { pinned, similar } = await getRelevantChunks(submission.org_id, submissionText)
+  const t0 = Date.now()
+  const submissionText = submission.raw_text.slice(0, 8000)
 
-  const hardStopsText = pinned.map((c: any) => c.content.slice(0, 500)).join('\n\n')
+  const tr = Date.now()
+  const { pinned, similar } = await getRelevantChunks(submission.org_id, submissionText)
+  console.log(`[claude] 1/3 rag: ${Date.now() - tr}ms → ${pinned.length} pinned, ${similar.length} similar`)
+
+  const hardStopsText = pinned.map((c: any) => `• ${c.content.slice(0, 120)}`).join('\n')
   const guidelinesText = similar
-    .map((c: any) => `[Page ${c.page}]\n${c.content.slice(0, 1500)}`)
+    .map((c: any) => `[Page ${c.page}]\n${c.content.slice(0, 800)}`)
     .join('\n\n---\n\n')
+
+  // Build mandatory check list from stored hard stops (deterministic — derived from DB)
+  const hardStopCheckList = pinned
+    .map((c: any) => `- ${c.embed_text.split(':')[0].trim()}`)
+    .join('\n')
 
   const prompt = `You are an expert commercial insurance underwriter evaluating a broker submission.
 
-## HARD STOPS — Check these first. If ANY match, decision is DECLINE immediately.
+## HARD STOPS — context only, do not re-evaluate here
 ${hardStopsText || '(none)'}
 
 ## RELEVANT GUIDELINES (retrieved for this specific risk)
@@ -32,6 +41,17 @@ ${submissionText}
 
 Evaluate this submission against the guidelines above.
 Return ONLY a JSON object — no other text, no markdown, no backticks.
+
+You MUST evaluate ALL of the following checks. These are derived from this carrier's actual guidelines.
+Do not add checks. Do not remove checks. Do not rename checks. Evaluate every single one.
+
+MANDATORY CHECKS — evaluate all ${pinned.length} of these:
+${hardStopCheckList}
+
+For each check:
+- status "pass" = clearly not present in submission
+- status "review" = unclear or cannot confirm from submission
+- status "fail" = confirmed present → triggers DECLINE or referral
 
 {
   "decision": "PROCEED" | "REFER" | "DECLINE",
@@ -47,7 +67,7 @@ Return ONLY a JSON object — no other text, no markdown, no backticks.
   },
   "recommendation": {
     "summary": "<one sentence>",
-    "action_items": ["<item 1>", "<item 2>"]
+    "action_items": ["<item 1>", "<item 2>", "<item 3>", "<item 4>"]
   },
   "flags": [
     {
@@ -61,9 +81,9 @@ Return ONLY a JSON object — no other text, no markdown, no backticks.
   "favorable_factors": ["<factor 1>", "<factor 2>"],
   "guideline_checks": [
     {
-      "rule": "<rule name>",
-      "required": "<what the guideline requires>",
-      "submitted": "<what was in the submission>",
+      "rule": "<exact rule name from the mandatory list above>",
+      "required": "<what the guideline requires — one sentence>",
+      "submitted": "<what the submission says about this — one sentence>",
       "status": "pass" | "review" | "fail",
       "cited_section": "<section reference>"
     }
@@ -81,6 +101,9 @@ Return ONLY a JSON object — no other text, no markdown, no backticks.
     }
   ],
   "risk_profile": {
+    "named_insured": "<full legal name of the insured>",
+    "broker": "<broker firm name>",
+    "location_count": "<number of locations e.g. '4 locations'>",
     "construction": "<value>",
     "year_built": "<value>",
     "renovation": "<value>",
@@ -98,20 +121,31 @@ Return ONLY a JSON object — no other text, no markdown, no backticks.
   }
 }
 
-Rules:
-- If ANY hard stop condition is present → decision MUST be "DECLINE"
-- CONDITION flag = must be resolved before binding
-- VERIFY flag = needs confirmation but does not block
-- Cite the specific guideline section for every flag and check`
+DECISION RULES — follow exactly, no judgment:
+- If ANY guideline_check has status "fail" → decision MUST be "DECLINE"
+- If ANY guideline_check has status "review" → decision MUST be "REFER"
+- If ALL guideline_checks have status "pass" → decision is "PROCEED"
+Apply these rules mechanically. Do not override them with judgment.
 
-  console.log('[claude] prompt chars:', prompt.length)
-  console.log('[claude] prompt approx tokens:', Math.round(prompt.length / 4))
+FLAG RULES:
+- CONDITION flag = check has status "fail" or requires resolution before binding
+- VERIFY flag = check has status "review" or needs confirmation
+- flags: max 6 items
+- missing_info: max 5 items
+- action_items: max 4 items
+- favorable_factors: max 4 items`
 
+  console.log(`[claude] 2/3 prompt: ${prompt.length} chars (~${Math.round(prompt.length / 4)} tokens)`)
+
+  const tc = Date.now()
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     max_tokens: 16000,
+    temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
+  console.log(`[claude] 3/3 api call: ${Date.now() - tc}ms`)
+  console.log(`[claude] total: ${Date.now() - t0}ms`)
 
   const text = (response.content[0] as any).text as string
   const clean = text.replace(/```json|```/g, '').trim()
@@ -123,7 +157,21 @@ Rules:
   }
 
   try {
-    return JSON.parse(clean)
+    const verdict = JSON.parse(clean)
+
+    // Override composite_score with deterministic calculation from check results
+    const checks = verdict.guideline_checks ?? []
+    const total = checks.length
+    if (total > 0) {
+      const passCount = checks.filter((c: any) => c.status === 'pass').length
+      const reviewCount = checks.filter((c: any) => c.status === 'review').length
+      const failCount = checks.filter((c: any) => c.status === 'fail').length
+      const rawScore = (passCount * 1.0 + reviewCount * 0.5 + failCount * 0.0) / total
+      verdict.composite_score = Math.round(rawScore * 100)
+      console.log(`[claude] score: ${verdict.composite_score} (${passCount}p/${reviewCount}r/${failCount}f of ${total} checks)`)
+    }
+
+    return verdict
   } catch (e) {
     console.error('[claude] JSON parse failed')
     console.error('[claude] stop_reason:', response.stop_reason)
@@ -152,23 +200,61 @@ Only automatic declines. Not referral triggers. Not conditional rules.
 GUIDELINES:
 ${allChunksText}`
 
+  const estimatedOutputTokens = Math.ceil(allChunksText.length / 20)
+  const maxTokens = Math.min(8000, Math.max(4000, estimatedOutputTokens))
+
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
-    max_tokens: 2000,
+    max_tokens: maxTokens,
+    temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const text = (response.content[0] as any).text as string
-  console.log('[claude] hard stop raw response:', text.slice(0, 1000))
+  if (response.stop_reason === 'max_tokens') {
+    console.warn('[claude] hard stop extraction truncated — retrying with 8000 tokens')
 
-  const match = text.match(/\[[\s\S]*\]/)
+    const retryResponse = await anthropic.messages.create({
+      model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
+      max_tokens: 8000,
+      temperature: 0,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    const retryText = (retryResponse.content[0] as any).text as string
+    const retryStripped = retryText.replace(/```json|```/g, '').trim()
+    const retryMatch = retryStripped.match(/\[[\s\S]*\]/)
+
+    if (!retryMatch) {
+      console.warn('[claude] hard stop retry: still no JSON array found')
+      return []
+    }
+    try {
+      const result = JSON.parse(retryMatch[0])
+      console.log(`[claude] hard stop retry succeeded: ${result.length} stops`)
+      return result
+    } catch (e) {
+      console.warn('[claude] hard stop retry: JSON parse failed')
+      return []
+    }
+  }
+
+  const text = (response.content[0] as any).text as string
+  const stripped = text.replace(/```json|```/g, '').trim()
+  const match = stripped.match(/\[[\s\S]*\]/)
+
   if (!match) {
-    console.warn('[claude] hard stop extraction: no JSON array found in response')
-    console.warn('[claude] raw response:', text.slice(0, 500))
+    console.warn('[claude] hard stop extraction: no JSON array found')
+    console.warn('[claude] raw response:', stripped.slice(0, 500))
     return []
   }
+
   try {
-    return JSON.parse(match[0])
+    const hardStops = JSON.parse(match[0])
+    if (hardStops.length < 10) {
+      console.warn(`[claude] suspiciously few hard stops: ${hardStops.length}`)
+    }
+    console.log(`[claude] hard stop extraction: ${hardStops.length} stops found`)
+    return hardStops
   } catch (e) {
     console.warn('[claude] hard stop extraction: JSON parse failed')
     console.warn('[claude] matched text:', match[0].slice(0, 500))

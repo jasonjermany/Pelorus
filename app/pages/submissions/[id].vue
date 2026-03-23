@@ -8,28 +8,17 @@
           </NuxtLink>
           <h1 class="text-2xl font-semibold text-white">Submission Review</h1>
         </div>
-        <div class="flex items-center gap-3">
-          <button
-            v-if="verdict"
-            class="rounded-full bg-success-600 px-4 py-2 text-sm font-semibold text-white hover:bg-success-700"
-          >
-            Approve &amp; Quote
-          </button>
-          <button
-            v-if="canEvaluate"
-            class="rounded-full bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-50"
-            :disabled="isEvaluating"
-            @click="runEvaluation"
-          >
-            {{ isEvaluating ? 'Evaluating...' : 'Run Evaluation' }}
-          </button>
-        </div>
+        <button
+          v-if="verdict"
+          class="rounded-full bg-success-600 px-4 py-2 text-sm font-semibold text-white hover:bg-success-700"
+        >
+          Approve &amp; Quote
+        </button>
       </div>
     </header>
 
     <main class="mx-auto max-w-6xl px-6 py-8">
       <div v-if="isLoading" class="py-10 text-center text-sm text-slate-500">Loading...</div>
-
       <div v-else-if="loadError" class="py-10 text-center text-sm text-danger-700">{{ loadError }}</div>
 
       <template v-else>
@@ -86,7 +75,7 @@
 
         <!-- Tabs -->
         <div v-if="verdict">
-          <div class="mb-4 flex gap-1 rounded-xl bg-white p-1 shadow-sm border border-primary-700/15">
+          <div class="mb-4 flex gap-1 rounded-xl border border-primary-700/15 bg-white p-1 shadow-sm">
             <button
               v-for="tab in tabs"
               :key="tab"
@@ -100,7 +89,6 @@
 
           <!-- Summary tab -->
           <div v-if="activeTab === 'Summary'" class="space-y-4">
-            <!-- Recommended next action (dark bg) -->
             <div class="rounded-xl bg-primary-700 p-5 text-white shadow-sm">
               <h3 class="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-300">Recommended Next Action</h3>
               <p class="mb-3 text-sm text-slate-100">{{ verdict.recommendation?.summary }}</p>
@@ -116,7 +104,6 @@
               </ol>
             </div>
 
-            <!-- Flags — CONDITION first -->
             <div v-if="sortedFlags.length" class="space-y-3">
               <h3 class="text-sm font-semibold text-primary-700">Concerns &amp; Flags</h3>
               <div
@@ -140,7 +127,6 @@
               </div>
             </div>
 
-            <!-- Favorable Factors -->
             <div v-if="verdict.favorable_factors?.length" class="rounded-xl border border-success-200 bg-success-50 p-5">
               <h3 class="mb-3 text-sm font-semibold text-success-700">Favorable Factors</h3>
               <ul class="space-y-1">
@@ -150,7 +136,6 @@
               </ul>
             </div>
 
-            <!-- Risk Summary for Quoting -->
             <div v-if="verdict.risk_profile" class="overflow-hidden rounded-xl border border-primary-700/15 bg-white shadow-sm">
               <div class="border-b border-primary-700/10 px-5 py-3">
                 <h3 class="text-sm font-semibold text-primary-700">Risk Summary for Quoting</h3>
@@ -261,17 +246,29 @@
           </div>
         </div>
 
-        <!-- Not evaluated yet -->
-        <div v-else-if="submission && !verdict" class="rounded-xl border border-primary-700/15 bg-white p-10 text-center shadow-sm">
-          <p class="text-sm font-semibold text-slate-700">No evaluation yet</p>
-          <p class="mt-1 text-xs text-slate-500">Status: {{ submission.status }}</p>
-          <button
-            v-if="canEvaluate"
-            class="mt-4 rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white hover:bg-accent-600"
-            @click="runEvaluation"
-          >
-            Run Evaluation
-          </button>
+        <!-- No verdict yet -->
+        <div v-else class="rounded-xl border border-primary-700/15 bg-white p-10 text-center shadow-sm">
+          <template v-if="submission?.status === 'error'">
+            <p class="text-sm font-semibold text-danger-700">Evaluation failed</p>
+            <button
+              class="mt-4 rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-50"
+              :disabled="isEvaluating"
+              @click="runEvaluation"
+            >
+              {{ isEvaluating ? 'Evaluating...' : 'Retry Evaluation' }}
+            </button>
+          </template>
+          <template v-else>
+            <p class="text-sm font-semibold text-slate-700">{{ submission?.status === 'processing' ? 'Stuck in processing' : 'Not yet evaluated' }}</p>
+            <button
+              class="mt-4 rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-50"
+              :disabled="isEvaluating"
+              @click="runEvaluation"
+            >
+              {{ isEvaluating ? 'Evaluating...' : 'Run Evaluation' }}
+            </button>
+          </template>
+          <p v-if="evalError" class="mt-3 text-sm text-danger-700">{{ evalError }}</p>
         </div>
       </template>
     </main>
@@ -295,26 +292,30 @@ type Verdict = {
   analyzed_in_seconds?: string
 }
 
-type EvaluationResponse = {
-  evaluation: { decision: string; composite_score: number; verdict: Verdict; created_at: string }
+type SubmissionResponse = {
+  id: string
+  org_id: string
+  status: string
+  source: string
+  broker_email: string | null
+  created_at: string
+  extracted_fields?: Record<string, any> | null
+  verdict: Verdict | null
 }
-
-type Submission = { id: string; org_id: string; status: string; extracted_fields?: Record<string, any> | null }
 
 const route = useRoute()
 const id = route.params.id as string
 
-const submission = ref<Submission | null>(null)
-const evaluation = ref<EvaluationResponse['evaluation'] | null>(null)
-const verdict = computed(() => evaluation.value?.verdict ?? null)
+const submission = ref<SubmissionResponse | null>(null)
+const verdict = computed(() => submission.value?.verdict ?? null)
 const isLoading = ref(false)
 const loadError = ref<string | null>(null)
 const isEvaluating = ref(false)
+const evalError = ref<string | null>(null)
 
 const tabs = ['Summary', 'Guidelines', 'Insights', 'Risk Profile'] as const
 const activeTab = ref<(typeof tabs)[number]>('Summary')
 
-const canEvaluate = computed(() => submission.value?.status === 'pending' || submission.value?.status === 'error')
 
 const sortedFlags = computed(() => {
   if (!verdict.value?.flags) return []
@@ -339,19 +340,7 @@ async function load() {
   isLoading.value = true
   loadError.value = null
   try {
-    // Try to fetch existing verdict
-    const [subRes, verdictRes] = await Promise.allSettled([
-      $fetch<{ submissions: Submission[] }>('/api/submissions'),
-      $fetch<EvaluationResponse>(`/api/submissions/${id}/verdict`),
-    ])
-
-    if (subRes.status === 'fulfilled') {
-      submission.value = subRes.value.submissions.find((s) => s.id === id) ?? null
-    }
-
-    if (verdictRes.status === 'fulfilled') {
-      evaluation.value = verdictRes.value.evaluation
-    }
+    submission.value = await $fetch<SubmissionResponse>(`/api/submissions/${id}`)
   } catch (e: any) {
     loadError.value = e?.data?.message || e?.message || 'Failed to load'
   } finally {
@@ -361,13 +350,12 @@ async function load() {
 
 async function runEvaluation() {
   isEvaluating.value = true
+  evalError.value = null
   try {
     await $fetch(`/api/submissions/${id}/evaluate`, { method: 'POST' })
-    const verdictRes = await $fetch<EvaluationResponse>(`/api/submissions/${id}/verdict`)
-    evaluation.value = verdictRes.evaluation
-    if (submission.value) submission.value.status = 'complete'
+    await load()
   } catch (e: any) {
-    loadError.value = e?.data?.message || e?.message || 'Evaluation failed'
+    evalError.value = e?.data?.message || e?.message || 'Evaluation failed'
   } finally {
     isEvaluating.value = false
   }

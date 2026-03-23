@@ -6,7 +6,19 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await supabase
     .from('submissions')
-    .select('id, org_id, status, source, broker_email, created_at, extracted_fields')
+    .select(`
+      id,
+      org_id,
+      status,
+      source,
+      broker_email,
+      created_at,
+      evaluations (
+        decision,
+        composite_score,
+        verdict
+      )
+    `)
     .eq('org_id', orgId)
     .order('created_at', { ascending: false })
 
@@ -14,5 +26,23 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch submissions', data: { message: error.message } })
   }
 
-  return { submissions: data ?? [] }
+  const submissions = (data ?? []).map((sub: any) => {
+    const evaluation = sub.evaluations?.[0]
+    const verdict = evaluation?.verdict
+    return {
+      id: sub.id,
+      status: sub.status,
+      source: sub.source,
+      broker_email: sub.broker_email,
+      created_at: sub.created_at,
+      decision: evaluation?.decision ?? null,
+      composite_score: evaluation?.composite_score ?? null,
+      named_insured: verdict?.risk_profile?.named_insured ?? null,
+      broker: verdict?.risk_profile?.broker ?? null,
+      location_count: verdict?.risk_profile?.location_count ?? null,
+      tiv: verdict?.risk_profile?.tiv ?? null,
+    }
+  })
+
+  return { submissions }
 })

@@ -95,20 +95,35 @@
           <div
             v-for="sub in submissions"
             :key="sub.id"
-            class="flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition hover:bg-surface-100"
-            @click="go(sub.id)"
+            class="flex items-center justify-between gap-4 px-6 py-4 transition"
+            :class="sub.status === 'processing' || sub.status === 'pending' ? 'cursor-default opacity-60' : 'cursor-pointer hover:bg-surface-100'"
+            @click="sub.status !== 'processing' && sub.status !== 'pending' && go(sub.id)"
           >
             <div class="min-w-0">
               <p class="truncate text-sm font-semibold text-slate-900">
-                {{ sub.extracted_fields?.insured_name || sub.broker_email || sub.id.slice(0, 12) + '...' }}
+                {{ sub.named_insured || sub.broker_email || 'Unnamed submission' }}
               </p>
-              <p class="mt-0.5 text-xs text-slate-500">{{ formatDate(sub.created_at) }}</p>
+              <p class="mt-0.5 text-xs text-slate-500">
+                <span v-if="sub.broker">{{ sub.broker }}</span>
+                <span v-if="sub.broker && sub.location_count"> · </span>
+                <span v-if="sub.location_count">{{ sub.location_count }}</span>
+                <span v-if="(sub.broker || sub.location_count) && sub.tiv"> · </span>
+                <span v-if="sub.tiv">{{ sub.tiv }}</span>
+                <span v-if="!sub.broker && !sub.location_count && !sub.tiv">{{ formatDate(sub.created_at) }}</span>
+              </p>
+              <p class="mt-0.5 text-xs text-slate-400">{{ formatDate(sub.created_at) }}</p>
             </div>
 
             <div class="flex shrink-0 items-center gap-3">
-              <!-- Evaluation decision badge if complete -->
+              <!-- Analyzing spinner -->
+              <span v-if="sub.status === 'processing'" class="flex items-center gap-1.5 text-xs text-accent-600">
+                <span class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                Analyzing...
+              </span>
+
+              <!-- Decision badge -->
               <span
-                v-if="sub.status === 'complete' && sub.decision"
+                v-if="sub.decision"
                 class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 :class="{
                   'bg-success-500/15 text-success-700': sub.decision === 'PROCEED',
@@ -119,8 +134,14 @@
                 {{ sub.decision }}
               </span>
 
-              <!-- Status badge -->
+              <!-- Score -->
+              <span v-if="sub.composite_score != null" class="text-sm font-bold text-slate-700">
+                {{ sub.composite_score }}
+              </span>
+
+              <!-- Status badge (hide when complete with decision) -->
               <span
+                v-if="!(sub.status === 'complete' && sub.decision)"
                 class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 :class="{
                   'bg-slate-100 text-slate-600': sub.status === 'pending',
@@ -144,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 type Submission = {
   id: string
@@ -152,8 +173,12 @@ type Submission = {
   source: string
   broker_email: string | null
   created_at: string
-  extracted_fields: Record<string, unknown> | null
-  decision?: string
+  decision: string | null
+  composite_score: number | null
+  named_insured: string | null
+  broker: string | null
+  location_count: string | null
+  tiv: string | null
 }
 
 const router = useRouter()
@@ -232,5 +257,18 @@ async function submitIngest() {
   }
 }
 
+const hasProcessing = computed(() => submissions.value.some((s) => s.status === 'processing' || s.status === 'pending'))
+
+let pollInterval: ReturnType<typeof setInterval> | null = null
+watch(hasProcessing, (val) => {
+  if (val && !pollInterval) {
+    pollInterval = setInterval(load, 5000)
+  } else if (!val && pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
+}, { immediate: true })
+
+onUnmounted(() => { if (pollInterval) clearInterval(pollInterval) })
 onMounted(load)
 </script>

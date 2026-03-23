@@ -11,7 +11,10 @@ export type ReductoChunk = {
 
 const reducto = new Reducto({ apiKey: process.env.REDUCTO_API_KEY })
 
-export async function parseFileToChunks(fileBuffer: Buffer, filename: string): Promise<ReductoChunk[]> {
+const PIPELINE_GUIDELINES = 'k97515keq0d8ysbq4bz3edryas83c0an'
+export const PIPELINE_SUBMISSIONS = 'k974b6rdszkw7yxyf9e3jpp27h83dx2f'
+
+export async function parseFileToChunks(fileBuffer: Buffer, filename: string, pipelineId = PIPELINE_GUIDELINES): Promise<ReductoChunk[]> {
   const t0 = Date.now()
   const uploadFile = await toFile(fileBuffer, filename)
   const upload = await reducto.upload({ file: uploadFile })
@@ -20,11 +23,10 @@ export async function parseFileToChunks(fileBuffer: Buffer, filename: string): P
   const t1 = Date.now()
   const parseResponse = await reducto.pipeline.run({
     input: upload.file_id,
-    pipeline_id: 'k97515keq0d8ysbq4bz3edryas83c0an',
+    pipeline_id: pipelineId,
   })
   console.log(`[reducto] parse "${filename}" → ${Date.now() - t1}ms`)
 
-  console.log(`[reducto] full response:`, JSON.stringify(parseResponse, null, 2).slice(0, 3000))
   const parseResult = (parseResponse as any).result?.parse?.result
   if (!parseResult) {
     throw new Error(`Reducto pipeline returned no parse result for ${filename}`)
@@ -51,12 +53,28 @@ export async function parseFileToChunks(fileBuffer: Buffer, filename: string): P
 }
 
 const SKIP_TYPES = new Set(['Page Number', 'Footer', 'Header'])
+const MEANINGFUL_TYPES = new Set(['Text', 'Table', 'List Item', 'Key Value'])
+const RULE_BULLET = /[◆●✔•]/  // bullet chars = real rule content
 
 export function filterChunks(chunks: ReductoChunk[]): ReductoChunk[] {
   return chunks.filter((chunk) => {
+    // Must have embed text of substance
     if (!chunk.embed || chunk.embed.length < 80) return false
+
+    // Skip chunks made entirely of non-content block types
     const allSkippable = chunk.blocks.every((b) => SKIP_TYPES.has(b.type))
-    return !allSkippable
+    if (allSkippable) return false
+
+    // Keep if chunk has any meaningful content block type
+    const hasMeaningfulContent = chunk.blocks.some((b) => MEANINGFUL_TYPES.has(b.type))
+    if (hasMeaningfulContent) return true
+
+    // Safety net — chunk has only Section Header/Title blocks but contains
+    // bullet characters. Reducto sometimes mislabels bullet point content
+    // as Section Headers. These contain real rules and must be kept.
+    if (RULE_BULLET.test(chunk.embed)) return true
+
+    return false
   })
 }
 

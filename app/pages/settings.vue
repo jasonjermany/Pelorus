@@ -21,6 +21,10 @@
           Hard stops are automatically extracted and pinned.
         </p>
 
+        <p v-if="chunks.length > 0" class="mt-3 text-sm text-amber-600">
+          Uploading a new PDF will replace all existing guideline chunks and hard stops for this organization.
+        </p>
+
         <div class="mt-4 flex items-center gap-3">
           <input
             ref="fileInput"
@@ -64,36 +68,57 @@
         </div>
 
         <div v-else class="space-y-2">
-          <div class="flex gap-4 text-xs text-slate-600">
-            <span><strong class="text-primary-700">{{ pinnedCount }}</strong> hard stops (pinned)</span>
-            <span><strong class="text-primary-700">{{ standardCount }}</strong> standard chunks</span>
-          </div>
+          <p class="text-xs text-slate-500">
+            {{ chunks.length }} total chunks &middot;
+            <strong class="text-slate-700">{{ standardCount }}</strong> guideline sections &middot;
+            <strong class="text-danger-700">{{ pinnedCount }}</strong> hard stops
+          </p>
 
           <div class="overflow-hidden rounded-xl border border-primary-700/15 bg-white shadow-sm">
-            <table class="min-w-full text-left text-sm">
+            <table class="w-full table-fixed text-left text-sm">
+              <colgroup>
+                <col class="w-16">
+                <col>
+                <col class="w-24">
+                <col class="w-28">
+              </colgroup>
               <thead>
                 <tr class="border-b border-primary-700/10 text-xs uppercase tracking-wide text-primary-700/70">
-                  <th class="px-5 py-3 font-semibold">Page</th>
-                  <th class="px-5 py-3 font-semibold">Preview</th>
-                  <th class="px-5 py-3 font-semibold">Type</th>
-                  <th class="px-5 py-3 font-semibold">Added</th>
+                  <th class="px-4 py-3 font-semibold">Page</th>
+                  <th class="px-4 py-3 font-semibold">Preview</th>
+                  <th class="px-4 py-3 font-semibold">Type</th>
+                  <th class="px-4 py-3 font-semibold">Added</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-primary-700/10">
-                <tr v-for="chunk in chunks" :key="chunk.id">
-                  <td class="px-5 py-3 text-slate-500">{{ chunk.page ?? '—' }}</td>
-                  <td class="max-w-sm px-5 py-3 text-slate-700">
-                    <p class="truncate text-xs">{{ chunk.embed_text }}</p>
-                  </td>
-                  <td class="px-5 py-3">
-                    <span
-                      class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                      :class="chunk.is_pinned ? 'bg-danger-500/15 text-danger-700' : 'bg-slate-100 text-slate-600'"
-                    >
-                      {{ chunk.is_pinned ? 'hard stop' : chunk.rule_type }}
+                <tr
+                  v-for="chunk in chunks"
+                  :key="chunk.id"
+                  :class="chunk.is_pinned ? 'bg-danger-500/5' : ''"
+                >
+                  <td class="px-4 py-3 text-slate-500">{{ chunk.page ?? '—' }}</td>
+                  <td
+                    class="px-4 py-3 pr-6 text-xs cursor-pointer select-none"
+                    :class="getChunkPreview(chunk.embed_text).length < 30 ? 'italic text-slate-400' : 'text-slate-700'"
+                    @click="expandedId = expandedId === chunk.id ? null : chunk.id"
+                  >
+                    <span class="flex items-start gap-1.5">
+                      <svg class="mt-0.5 shrink-0 text-slate-300 transition-transform" :class="expandedId === chunk.id ? 'rotate-90' : ''" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span v-if="expandedId === chunk.id" class="whitespace-pre-wrap">{{ getCleanText(chunk.embed_text) }}</span>
+                      <span v-else>{{ getChunkPreview(chunk.embed_text) }}</span>
                     </span>
                   </td>
-                  <td class="px-5 py-3 text-xs text-slate-500">{{ formatDate(chunk.created_at) }}</td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap"
+                      :class="chunk.is_pinned ? 'bg-danger-500/15 text-danger-700' : 'bg-slate-100 text-slate-600'"
+                    >
+                      {{ chunk.is_pinned ? 'hard stop' : 'standard' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-xs text-slate-500">{{ formatDate(chunk.created_at) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -128,6 +153,28 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 const pinnedCount = computed(() => chunks.value.filter((c) => c.is_pinned).length)
 const standardCount = computed(() => chunks.value.filter((c) => !c.is_pinned).length)
+const expandedId = ref<string | null>(null)
+
+function getCleanText(embedText: string): string {
+  return embedText
+    .replace(/^#+\s+/gm, '')
+    .split('\n')
+    .filter((line) => !line.includes('(cont.)'))
+    .join('\n')
+    .trim()
+}
+
+function getChunkPreview(embedText: string): string {
+  let text = embedText
+    .replace(/^#+\s+/gm, '')
+    .split('\n')
+    .filter((line) => !line.includes('(cont.)'))
+    .join('\n')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (text.length > 140) text = text.slice(0, 140).replace(/\s\S*$/, '') + '…'
+  return text
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString()

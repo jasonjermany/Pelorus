@@ -8,6 +8,7 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
     .select('content, embed_text, page, rule_type')
     .eq('org_id', orgId)
     .eq('is_pinned', true)
+    .order('chunk_index', { ascending: true })
 
   if (pinnedError) {
     console.error('[rag] pinned chunk fetch error:', pinnedError)
