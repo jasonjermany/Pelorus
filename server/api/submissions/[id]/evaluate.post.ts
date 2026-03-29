@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const t = Date.now()
-    const verdict = await evaluateSubmission(submission)
+    const verdict = await evaluateSubmission(submission, submission.org_id)
     const analyzedInSeconds = ((Date.now() - t) / 1000).toFixed(1)
     const storedVerdict = { ...verdict, analyzed_in_seconds: analyzedInSeconds }
 

@@ -9,7 +9,8 @@
       "Bash(rm \"c:/Projects/Pelorus/app/pages/carriers/[id].vue\")",
       "Bash(\"c:/Projects/Pelorus/app/pages/settings.vue\")",
       "Bash(\"c:/Projects/Pelorus/server/utils/carrier.ts\")",
-      "Bash(\"c:/Projects/Pelorus/server/utils/org.ts\")"
+      "Bash(\"c:/Projects/Pelorus/server/utils/org.ts\")",
+      "Bash(npx nuxi:*)"
     ]
   }
 }

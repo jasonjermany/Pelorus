@@ -1,6 +1,6 @@
 import { supabase } from '../../utils/supabase'
 import { embed } from '../../utils/embeddings'
-import { extractHardStops } from '../../utils/claude'
+import { extractHardStops, extractRiskProfileFields } from '../../utils/claude'
 import { parseFileToChunks, filterChunks, getChunkPage, getChunkBlockTypes } from '../../utils/reducto'
 import { getOrgId } from '../../utils/org'
 
@@ -58,7 +58,12 @@ export default defineEventHandler(async (event) => {
   const hardStopText = (hardStopChunks.length ? hardStopChunks : chunks)
     .map((c) => c.embed)
     .join('\n\n---\n\n')
-  const hardStops = await extractHardStops(hardStopText)
+  const [hardStops, riskProfileFields] = await Promise.all([
+    extractHardStops(hardStopText),
+    extractRiskProfileFields(chunks.map((c) => c.embed).join('\n\n---\n\n')),
+  ])
+
+  await supabase.from('organizations').update({ risk_profile_fields: riskProfileFields }).eq('id', orgId)
 
   // 3. Embed chunks (parallel)
   const chunkRows = await Promise.all(

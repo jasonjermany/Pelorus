@@ -39,8 +39,7 @@ export default defineEventHandler(async (event) => {
       composite_score: evaluation?.composite_score ?? null,
       named_insured: verdict?.risk_profile?.named_insured ?? null,
       broker: verdict?.risk_profile?.broker ?? null,
-      location_count: verdict?.risk_profile?.location_count ?? null,
-      tiv: verdict?.risk_profile?.tiv ?? null,
+      prior_carrier: verdict?.risk_profile?.prior_carrier ?? null,
     }
   })
 

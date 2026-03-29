@@ -105,11 +105,9 @@
               </p>
               <p class="mt-0.5 text-xs text-slate-500">
                 <span v-if="sub.broker">{{ sub.broker }}</span>
-                <span v-if="sub.broker && sub.location_count"> · </span>
-                <span v-if="sub.location_count">{{ sub.location_count }}</span>
-                <span v-if="(sub.broker || sub.location_count) && sub.tiv"> · </span>
-                <span v-if="sub.tiv">{{ sub.tiv }}</span>
-                <span v-if="!sub.broker && !sub.location_count && !sub.tiv">{{ formatDate(sub.created_at) }}</span>
+                <span v-if="sub.broker && sub.prior_carrier"> · </span>
+                <span v-if="sub.prior_carrier">{{ sub.prior_carrier }}</span>
+                <span v-if="!sub.broker && !sub.prior_carrier">{{ formatDate(sub.created_at) }}</span>
               </p>
               <p class="mt-0.5 text-xs text-slate-400">{{ formatDate(sub.created_at) }}</p>
             </div>
@@ -177,8 +175,7 @@ type Submission = {
   composite_score: number | null
   named_insured: string | null
   broker: string | null
-  location_count: string | null
-  tiv: string | null
+  prior_carrier: string | null
 }
 
 const router = useRouter()
