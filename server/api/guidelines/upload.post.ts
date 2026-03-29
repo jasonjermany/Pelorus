@@ -2,9 +2,11 @@ import { supabase } from '../../utils/supabase'
 import { embed } from '../../utils/embeddings'
 import { extractHardStops, extractRiskProfileFields } from '../../utils/claude'
 import { parseFileToChunks, filterChunks, getChunkPage, getChunkBlockTypes } from '../../utils/reducto'
-import { getOrgId } from '../../utils/org'
+import { getOrgId, requireAdmin } from '../../utils/org'
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
+
   const parts = await readMultipartFormData(event)
   if (!parts?.length) {
     throw createError({ statusCode: 400, statusMessage: 'Missing form data' })

@@ -1,20 +1,17 @@
-import { supabase } from './supabase'
+import type { H3Event } from 'h3'
 
-export async function getOrgId(_event?: any): Promise<string> {
-  const { data: existing } = await supabase
-    .from('organizations')
-    .select('id')
-    .limit(1)
-    .single()
+export async function getOrgId(event: H3Event): Promise<string> {
+  const session = await getUserSession(event)
+  const orgId = session?.user?.org_id
+  if (!orgId) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+  return orgId as string
+}
 
-  if (existing?.id) return existing.id
-
-  const { data: created, error } = await supabase
-    .from('organizations')
-    .insert({ name: 'Default' })
-    .select('id')
-    .single()
-
-  if (error || !created) throw new Error(`Failed to get or create organization: ${error?.message}`)
-  return created.id
+export async function requireAdmin(event: H3Event): Promise<void> {
+  const session = await getUserSession(event)
+  if (session?.user?.role !== 'admin') {
+    throw createError({ statusCode: 403, statusMessage: 'Admin access required' })
+  }
 }
