@@ -10,14 +10,21 @@
                 AI-powered submission triage for underwriters.
               </p>
               <p class="mt-2 text-sm text-slate-200">
-                Convert underwriting guidelines into structured rules, extract facts from submissions, and instantly see pass/fail results.
+                Convert underwriting guidelines into structured rules, extract
+                facts from submissions, and instantly see pass/fail results.
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <NuxtLink to="/dashboard" class="rounded-md border border-slate-200/50 bg-white px-3 py-1 text-xs font-semibold text-primary-700 hover:bg-slate-100">
+              <NuxtLink
+                to="/dashboard"
+                class="rounded-md border border-slate-200/50 bg-white px-3 py-1 text-xs font-semibold text-primary-700 hover:bg-slate-100"
+              >
                 Dashboard
               </NuxtLink>
-              <NuxtLink to="/dev" class="rounded-md border border-accent-500/40 bg-accent-500 px-3 py-1 text-xs font-semibold text-white">
+              <NuxtLink
+                to="/dev"
+                class="rounded-md border border-accent-500/40 bg-accent-500 px-3 py-1 text-xs font-semibold text-white"
+              >
                 Dev Console
               </NuxtLink>
             </div>
@@ -31,7 +38,9 @@
         <Card>
           <div class="flex items-start justify-between gap-4">
             <div class="min-h-[4.5rem]">
-              <h2 class="text-xl font-semibold text-primary-700">Underwriting Guidelines</h2>
+              <h2 class="text-xl font-semibold text-primary-700">
+                Underwriting Guidelines
+              </h2>
               <p class="mt-1 text-sm text-slate-600">
                 Upload guidelines files to generate structured rules.
               </p>
@@ -40,8 +49,14 @@
           </div>
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button variant="primary" :disabled="isExtractingGuidelinesFile" @click="triggerGuidelinesFileUpload">
-              {{ isExtractingGuidelinesFile ? 'Extracting...' : 'Upload Files' }}
+            <Button
+              variant="primary"
+              :disabled="isExtractingGuidelinesFile"
+              @click="triggerGuidelinesFileUpload"
+            >
+              {{
+                isExtractingGuidelinesFile ? "Extracting..." : "Upload Files"
+              }}
             </Button>
             <Button variant="secondary" @click="resetGuidelines">Reset</Button>
           </div>
@@ -60,11 +75,19 @@
             {{ guidelinesUploadError }}
           </p>
           <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Structured Rules</h3>
-            <p class="mt-1 text-xs text-slate-500">Rules generated from your guidelines. Each rule is evaluated against extracted facts.</p>
+            <h3 class="text-sm font-semibold text-primary-700">
+              Structured Rules
+            </h3>
+            <p class="mt-1 text-xs text-slate-500">
+              Rules generated from your guidelines. Each rule is evaluated
+              against extracted facts.
+            </p>
 
             <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!rules.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+              <div
+                v-if="!rules.length"
+                class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+              >
                 Generate rules to see them appear here.
               </div>
 
@@ -76,10 +99,16 @@
                 >
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ rule.normalizedExpression }}</p>
-                      <p class="mt-1 text-xs text-slate-500">{{ rule.sourceText }}</p>
+                      <p class="text-sm font-semibold text-slate-900">
+                        {{ rule.normalizedExpression }}
+                      </p>
+                      <p class="mt-1 text-xs text-slate-500">
+                        {{ rule.sourceText }}
+                      </p>
                     </div>
-                    <span class="rounded-full bg-primary-700/10 px-3 py-1 text-xs font-semibold text-primary-700">
+                    <span
+                      class="rounded-full bg-primary-700/10 px-3 py-1 text-xs font-semibold text-primary-700"
+                    >
                       {{ rule.field }}
                     </span>
                   </div>
@@ -92,7 +121,9 @@
         <Card>
           <div class="flex items-start justify-between gap-4">
             <div class="min-h-[4.5rem]">
-              <h2 class="text-xl font-semibold text-primary-700">Submission Input</h2>
+              <h2 class="text-xl font-semibold text-primary-700">
+                Submission Input
+              </h2>
               <p class="mt-1 text-sm text-slate-600">
                 Upload a submission file to extract facts and evaluate rules.
               </p>
@@ -101,8 +132,16 @@
           </div>
 
           <div class="mt-4 flex flex-wrap items-center gap-3">
-            <Button variant="accent" :disabled="isExtractingSubmissionFile || isAnalyzing || !rules.length" @click="triggerSubmissionFileUpload">
-              {{ isExtractingSubmissionFile ? 'Extracting...' : 'Upload Files' }}
+            <Button
+              variant="accent"
+              :disabled="
+                isExtractingSubmissionFile || isAnalyzing || !rules.length
+              "
+              @click="triggerSubmissionFileUpload"
+            >
+              {{
+                isExtractingSubmissionFile ? "Extracting..." : "Upload Files"
+              }}
             </Button>
             <Button variant="secondary" @click="resetSubmission">Reset</Button>
           </div>
@@ -131,13 +170,19 @@
           </p>
 
           <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Extracted Facts</h3>
+            <h3 class="text-sm font-semibold text-primary-700">
+              Extracted Facts
+            </h3>
             <p class="mt-1 text-xs text-slate-500">
-              Facts extracted from the submission that are used to evaluate each rule.
+              Facts extracted from the submission that are used to evaluate each
+              rule.
             </p>
 
             <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!facts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+              <div
+                v-if="!facts.length"
+                class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+              >
                 Analyze a submission to see extracted facts.
               </div>
 
@@ -149,9 +194,11 @@
                 >
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ fact.field }}</p>
+                      <p class="text-sm font-semibold text-slate-900">
+                        {{ fact.field }}
+                      </p>
                       <p class="mt-1 text-xs text-slate-500">
-                        {{ fact.sourceSnippet || 'Extracted from submission' }}
+                        {{ fact.sourceSnippet || "Extracted from submission" }}
                       </p>
                     </div>
                     <Badge :variant="factConfidenceVariant(fact.confidence)">
@@ -159,7 +206,8 @@
                     </Badge>
                   </div>
                   <p class="mt-3 text-sm text-slate-700">
-                    <span class="font-medium">Value:</span> {{ displayFactValue(fact.value) }}
+                    <span class="font-medium">Value:</span>
+                    {{ displayFactValue(fact.value) }}
                   </p>
                 </div>
               </div>
@@ -167,13 +215,19 @@
           </div>
 
           <div class="mt-6">
-            <h3 class="text-sm font-semibold text-primary-700">Additional Signals</h3>
+            <h3 class="text-sm font-semibold text-primary-700">
+              Additional Signals
+            </h3>
             <p class="mt-1 text-xs text-slate-500">
-              Important underwriting facts detected by AI outside the current rule set.
+              Important underwriting facts detected by AI outside the current
+              rule set.
             </p>
 
             <div class="mt-4 max-h-[28rem] space-y-3 overflow-y-auto pr-1">
-              <div v-if="!additionalFacts.length" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+              <div
+                v-if="!additionalFacts.length"
+                class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+              >
                 No additional signals detected.
               </div>
 
@@ -185,9 +239,11 @@
                 >
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <p class="text-sm font-semibold text-slate-900">{{ fact.field }}</p>
+                      <p class="text-sm font-semibold text-slate-900">
+                        {{ fact.field }}
+                      </p>
                       <p class="mt-1 text-xs text-slate-500">
-                        {{ fact.sourceSnippet || 'Extracted from submission' }}
+                        {{ fact.sourceSnippet || "Extracted from submission" }}
                       </p>
                     </div>
                     <Badge :variant="factConfidenceVariant(fact.confidence)">
@@ -195,7 +251,8 @@
                     </Badge>
                   </div>
                   <p class="mt-3 text-sm text-slate-700">
-                    <span class="font-medium">Value:</span> {{ displayFactValue(fact.value) }}
+                    <span class="font-medium">Value:</span>
+                    {{ displayFactValue(fact.value) }}
                   </p>
                 </div>
               </div>
@@ -209,18 +266,24 @@
           <div class="flex flex-col gap-4">
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 class="text-xl font-semibold text-primary-700">Evaluation Report</h2>
+                <h2 class="text-xl font-semibold text-primary-700">
+                  Evaluation Report
+                </h2>
                 <p class="mt-1 text-sm text-slate-600">
-                  See how the submission compares to your underwriting guidelines.
+                  See how the submission compares to your underwriting
+                  guidelines.
                 </p>
               </div>
               <div class="flex items-center gap-3">
                 <span
                   class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                   :class="{
-                    'bg-success-500/15 text-success-700': overallStatus === 'PASS',
-                    'bg-danger-500/15 text-danger-700': overallStatus === 'FAIL',
-                    'bg-accent-500/15 text-accent-600': overallStatus === 'REFER',
+                    'bg-success-500/15 text-success-700':
+                      overallStatus === 'PASS',
+                    'bg-danger-500/15 text-danger-700':
+                      overallStatus === 'FAIL',
+                    'bg-accent-500/15 text-accent-600':
+                      overallStatus === 'REFER',
                   }"
                 >
                   <span
@@ -234,7 +297,11 @@
                   Submission Result: {{ overallStatus }}
                 </span>
 
-                <Button variant="ghost" :disabled="!canCopyJson" @click="copyReport">
+                <Button
+                  variant="ghost"
+                  :disabled="!canCopyJson"
+                  @click="copyReport"
+                >
                   Copy JSON
                 </Button>
               </div>
@@ -242,57 +309,117 @@
 
             <div class="grid gap-6 lg:grid-cols-4">
               <div>
-                <h3 class="text-sm font-semibold text-primary-700">Failed Rules</h3>
+                <h3 class="text-sm font-semibold text-primary-700">
+                  Failed Rules
+                </h3>
                 <div class="mt-3 space-y-3">
-                  <div v-if="failedResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+                  <div
+                    v-if="failedResults.length === 0"
+                    class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+                  >
                     No failed rules.
                   </div>
-                  <div v-for="result in failedResults" :key="result.ruleId" class="rounded-xl border border-danger-200 bg-danger-50 p-4">
-                    <p class="text-sm font-semibold text-danger-800">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Hard decline: {{ result.isHardDecline ? 'Yes' : 'No' }}</p>
-                    <p class="mt-1 text-xs text-danger-700">Reason: {{ result.reason }}</p>
+                  <div
+                    v-for="result in failedResults"
+                    :key="result.ruleId"
+                    class="rounded-xl border border-danger-200 bg-danger-50 p-4"
+                  >
+                    <p class="text-sm font-semibold text-danger-800">
+                      {{ result.normalizedExpression }}
+                    </p>
+                    <p class="mt-1 text-xs text-danger-700">
+                      Actual: {{ displayFactValue(result.actualValue) }}
+                    </p>
+                    <p class="mt-1 text-xs text-danger-700">
+                      Hard decline: {{ result.isHardDecline ? "Yes" : "No" }}
+                    </p>
+                    <p class="mt-1 text-xs text-danger-700">
+                      Reason: {{ result.reason }}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 class="text-sm font-semibold text-primary-700">Unknown Rules</h3>
+                <h3 class="text-sm font-semibold text-primary-700">
+                  Unknown Rules
+                </h3>
                 <div class="mt-3 space-y-3">
-                  <div v-if="unknownResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+                  <div
+                    v-if="unknownResults.length === 0"
+                    class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+                  >
                     No unknown rules.
                   </div>
-                  <div v-for="result in unknownResults" :key="result.ruleId" class="rounded-xl border border-accent-500/30 bg-accent-500/10 p-4">
-                    <p class="text-sm font-semibold text-accent-600">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-accent-600">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-accent-600">Reason: {{ result.reason }}</p>
+                  <div
+                    v-for="result in unknownResults"
+                    :key="result.ruleId"
+                    class="rounded-xl border border-accent-500/30 bg-accent-500/10 p-4"
+                  >
+                    <p class="text-sm font-semibold text-accent-600">
+                      {{ result.normalizedExpression }}
+                    </p>
+                    <p class="mt-1 text-xs text-accent-600">
+                      Actual: {{ displayFactValue(result.actualValue) }}
+                    </p>
+                    <p class="mt-1 text-xs text-accent-600">
+                      Reason: {{ result.reason }}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 class="text-sm font-semibold text-primary-700">Passed Rules</h3>
+                <h3 class="text-sm font-semibold text-primary-700">
+                  Passed Rules
+                </h3>
                 <div class="mt-3 space-y-3">
-                  <div v-if="passedResults.length === 0" class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600">
+                  <div
+                    v-if="passedResults.length === 0"
+                    class="rounded-xl border border-dashed border-primary-700/20 bg-surface-100 p-6 text-sm text-slate-600"
+                  >
                     No rules have passed yet.
                   </div>
-                  <div v-for="result in passedResults" :key="result.ruleId" class="rounded-xl border border-success-200 bg-success-50 p-4">
-                    <p class="text-sm font-semibold text-success-800">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-success-700">Actual: {{ displayFactValue(result.actualValue) }}</p>
-                    <p class="mt-1 text-xs text-success-700">Reason: {{ result.reason }}</p>
+                  <div
+                    v-for="result in passedResults"
+                    :key="result.ruleId"
+                    class="rounded-xl border border-success-200 bg-success-50 p-4"
+                  >
+                    <p class="text-sm font-semibold text-success-800">
+                      {{ result.normalizedExpression }}
+                    </p>
+                    <p class="mt-1 text-xs text-success-700">
+                      Actual: {{ displayFactValue(result.actualValue) }}
+                    </p>
+                    <p class="mt-1 text-xs text-success-700">
+                      Reason: {{ result.reason }}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 class="text-sm font-semibold text-slate-400">Not Applicable</h3>
+                <h3 class="text-sm font-semibold text-slate-400">
+                  Not Applicable
+                </h3>
                 <div class="mt-3 space-y-3">
-                  <div v-if="naResults.length === 0" class="rounded-xl border border-dashed border-slate-200 bg-surface-100 p-6 text-sm text-slate-500">
+                  <div
+                    v-if="naResults.length === 0"
+                    class="rounded-xl border border-dashed border-slate-200 bg-surface-100 p-6 text-sm text-slate-500"
+                  >
                     No skipped rules.
                   </div>
-                  <div v-for="result in naResults" :key="result.ruleId" class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p class="text-sm font-semibold text-slate-500">{{ result.normalizedExpression }}</p>
-                    <p class="mt-1 text-xs text-slate-400">{{ result.reason }}</p>
+                  <div
+                    v-for="result in naResults"
+                    :key="result.ruleId"
+                    class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                  >
+                    <p class="text-sm font-semibold text-slate-500">
+                      {{ result.normalizedExpression }}
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">
+                      {{ result.reason }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -304,118 +431,142 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Card from '~/components/ui/Card.vue'
-import Button from '~/components/ui/Button.vue'
-import Badge from '~/components/ui/Badge.vue'
-import type { Rule, ExtractedFact, EvaluationResult, ProcessedSubmission, SubmissionDecision } from '~/types/models'
-import { evaluateRules } from '~/utils/ruleEngine'
+import { ref, computed } from "vue";
+import Card from "~/components/ui/Card.vue";
+import Button from "~/components/ui/Button.vue";
+import Badge from "~/components/ui/Badge.vue";
+import type {
+  Rule,
+  ExtractedFact,
+  EvaluationResult,
+  ProcessedSubmission,
+  SubmissionDecision,
+} from "~/types/models";
+import { evaluateRules } from "~/utils/ruleEngine";
 
-const guidelines = ref('')
-const submission = ref('')
+const guidelines = ref("");
+const submission = ref("");
 
-const rules = ref<Rule[]>([])
-const facts = ref<ExtractedFact[]>([])
-const additionalFacts = ref<ExtractedFact[]>([])
-const evaluation = ref<EvaluationResult[]>([])
+const rules = ref<Rule[]>([]);
+const facts = ref<ExtractedFact[]>([]);
+const additionalFacts = ref<ExtractedFact[]>([]);
+const evaluation = ref<EvaluationResult[]>([]);
 
 type RulesApiResponse = {
-  rules: Rule[]
-  filesProcessed?: number
-  provider?: string
-}
+  rules: Rule[];
+  filesProcessed?: number;
+  provider?: string;
+};
 
 type FactsApiResponse = {
-  facts: ExtractedFact[]
-  additionalFacts?: ExtractedFact[]
-  submissionText?: string
-}
+  facts: ExtractedFact[];
+  additionalFacts?: ExtractedFact[];
+  submissionText?: string;
+};
 
 type SaveSubmissionApiResponse = {
-  submission: ProcessedSubmission
-}
+  submission: ProcessedSubmission;
+};
 
-const isAnalyzing = ref(false)
-const isExtractingGuidelinesFile = ref(false)
-const isExtractingSubmissionFile = ref(false)
-const analyzeError = ref<string | null>(null)
-const saveError = ref<string | null>(null)
-const saveNote = ref<string | null>(null)
-const guidelinesUploadError = ref<string | null>(null)
-const guidelinesUploadNote = ref<string | null>(null)
-const submissionUploadError = ref<string | null>(null)
-const submissionUploadNote = ref<string | null>(null)
-const guidelinesFileInput = ref<HTMLInputElement | null>(null)
-const submissionFileInput = ref<HTMLInputElement | null>(null)
+const isAnalyzing = ref(false);
+const isExtractingGuidelinesFile = ref(false);
+const isExtractingSubmissionFile = ref(false);
+const analyzeError = ref<string | null>(null);
+const saveError = ref<string | null>(null);
+const saveNote = ref<string | null>(null);
+const guidelinesUploadError = ref<string | null>(null);
+const guidelinesUploadNote = ref<string | null>(null);
+const submissionUploadError = ref<string | null>(null);
+const submissionUploadNote = ref<string | null>(null);
+const guidelinesFileInput = ref<HTMLInputElement | null>(null);
+const submissionFileInput = ref<HTMLInputElement | null>(null);
 
 const getErrorMessage = (error: unknown) => {
-  if (error && typeof error === 'object') {
+  if (error && typeof error === "object") {
     const e = error as {
-      data?: { message?: string }
-      statusMessage?: string
-      message?: string
-    }
-    return e.data?.message || e.statusMessage || e.message || 'Request failed.'
+      data?: { message?: string };
+      statusMessage?: string;
+      message?: string;
+    };
+    return e.data?.message || e.statusMessage || e.message || "Request failed.";
   }
-  return 'Request failed.'
-}
+  return "Request failed.";
+};
 
 const clearAnalysisState = () => {
-  facts.value = []
-  additionalFacts.value = []
-  evaluation.value = []
-}
+  facts.value = [];
+  additionalFacts.value = [];
+  evaluation.value = [];
+};
 
 const clearGuidelinesUploadState = () => {
-  guidelinesUploadError.value = null
-  guidelinesUploadNote.value = null
-}
+  guidelinesUploadError.value = null;
+  guidelinesUploadNote.value = null;
+};
 
 const summarizeEvaluation = (results: EvaluationResult[]) => {
-  const active = results.filter((r) => r.status !== 'N/A')
-  const failed = active.filter((item) => item.status === 'FAIL').length
-  const unknown = active.filter((item) => item.status === 'UNKNOWN').length
-  if (failed === 0 && unknown === 0) return 'No blocking issues.'
-  return `${failed} failed, ${unknown} unknown`
-}
+  const active = results.filter((r) => r.status !== "N/A");
+  const failed = active.filter((item) => item.status === "FAIL").length;
+  const unknown = active.filter((item) => item.status === "UNKNOWN").length;
+  if (failed === 0 && unknown === 0) return "No blocking issues.";
+  return `${failed} failed, ${unknown} unknown`;
+};
 
 const deriveCompanyName = (
   extractedFacts: ExtractedFact[],
   extractedAdditionalFacts: ExtractedFact[],
   submissionText: string,
 ) => {
-  const allFacts = [...extractedFacts, ...extractedAdditionalFacts]
-  const preferredFields = ['insured_name', 'dba_trade_name', 'business_name', 'entity_name']
+  const allFacts = [...extractedFacts, ...extractedAdditionalFacts];
+  const preferredFields = [
+    "insured_name",
+    "dba_trade_name",
+    "business_name",
+    "entity_name",
+  ];
   for (const field of preferredFields) {
-    const match = allFacts.find((fact) => fact.field === field && typeof fact.value === 'string' && fact.value.trim())
-    if (match && typeof match.value === 'string') return match.value.trim()
+    const match = allFacts.find(
+      (fact) =>
+        fact.field === field &&
+        typeof fact.value === "string" &&
+        fact.value.trim(),
+    );
+    if (match && typeof match.value === "string") return match.value.trim();
   }
 
   const firstLine = submissionText
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .find(Boolean)
-  return firstLine ? firstLine.slice(0, 80) : 'Unknown Insured'
-}
+    .find(Boolean);
+  return firstLine ? firstLine.slice(0, 80) : "Unknown Insured";
+};
 
-const computeSubmissionDecision = (results: EvaluationResult[]): SubmissionDecision => {
-  const active = results.filter((r) => r.status !== 'N/A')
-  const hasHardDeclineFail = active.some((result) => result.status === 'FAIL' && result.isHardDecline)
-  if (hasHardDeclineFail) return 'FAIL'
-  const hasUnknown = active.some((result) => result.status === 'UNKNOWN')
-  const hasManualReview = active.some((result) => result.requiresManualReview)
-  if (hasUnknown || hasManualReview) return 'REFER'
-  return 'PASS'
-}
+const computeSubmissionDecision = (
+  results: EvaluationResult[],
+): SubmissionDecision => {
+  const active = results.filter((r) => r.status !== "N/A");
+  const hasHardDeclineFail = active.some(
+    (result) => result.status === "FAIL" && result.isHardDecline,
+  );
+  if (hasHardDeclineFail) return "FAIL";
+  const hasUnknown = active.some((result) => result.status === "UNKNOWN");
+  const hasManualReview = active.some((result) => result.requiresManualReview);
+  if (hasUnknown || hasManualReview) return "REFER";
+  return "PASS";
+};
 
 const saveProcessedSubmission = async (
   extractedFacts: ExtractedFact[],
   extractedAdditionalFacts: ExtractedFact[],
   evaluationResults: EvaluationResult[],
 ) => {
-  const status = computeSubmissionDecision(evaluationResults)
-  const companyName = deriveCompanyName(extractedFacts, extractedAdditionalFacts, submission.value)
-  const summary = summarizeEvaluation(evaluationResults)
+  const status = computeSubmissionDecision(evaluationResults);
+  const companyName = deriveCompanyName(
+    extractedFacts,
+    extractedAdditionalFacts,
+    submission.value,
+  );
+  const summary = summarizeEvaluation(evaluationResults);
 
   const payload = {
     companyName,
@@ -427,153 +578,169 @@ const saveProcessedSubmission = async (
     facts: extractedFacts,
     additionalFacts: extractedAdditionalFacts,
     evaluation: evaluationResults,
-  }
+  };
 
-  const response = await $fetch<SaveSubmissionApiResponse>('/api/submissions', {
-    method: 'POST',
+  const response = await $fetch<SaveSubmissionApiResponse>("/api/submissions", {
+    method: "POST",
     body: payload,
-  })
-  saveNote.value = `Saved to dashboard as ${response.submission.companyName}.`
-}
+  });
+  saveNote.value = `Saved to dashboard as ${response.submission.companyName}.`;
+};
 
-const generateRulesFromFiles = async (files: File[]): Promise<RulesApiResponse> => {
-  const formData = new FormData()
+const generateRulesFromFiles = async (
+  files: File[],
+): Promise<RulesApiResponse> => {
+  const formData = new FormData();
   for (const file of files) {
-    formData.append('file', file)
+    formData.append("file", file);
   }
-  const response = await $fetch<RulesApiResponse>('/api/rules', {
-    method: 'POST',
+  const response = await $fetch<RulesApiResponse>("/api/rules", {
+    method: "POST",
     body: formData,
-  })
-  return response
-}
+  });
+  return response;
+};
 
 const triggerGuidelinesFileUpload = () => {
-  if (isExtractingGuidelinesFile.value) return
-  guidelinesFileInput.value?.click()
-}
+  if (isExtractingGuidelinesFile.value) return;
+  guidelinesFileInput.value?.click();
+};
 
 const onGuidelinesFileSelected = async (event: Event) => {
-  const input = event.target as HTMLInputElement | null
-  const files = Array.from(input?.files ?? [])
-  if (!files.length) return
+  const input = event.target as HTMLInputElement | null;
+  const files = Array.from(input?.files ?? []);
+  if (!files.length) return;
 
-  clearGuidelinesUploadState()
-  isExtractingGuidelinesFile.value = true
+  clearGuidelinesUploadState();
+  isExtractingGuidelinesFile.value = true;
   try {
-    const response = await generateRulesFromFiles(files)
-    rules.value = response.rules
-    clearAnalysisState()
-    const count = response.filesProcessed ?? files.length
-    guidelinesUploadNote.value = `Generated ${response.rules.length} rules from ${count} file${count === 1 ? '' : 's'} via ${response.provider || 'reducto'}.`
+    const response = await generateRulesFromFiles(files);
+    rules.value = response.rules;
+    clearAnalysisState();
+    const count = response.filesProcessed ?? files.length;
+    guidelinesUploadNote.value = `Generated ${response.rules.length} rules from ${count} file${count === 1 ? "" : "s"} via ${response.provider || "reducto"}.`;
   } catch (error) {
-    rules.value = []
-    clearAnalysisState()
-    guidelinesUploadError.value = getErrorMessage(error)
+    rules.value = [];
+    clearAnalysisState();
+    guidelinesUploadError.value = getErrorMessage(error);
   } finally {
-    isExtractingGuidelinesFile.value = false
-    if (input) input.value = ''
+    isExtractingGuidelinesFile.value = false;
+    if (input) input.value = "";
   }
-}
+};
 
 const triggerSubmissionFileUpload = () => {
-  if (isExtractingSubmissionFile.value || isAnalyzing.value) return
-  submissionFileInput.value?.click()
-}
+  if (isExtractingSubmissionFile.value || isAnalyzing.value) return;
+  submissionFileInput.value?.click();
+};
 
 const onSubmissionFileSelected = async (event: Event) => {
-  const input = event.target as HTMLInputElement | null
-  const files = Array.from(input?.files ?? [])
-  if (!files.length) return
+  const input = event.target as HTMLInputElement | null;
+  const files = Array.from(input?.files ?? []);
+  if (!files.length) return;
 
-  submissionUploadError.value = null
-  submissionUploadNote.value = null
-  saveError.value = null
-  saveNote.value = null
-  isExtractingSubmissionFile.value = true
-  isAnalyzing.value = true
-  evaluation.value = []
+  submissionUploadError.value = null;
+  submissionUploadNote.value = null;
+  saveError.value = null;
+  saveNote.value = null;
+  isExtractingSubmissionFile.value = true;
+  isAnalyzing.value = true;
+  evaluation.value = [];
 
   try {
-    const formData = new FormData()
+    const formData = new FormData();
     for (const file of files) {
-      formData.append('file', file)
+      formData.append("file", file);
     }
-    formData.append('rules', JSON.stringify(rules.value))
+    formData.append("rules", JSON.stringify(rules.value));
 
-    const response = await $fetch<FactsApiResponse>('/api/facts', {
-      method: 'POST',
+    const response = await $fetch<FactsApiResponse>("/api/facts", {
+      method: "POST",
       body: formData,
-    })
+    });
 
-    facts.value = response.facts
-    additionalFacts.value = response.additionalFacts ?? []
-    submission.value = response.submissionText ?? ''
+    facts.value = response.facts;
+    additionalFacts.value = response.additionalFacts ?? [];
+    submission.value = response.submissionText ?? "";
 
-    const evaluated = evaluateRules(rules.value, response.facts)
-    evaluation.value = evaluated
-    submissionUploadNote.value = `Analyzed ${files.length} file${files.length === 1 ? '' : 's'}.`
+    const evaluated = evaluateRules(rules.value, response.facts);
+    evaluation.value = evaluated;
+    submissionUploadNote.value = `Analyzed ${files.length} file${files.length === 1 ? "" : "s"}.`;
 
     try {
-      await saveProcessedSubmission(response.facts, response.additionalFacts ?? [], evaluated)
+      await saveProcessedSubmission(
+        response.facts,
+        response.additionalFacts ?? [],
+        evaluated,
+      );
     } catch (saveFailure) {
-      saveError.value = getErrorMessage(saveFailure)
+      saveError.value = getErrorMessage(saveFailure);
     }
   } catch (error) {
-    facts.value = []
-    additionalFacts.value = []
-    submissionUploadError.value = getErrorMessage(error)
+    facts.value = [];
+    additionalFacts.value = [];
+    submissionUploadError.value = getErrorMessage(error);
   } finally {
-    isExtractingSubmissionFile.value = false
-    isAnalyzing.value = false
-    if (input) input.value = ''
+    isExtractingSubmissionFile.value = false;
+    isAnalyzing.value = false;
+    if (input) input.value = "";
   }
-}
+};
 
 const resetGuidelines = () => {
-  guidelines.value = ''
-  rules.value = []
-  clearAnalysisState()
-  clearGuidelinesUploadState()
-  analyzeError.value = null
-  saveError.value = null
-  saveNote.value = null
-}
+  guidelines.value = "";
+  rules.value = [];
+  clearAnalysisState();
+  clearGuidelinesUploadState();
+  analyzeError.value = null;
+  saveError.value = null;
+  saveNote.value = null;
+};
 
 const resetSubmission = () => {
-  submission.value = ''
-  clearAnalysisState()
-  analyzeError.value = null
-  saveError.value = null
-  saveNote.value = null
-  submissionUploadError.value = null
-  submissionUploadNote.value = null
-}
+  submission.value = "";
+  clearAnalysisState();
+  analyzeError.value = null;
+  saveError.value = null;
+  saveNote.value = null;
+  submissionUploadError.value = null;
+  submissionUploadNote.value = null;
+};
 
 const displayFactValue = (value: any) => {
-  if (value === null || value === undefined) return 'N/A'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  return value
-}
+  if (value === null || value === undefined) return "N/A";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return value;
+};
 
 const factConfidenceVariant = (confidence: number) => {
-  if (confidence > 0.8) return 'success'
-  if (confidence > 0.5) return 'info'
-  return 'neutral'
-}
+  if (confidence > 0.8) return "success";
+  if (confidence > 0.5) return "info";
+  return "neutral";
+};
 
-const results = computed(() => evaluation.value)
-const failedResults = computed(() => results.value.filter((r) => r.status === 'FAIL'))
-const unknownResults = computed(() => results.value.filter((r) => r.status === 'UNKNOWN'))
-const passedResults = computed(() => results.value.filter((r) => r.status === 'PASS'))
-const naResults = computed(() => results.value.filter((r) => r.status === 'N/A'))
+const results = computed(() => evaluation.value);
+const failedResults = computed(() =>
+  results.value.filter((r) => r.status === "FAIL"),
+);
+const unknownResults = computed(() =>
+  results.value.filter((r) => r.status === "UNKNOWN"),
+);
+const passedResults = computed(() =>
+  results.value.filter((r) => r.status === "PASS"),
+);
+const naResults = computed(() =>
+  results.value.filter((r) => r.status === "N/A"),
+);
 
 const overallStatus = computed(() => {
-  if (!results.value.length) return 'N/A'
-  return computeSubmissionDecision(results.value)
-})
+  if (!results.value.length) return "N/A";
+  return computeSubmissionDecision(results.value);
+});
 
-const canCopyJson = computed(() => rules.value.length > 0 && facts.value.length > 0)
+const canCopyJson = computed(
+  () => rules.value.length > 0 && facts.value.length > 0,
+);
 
 const copyReport = async () => {
   const payload = {
@@ -584,8 +751,7 @@ const copyReport = async () => {
     additionalFacts: additionalFacts.value,
     evaluation: evaluation.value,
     overallStatus: overallStatus.value,
-  }
-  await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
-}
-
+  };
+  await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+};
 </script>

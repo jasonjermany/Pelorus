@@ -72,9 +72,8 @@ export default defineEventHandler(async (event) => {
     try {
       await supabase.from('submissions').update({ status: 'processing' }).eq('id', submission.id)
 
-      const t = Date.now()
       const verdict = await evaluateSubmission({ ...submission, raw_text: rawText }, orgId)
-      const analyzedInSeconds = ((Date.now() - t) / 1000).toFixed(1)
+      const analyzedInSeconds = ((Date.now() - t_total) / 1000).toFixed(1)
       const storedVerdict = { ...verdict, analyzed_in_seconds: analyzedInSeconds }
 
       const { error: evalInsertError } = await supabase.from('evaluations').insert({
