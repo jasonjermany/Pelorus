@@ -7,7 +7,7 @@
       >
         <div class="flex flex-col gap-1.5">
           <NuxtLink
-            to="/"
+            to="/inbox"
             class="text-[11px] text-white/35 hover:text-white/70 transition-colors tracking-[0.02em]"
             >← Inbox</NuxtLink
           >

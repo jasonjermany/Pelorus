@@ -1,8 +1,6 @@
 import { supabase } from './supabase'
 
 export async function getOrgId(_event?: any): Promise<string> {
-  if (process.env.ORG_ID) return process.env.ORG_ID
-
   const { data: existing } = await supabase
     .from('organizations')
     .select('id')
