@@ -272,7 +272,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 
 type Submission = {
   id: string;
@@ -359,27 +359,34 @@ async function submitIngest() {
   }
 }
 
-const hasProcessing = computed(() =>
-  submissions.value.some((s) => s.status === "processing" || s.status === "pending"),
-);
+const { $supabase } = useNuxtApp() as any;
+const { user } = useUserSession();
 
-let pollInterval: ReturnType<typeof setInterval> | null = null;
-watch(
-  hasProcessing,
-  (val) => {
-    if (val && !pollInterval) {
-      pollInterval = setInterval(load, 5000);
-    } else if (!val && pollInterval) {
-      clearInterval(pollInterval);
-      pollInterval = null;
-    }
-  },
-  { immediate: true },
-);
+let channel: ReturnType<typeof $supabase.channel> | null = null;
+
+function subscribeRealtime() {
+  if (!user.value?.org_id) return;
+  channel = $supabase
+    .channel("submissions-inbox")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "submissions",
+        filter: `org_id=eq.${user.value.org_id}`,
+      },
+      () => load(),
+    )
+    .subscribe();
+}
 
 onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval);
+  if (channel) $supabase.removeChannel(channel);
 });
 
-onMounted(load);
+onMounted(() => {
+  load();
+  subscribeRealtime();
+});
 </script>
