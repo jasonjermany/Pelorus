@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     voyageApiKey: process.env.VOYAGE_API_KEY,
     reductoApiKey: process.env.REDUCTO_API_KEY,
     public: {
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
+      supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
     },
   },
