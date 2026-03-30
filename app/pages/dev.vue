@@ -442,7 +442,6 @@ import type {
   ProcessedSubmission,
   SubmissionDecision,
 } from "~/types/models";
-import { evaluateRules } from "~/utils/ruleEngine";
 
 const guidelines = ref("");
 const submission = ref("");
