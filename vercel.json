@@ -1,7 +1,7 @@
 {
   "regions": ["pdx1"],
   "functions": {
-    "server/api/**": {
+    "api/**": {
       "maxDuration": 300
     }
   }
