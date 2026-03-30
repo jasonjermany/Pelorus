@@ -2,26 +2,7 @@
   <div class="min-h-screen bg-[#faf8f3] font-sans overflow-x-hidden">
 
     <!-- NAV -->
-    <nav class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-12 bg-[#faf8f3]/95 backdrop-blur-md border-b border-black/[0.06]">
-      <a href="#" class="flex items-center gap-2.5 no-underline">
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="15" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3"/>
-          <circle cx="16" cy="16" r="6" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3"/>
-          <line x1="16" y1="1" x2="16" y2="7" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
-          <line x1="16" y1="25" x2="16" y2="31" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
-          <line x1="1" y1="16" x2="7" y2="16" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
-          <line x1="25" y1="16" x2="31" y2="16" stroke="#0f1923" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
-          <line x1="16" y1="10" x2="20" y2="16" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="16" cy="16" r="2" fill="#c9a84c"/>
-        </svg>
-        <span class="text-[20px] font-semibold text-primary-800 tracking-[-0.3px]">Pelorus</span>
-      </a>
-      <ul class="flex items-center gap-8 list-none">
-        <li><a href="#features" class="text-[14px] font-medium text-black/50 hover:text-primary-800 transition-colors no-underline">Features</a></li>
-        <li><a href="#how" class="text-[14px] font-medium text-black/50 hover:text-primary-800 transition-colors no-underline">How it works</a></li>
-        <li><a href="#contact" class="bg-primary-800 hover:bg-primary-700 text-white text-[14px] font-medium px-5 py-2 rounded-md no-underline transition-colors">Contact Sales</a></li>
-      </ul>
-    </nav>
+    <AppHeader variant="marketing" />
 
     <!-- HERO -->
     <section class="min-h-screen flex items-center pt-16 px-12 relative overflow-hidden">

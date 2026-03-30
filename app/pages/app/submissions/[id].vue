@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-surface-50 font-sans">
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-primary-800 border-b border-white/5">
+    <AppHeader variant="app">
       <div
         class="mx-auto max-w-5xl px-8 py-3.5 flex items-center justify-between gap-4"
       >
@@ -12,21 +12,12 @@
             >← Inbox</NuxtLink
           >
           <div class="flex items-center gap-2">
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="15" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-              <circle cx="16" cy="16" r="6" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-              <line x1="16" y1="1" x2="16" y2="7" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="16" y1="25" x2="16" y2="31" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="1" y1="16" x2="7" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="25" y1="16" x2="31" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="16" y1="10" x2="20" y2="16" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="16" cy="16" r="2" fill="#c9a84c"/>
-            </svg>
+            <img src="/PelorusLogo.png" width="30" height="30" alt="Pelorus" />
             <span class="font-sans text-[17px] text-white tracking-[-0.3px]">Submission Review</span>
           </div>
         </div>
       </div>
-    </header>
+    </AppHeader>
 
     <main class="mx-auto max-w-5xl px-8 py-8 flex flex-col gap-4">
       <div v-if="isLoading" class="py-16 text-center text-[13px] text-black/30">Loading...</div>

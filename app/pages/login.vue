@@ -4,16 +4,7 @@
 
       <!-- Logo -->
       <div class="flex items-center justify-center gap-2.5 mb-10">
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="15" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5"/>
-          <circle cx="16" cy="16" r="6" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5"/>
-          <line x1="16" y1="1" x2="16" y2="7" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="16" y1="25" x2="16" y2="31" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="1" y1="16" x2="7" y2="16" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="25" y1="16" x2="31" y2="16" stroke="#0a1628" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="16" y1="10" x2="20" y2="16" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="16" cy="16" r="2" fill="#c9a84c"/>
-        </svg>
+        <img src="/PelorusLogo.png" width="54" height="54" alt="Pelorus" />
         <span class="text-[20px] font-semibold text-primary-800 tracking-[-0.3px]">Pelorus</span>
       </div>
 
@@ -68,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+const { fetch: refreshSession } = useUserSession()
+
 const email = ref('')
 const password = ref('')
 const error = ref<string | null>(null)
@@ -85,7 +78,7 @@ async function login() {
       method: 'POST',
       body: { email: email.value, password: password.value },
     })
-    await refreshNuxtData()
+    await refreshSession()
     await navigateTo('/app', { replace: true })
   } catch (e: any) {
     error.value = e?.data?.statusMessage || 'Invalid email or password.'

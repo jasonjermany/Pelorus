@@ -9,54 +9,40 @@ export default defineEventHandler(async (event) => {
 
   const orgId = await getOrgId(event)
 
-  let rawText: string
+  let fileParts: { data: Buffer; filename: string }[] = []
   let brokerEmail: string | undefined
   let source: 'upload' | 'email' = 'upload'
+  let inlineText: string | undefined
   const t_total = Date.now()
 
   if (isMultipart) {
-    // File upload path
     const parts = await readMultipartFormData(event)
     if (!parts?.length) {
       throw createError({ statusCode: 400, statusMessage: 'Missing form data' })
     }
-
-    const fileParts = parts.filter((p) => p.filename && p.data)
+    const rawFileParts = parts.filter((p) => p.filename && p.data)
     const emailPart = parts.find((p) => p.name === 'brokerEmail' && !p.filename)
-
-    if (!fileParts.length) throw createError({ statusCode: 400, statusMessage: 'Missing submission file' })
-
+    if (!rawFileParts.length) throw createError({ statusCode: 400, statusMessage: 'Missing submission file' })
     brokerEmail = emailPart?.data.toString('utf8').trim()
     source = 'upload'
-
-    const t_reducto = Date.now()
-    const texts = await Promise.all(
-      fileParts.map(async (filePart) => {
-        const chunks = await parseFileToChunks(Buffer.from(filePart.data), filePart.filename!, PIPELINE_SUBMISSIONS)
-        return chunks.map((c) => c.embed || c.content).join('\n\n')
-      })
-    )
-    rawText = texts.join('\n\n---\n\n')
-    console.log(`[ingest] reducto     ${Date.now() - t_reducto}ms  (${fileParts.length} file${fileParts.length !== 1 ? 's' : ''})`)
+    fileParts = rawFileParts.map((p) => ({ data: Buffer.from(p.data), filename: p.filename! }))
   } else {
-    // Email webhook / JSON path
     const body = await readBody<{ text: string; brokerEmail?: string }>(event)
-
     if (!body?.text?.trim()) throw createError({ statusCode: 400, statusMessage: 'Missing submission text' })
-
-    rawText = body.text
+    inlineText = body.text
     brokerEmail = body.brokerEmail
     source = 'email'
   }
 
+  // Insert immediately so the submission appears in the inbox right away
   const { data, error } = await supabase
     .from('submissions')
     .insert({
       org_id: orgId,
-      raw_text: rawText,
+      raw_text: '',
       broker_email: brokerEmail ?? null,
       source,
-      status: 'pending',
+      status: 'processing',
     })
     .select('id, org_id, status, source, broker_email, created_at')
     .single()
@@ -67,10 +53,25 @@ export default defineEventHandler(async (event) => {
 
   const submission = data
 
-  // Fire and forget — return immediately, evaluate in background
+  // Fire and forget — parse + evaluate in background
   setImmediate(async () => {
     try {
-      await supabase.from('submissions').update({ status: 'processing' }).eq('id', submission.id)
+      let rawText: string
+      if (inlineText) {
+        rawText = inlineText
+      } else {
+        const t_reducto = Date.now()
+        const texts = await Promise.all(
+          fileParts.map(async ({ data, filename }) => {
+            const chunks = await parseFileToChunks(data, filename, PIPELINE_SUBMISSIONS)
+            return chunks.map((c) => c.embed || c.content).join('\n\n')
+          })
+        )
+        rawText = texts.join('\n\n---\n\n')
+        console.log(`[ingest] reducto     ${Date.now() - t_reducto}ms  (${fileParts.length} file${fileParts.length !== 1 ? 's' : ''})`)
+      }
+
+      await supabase.from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 
       const verdict = await evaluateSubmission({ ...submission, raw_text: rawText }, orgId)
       const analyzedInSeconds = ((Date.now() - t_total) / 1000).toFixed(1)

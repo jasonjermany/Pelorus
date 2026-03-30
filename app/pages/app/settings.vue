@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-surface-50 font-sans">
+  <div class="h-screen flex flex-col bg-surface-50 font-sans overflow-hidden">
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-primary-800 border-b border-white/5">
+    <AppHeader variant="app">
       <div class="mx-auto max-w-5xl px-8 py-3.5 flex items-center gap-4">
         <div class="flex flex-col gap-1.5">
           <NuxtLink
@@ -10,23 +10,14 @@
             >← Inbox</NuxtLink
           >
           <div class="flex items-center gap-2">
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="15" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-              <circle cx="16" cy="16" r="6" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-              <line x1="16" y1="1" x2="16" y2="7" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="16" y1="25" x2="16" y2="31" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="1" y1="16" x2="7" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="25" y1="16" x2="31" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="16" y1="10" x2="20" y2="16" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="16" cy="16" r="2" fill="#c9a84c"/>
-            </svg>
+            <img src="/PelorusLogo.png" width="30" height="30" alt="Pelorus" />
             <span class="font-sans text-[17px] text-white tracking-[-0.3px]">Guidelines &amp; Settings</span>
           </div>
         </div>
       </div>
-    </header>
+    </AppHeader>
 
-    <main class="mx-auto max-w-5xl px-8 py-8 flex flex-col gap-4">
+    <main class="flex-1 overflow-y-auto min-h-0 mx-auto w-full max-w-5xl px-8 py-8 flex flex-col gap-4">
       <!-- Upload Card (admin only) -->
       <div v-if="isAdmin" class="bg-white rounded-2xl border border-black/[0.07] shadow-card p-7">
         <div class="flex items-start justify-between gap-6 mb-5">
@@ -104,7 +95,7 @@
       </div>
 
       <!-- Chunks Table -->
-      <div v-if="chunks.length" class="bg-white rounded-2xl border border-black/[0.07] shadow-card overflow-hidden">
+      <div v-if="chunks.length" class="bg-white rounded-2xl border border-black/[0.07] shadow-card overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-black/[0.05]">
           <div>
             <h2 class="text-[14px] font-semibold text-primary-800">Guideline Library</h2>

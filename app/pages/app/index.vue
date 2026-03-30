@@ -1,21 +1,12 @@
 <template>
   <div class="h-screen flex flex-col bg-surface-50 font-sans overflow-hidden">
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-primary-800 border-b border-white/5">
+    <AppHeader variant="app">
       <div
         class="mx-auto max-w-5xl px-8 py-4 flex items-center justify-between gap-4"
       >
         <div class="flex items-center gap-2.5">
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="15" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-            <circle cx="16" cy="16" r="6" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
-            <line x1="16" y1="1" x2="16" y2="7" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="16" y1="25" x2="16" y2="31" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="1" y1="16" x2="7" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="25" y1="16" x2="31" y2="16" stroke="white" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="16" y1="10" x2="20" y2="16" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="16" cy="16" r="2" fill="#c9a84c"/>
-          </svg>
+          <img src="/PelorusLogo.png" width="34" height="34" alt="Pelorus" />
           <span class="font-sans text-[19px] text-white tracking-[-0.3px]">Pelorus</span>
         </div>
         <div class="flex items-center gap-4">
@@ -39,7 +30,7 @@
           </button>
         </div>
       </div>
-    </header>
+    </AppHeader>
 
     <!-- Ingest Modal -->
     <div
@@ -314,9 +305,12 @@ function go(id: string) {
   router.push(`/app/submissions/${id}`);
 }
 
+const { fetch: refreshSession } = useUserSession()
+
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
-  await navigateTo('/login')
+  await refreshSession()
+  await navigateTo('/login', { replace: true })
 }
 
 async function load() {
@@ -349,17 +343,13 @@ async function submitIngest() {
   isIngesting.value = true;
   ingestError.value = null;
   try {
-    if (ingestFiles.value.length) {
-      const fd = new FormData();
-      for (const f of ingestFiles.value) fd.append("file", f, f.name);
-      if (ingestBrokerEmail.value) fd.append("brokerEmail", ingestBrokerEmail.value);
-      await $fetch("/api/submissions/ingest", { method: "POST", body: fd });
-    } else {
-      await $fetch("/api/submissions/ingest", {
-        method: "POST",
-        body: { text: ingestText.value, brokerEmail: ingestBrokerEmail.value || undefined },
-      });
-    }
+    const files = ingestFiles.value.length
+      ? ingestFiles.value
+      : [new File([ingestText.value], "submission.txt", { type: "text/plain" })];
+    const fd = new FormData();
+    for (const f of files) fd.append("file", f, f.name);
+    if (ingestBrokerEmail.value) fd.append("brokerEmail", ingestBrokerEmail.value);
+    await $fetch("/api/submissions/ingest", { method: "POST", body: fd });
     closeIngest();
     await load();
   } catch (e: any) {

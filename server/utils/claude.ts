@@ -1,12 +1,44 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getRelevantChunks } from './rag'
 
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
   defaultHeaders: {
     'anthropic-beta': 'extended-cache-ttl-2025-04-11',
   },
 })
+
+const CHECKS_TOOL = {
+  name: 'submit_evaluation',
+  description: 'Submit the structured underwriting evaluation results after analyzing all checks.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      decision: {
+        type: 'string',
+        enum: ['PROCEED', 'REFER', 'DECLINE'],
+        description: 'Overall underwriting decision based on the check results.',
+      },
+      guideline_checks: {
+        type: 'array',
+        description: 'Only include checks with status "review" or "fail". Omit passing checks entirely.',
+        items: {
+          type: 'object',
+          properties: {
+            rule: { type: 'string', description: 'Exact rule name from the mandatory check list.' },
+            required: { type: 'string', description: 'What the guideline requires.' },
+            submitted: { type: 'string', description: 'What the submission says.' },
+            status: { type: 'string', enum: ['review', 'fail'] },
+            cited_section: { type: 'string', description: 'Section or page reference.' },
+          },
+          required: ['rule', 'required', 'submitted', 'status', 'cited_section'],
+        },
+      },
+    },
+    required: ['decision', 'guideline_checks'],
+  },
+}
 
 const HARD_STOP_RULES = `HARD STOP STATUS RULES — apply these to every check, no exceptions:
 
@@ -90,19 +122,7 @@ DECISION RULES — follow exactly, no judgment:
 - If ANY guideline_check has status "review" → decision MUST be "REFER"
 - If ALL checks pass (guideline_checks is empty) → decision is "PROCEED"
 
-Return ONLY valid JSON, no markdown, no backticks:
-{
-  "decision": "PROCEED" | "REFER" | "DECLINE",
-  "guideline_checks": [
-    {
-      "rule": "<exact rule name from the mandatory list above>",
-      "required": "<what the guideline requires>",
-      "submitted": "<what the submission says>",
-      "status": "review" | "fail",
-      "cited_section": "<section ref>"
-    }
-  ]
-}`,
+Call the submit_evaluation tool with your results.`,
           cache_control: { type: 'ephemeral', ttl: '1h' } as any,
         },
         {
@@ -272,7 +292,7 @@ export async function evaluateSubmission(
 
   // Stream Call 1 (checks) — fire flags as soon as decision is visible in the stream
   let flagsPromise: Promise<any> | null = null
-  let partialText = ''
+  let partialToolInput = ''
   let flagsFired = false
 
   const t_call1 = Date.now()
@@ -280,17 +300,21 @@ export async function evaluateSubmission(
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     max_tokens: 6000,
     temperature: 0,
+    tools: [CHECKS_TOOL],
+    tool_choice: { type: 'tool', name: 'submit_evaluation' },
     messages: buildChecksMessages(submissionText, hardStopsText, guidelinesText, hardStopCheckList, pinned.length),
-  })
+  } as any)
 
-  stream.on('text', (chunk) => {
-    partialText += chunk
-    if (!flagsFired) {
-      const m = partialText.match(/"decision"\s*:\s*"(PROCEED|REFER|DECLINE)"/)
-      if (m) {
-        flagsFired = true
-        console.log(`[eval] flags fired  → ${m[1]}`)
-        flagsPromise = runFlagsCall(submissionText, { decision: m[1]!, guideline_checks: [] })
+  stream.on('streamEvent', (event: any) => {
+    if (event.type === 'content_block_delta' && event.delta?.type === 'input_json_delta') {
+      partialToolInput += event.delta.partial_json ?? ''
+      if (!flagsFired) {
+        const m = partialToolInput.match(/"decision"\s*:\s*"(PROCEED|REFER|DECLINE)"/)
+        if (m) {
+          flagsFired = true
+          console.log(`[eval] flags fired  → ${m[1]}`)
+          flagsPromise = runFlagsCall(submissionText, { decision: m[1]!, guideline_checks: [] })
+        }
       }
     }
   })
@@ -309,19 +333,12 @@ export async function evaluateSubmission(
     throw new Error('[eval] checks call truncated — hit max_tokens')
   }
 
-  const checksText = (finalMsg.content[0] as any).text as string
-  console.log(`[eval] call 1 output  ${checksText.length} chars (~${Math.round(checksText.length / 4)} tokens)`)
-  const checksClean = checksText.replace(/```json|```/g, '').trim()
-  const checksJsonStart = checksClean.indexOf('{')
-  const checksJsonEnd = checksClean.lastIndexOf('}')
-  console.log(`[eval] json slice    ${checksJsonStart}..${checksJsonEnd} of ${checksClean.length}`)
-  let checksResult: any
-  try {
-    checksResult = JSON.parse(checksClean.slice(checksJsonStart, checksJsonEnd + 1))
-  } catch (e) {
-    console.error('[eval] parse fail, tail:', checksClean.slice(checksJsonEnd - 200, checksJsonEnd + 50))
-    throw e
+  const toolUseBlock = finalMsg.content.find((b: any) => b.type === 'tool_use')
+  if (!toolUseBlock) {
+    throw new Error(`[eval] checks call returned no tool_use block (stop_reason: ${finalMsg.stop_reason})`)
   }
+  const checksResult = (toolUseBlock as any).input as { decision: string; guideline_checks: any[] }
+  console.log(`[eval] call 1 output  ${JSON.stringify(checksResult).length} chars  (${checksResult.guideline_checks?.length ?? 0} checks)`)
 
   if (!flagsPromise) {
     flagsPromise = runFlagsCall(submissionText, checksResult)
