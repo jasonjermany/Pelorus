@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { getSupabase } from './supabase'
 import { embed } from './embeddings'
 
 export async function getRelevantChunks(orgId: string, submissionText: string) {
@@ -20,7 +20,7 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
 
   if (pinnedResult.error) throw new Error(`[rag] pinned chunk fetch error: ${pinnedResult.error.message}`)
 
-  const { data: similar, error: similarError } = await supabase.rpc('match_chunks', {
+  const { data: similar, error: similarError } = await getSupabase().rpc('match_chunks', {
     query_embedding: vector,
     org_id: orgId,
     match_count: 6,
