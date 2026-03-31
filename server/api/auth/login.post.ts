@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { getSupabase } from '../../utils/supabase'
 
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Email and password required' })
   }
 
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+  const { data: authData, error: authError } = await getSupabase().auth.signInWithPassword({
     email,
     password,
   })

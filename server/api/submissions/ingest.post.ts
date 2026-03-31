@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { getSupabase } from '../../utils/supabase'
 import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { getOrgId } from '../../utils/org'
 import { evaluateSubmission } from '../../utils/claude'
@@ -71,13 +71,13 @@ export default defineEventHandler(async (event) => {
         console.log(`[ingest] reducto     ${Date.now() - t_reducto}ms  (${fileParts.length} file${fileParts.length !== 1 ? 's' : ''})`)
       }
 
-      await supabase.from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
+      await getSupabase().from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 
       const verdict = await evaluateSubmission({ ...submission, raw_text: rawText }, orgId)
       const analyzedInSeconds = ((Date.now() - t_total) / 1000).toFixed(1)
       const storedVerdict = { ...verdict, analyzed_in_seconds: analyzedInSeconds }
 
-      const { error: evalInsertError } = await supabase.from('evaluations').insert({
+      const { error: evalInsertError } = await getSupabase().from('evaluations').insert({
         org_id: submission.org_id,
         submission_id: submission.id,
         decision: verdict.decision,
@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
       const stack = err instanceof Error ? err.stack : undefined
       console.error(`[ingest] background eval failed  submission=${submission.id}  error=${msg}`)
       if (stack) console.error(`[ingest] stack: ${stack}`)
-      await supabase.from('submissions').update({ status: 'error' }).eq('id', submission.id)
+      await getSupabase().from('submissions').update({ status: 'error' }).eq('id', submission.id)
     }
   })
 

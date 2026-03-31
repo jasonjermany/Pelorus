@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { getSupabase } from '../../utils/supabase'
 import { embed } from '../../utils/embeddings'
 import { extractHardStops, extractRiskProfileFields } from '../../utils/claude'
 import { parseFileToChunks, filterChunks, getChunkPage, getChunkBlockTypes } from '../../utils/reducto'
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     extractRiskProfileFields(chunks.map((c) => c.embed).join('\n\n---\n\n')),
   ])
 
-  await supabase.from('organizations').update({ risk_profile_fields: riskProfileFields }).eq('id', orgId)
+  await getSupabase().from('organizations').update({ risk_profile_fields: riskProfileFields }).eq('id', orgId)
 
   // 3. Embed chunks (parallel)
   const chunkRows = await Promise.all(
@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
   const rows = [...chunkRows, ...hardStopRows]
 
   // 5. Bulk insert into Supabase
-  const { error } = await supabase.from('guideline_chunks').insert(rows)
+  const { error } = await getSupabase().from('guideline_chunks').insert(rows)
   if (error) {
     throw createError({ statusCode: 500, statusMessage: 'Failed to store chunks', data: { message: error.message } })
   }

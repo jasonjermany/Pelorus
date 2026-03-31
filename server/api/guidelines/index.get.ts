@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { getSupabase } from '../../utils/supabase'
 import { getOrgId } from '../../utils/org'
 
 export default defineEventHandler(async (event) => {

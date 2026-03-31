@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabase'
+import { getSupabase } from '../utils/supabase'
 
 export default defineNitroPlugin(async () => {
   const { error } = await supabase

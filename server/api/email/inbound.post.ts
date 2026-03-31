@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { getSupabase } from '../../utils/supabase'
 import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { evaluateSubmission } from '../../utils/claude'
 
@@ -98,12 +98,12 @@ export default defineEventHandler(async (event) => {
       const chunks = await parseFileToChunks(filePart.data, filePart.filename, PIPELINE_SUBMISSIONS)
       const rawText = chunks.map((c) => c.embed || c.content).join('\n\n')
 
-      await supabase.from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
+      await getSupabase().from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 
       const verdict = await evaluateSubmission({ ...submission, raw_text: rawText }, orgId)
       const analyzedInSeconds = ((Date.now() - t_total) / 1000).toFixed(1)
 
-      const { error: evalError } = await supabase.from('evaluations').insert({
+      const { error: evalError } = await getSupabase().from('evaluations').insert({
         org_id: submission.org_id,
         submission_id: submission.id,
         decision: verdict.decision,
@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
     } catch (err) {
       console.error('[email/inbound] background eval failed:', err)
-      await supabase.from('submissions').update({ status: 'error' }).eq('id', submission.id)
+      await getSupabase().from('submissions').update({ status: 'error' }).eq('id', submission.id)
     }
   })
 

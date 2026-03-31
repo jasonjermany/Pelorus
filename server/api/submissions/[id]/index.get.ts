@@ -1,4 +1,4 @@
-import { supabase } from '../../../utils/supabase'
+import { getSupabase } from '../../../utils/supabase'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params!

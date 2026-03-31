@@ -9,5 +9,5 @@ export function getSupabase() {
       process.env.SUPABASE_KEY!,
     )
   }
-  return _supabase
+  return _supabase!
 }

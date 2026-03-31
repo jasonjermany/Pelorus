@@ -1,4 +1,4 @@
-import { supabase } from '../../../utils/supabase'
+import { getSupabase } from '../../../utils/supabase'
 import { evaluateSubmission } from '../../../utils/claude'
 
 export default defineEventHandler(async (event) => {
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Submission has no org_id' })
   }
 
-  await supabase.from('submissions').update({ status: 'processing' }).eq('id', id)
+  await getSupabase().from('submissions').update({ status: 'processing' }).eq('id', id)
 
   try {
     const t = Date.now()
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     const analyzedInSeconds = ((Date.now() - t) / 1000).toFixed(1)
     const storedVerdict = { ...verdict, analyzed_in_seconds: analyzedInSeconds }
 
-    const { error: evalInsertError } = await supabase.from('evaluations').insert({
+    const { error: evalInsertError } = await getSupabase().from('evaluations').insert({
       org_id: submission.org_id,
       submission_id: id,
       decision: verdict.decision,
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     })
     if (evalInsertError) throw new Error(`Failed to store evaluation: ${evalInsertError.message}`)
 
-    const { error: completeError } = await supabase.from('submissions').update({ status: 'complete' }).eq('id', id)
+    const { error: completeError } = await getSupabase().from('submissions').update({ status: 'complete' }).eq('id', id)
     if (completeError) throw new Error(`Failed to mark complete: ${completeError.message}`)
 
     return storedVerdict
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     const stack = err instanceof Error ? err.stack : undefined
     console.error(`[eval] failed  submission=${id}  error=${msg}`)
     if (stack) console.error(`[eval] stack: ${stack}`)
-    await supabase.from('submissions').update({ status: 'error' }).eq('id', id)
+    await getSupabase().from('submissions').update({ status: 'error' }).eq('id', id)
     throw createError({
       statusCode: 500,
       statusMessage: 'Evaluation failed',
