@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (authError || !authData.user) {
+    console.error(`[auth] login failed  email=${email}  error=${authError?.message ?? 'no user returned'}`)
     throw createError({ statusCode: 401, statusMessage: 'Invalid email or password' })
   }
 
@@ -23,6 +24,7 @@ export default defineEventHandler(async (event) => {
     .single()
 
   if (userError || !userRecord) {
+    console.error(`[auth] user record not found  email=${email}  error=${userError?.message ?? 'null record'}`)
     throw createError({ statusCode: 401, statusMessage: 'User not found' })
   }
 

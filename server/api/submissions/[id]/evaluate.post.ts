@@ -40,11 +40,15 @@ export default defineEventHandler(async (event) => {
 
     return storedVerdict
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : undefined
+    console.error(`[eval] failed  submission=${id}  error=${msg}`)
+    if (stack) console.error(`[eval] stack: ${stack}`)
     await supabase.from('submissions').update({ status: 'error' }).eq('id', id)
     throw createError({
       statusCode: 500,
       statusMessage: 'Evaluation failed',
-      data: { message: err instanceof Error ? err.message : 'Unknown error' },
+      data: { message: msg },
     })
   }
 })

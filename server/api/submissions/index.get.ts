@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
     .order('created_at', { ascending: false })
 
   if (error) {
+    console.error(`[submissions] fetch failed  org=${orgId}  error=${error.message}`)
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch submissions', data: { message: error.message } })
   }
 

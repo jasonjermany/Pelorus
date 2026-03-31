@@ -93,7 +93,10 @@ export default defineEventHandler(async (event) => {
       if (completeError) throw new Error(`Failed to mark complete: ${completeError.message}`)
       console.log(`[ingest] total       ${Date.now() - t_total}ms`)
     } catch (err) {
-      console.error('[ingest] background eval failed:', err)
+      const msg = err instanceof Error ? err.message : String(err)
+      const stack = err instanceof Error ? err.stack : undefined
+      console.error(`[ingest] background eval failed  submission=${submission.id}  error=${msg}`)
+      if (stack) console.error(`[ingest] stack: ${stack}`)
       await supabase.from('submissions').update({ status: 'error' }).eq('id', submission.id)
     }
   })
