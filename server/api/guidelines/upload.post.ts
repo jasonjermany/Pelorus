@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const orgId = await getOrgId(event)
 
   // Clear existing guidelines for this org before processing new ones
-  const { error: deleteError } = await supabase
+  const { error: deleteError } = await getSupabase()
     .from('guideline_chunks')
     .delete()
     .eq('org_id', orgId)

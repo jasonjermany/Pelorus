@@ -1,7 +1,7 @@
 import { getSupabase } from '../utils/supabase'
 
 export default defineNitroPlugin(async () => {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('submissions')
     .update({ status: 'error' })
     .in('status', ['processing', 'pending'])

@@ -4,7 +4,7 @@ import { evaluateSubmission } from '../../../utils/claude'
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params!
 
-  const { data: submission, error: fetchError } = await supabase
+  const { data: submission, error: fetchError } = await getSupabase()
     .from('submissions')
     .select('*')
     .eq('id', id)

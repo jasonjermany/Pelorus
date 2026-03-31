@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Insert immediately so the submission appears in the inbox right away
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('submissions')
     .insert({
       org_id: orgId,
@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
       })
       if (evalInsertError) throw new Error(`Failed to store evaluation: ${evalInsertError.message}`)
 
-      const { error: completeError } = await supabase
+      const { error: completeError } = await getSupabase()
         .from('submissions')
         .update({ status: 'complete' })
         .eq('id', submission.id)

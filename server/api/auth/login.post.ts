@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid email or password' })
   }
 
-  const { data: userRecord, error: userError } = await supabase
+  const { data: userRecord, error: userError } = await getSupabase()
     .from('users')
     .select('id, org_id, role, email')
     .eq('email', email)

@@ -4,13 +4,13 @@ import { embed } from './embeddings'
 export async function getRelevantChunks(orgId: string, submissionText: string) {
   // Run pinned fetch, org fetch, and embedding in parallel
   const [pinnedResult, orgResult, vector] = await Promise.all([
-    supabase
+    getSupabase()
       .from('guideline_chunks')
       .select('content, embed_text, page, rule_type')
       .eq('org_id', orgId)
       .eq('is_pinned', true)
       .order('chunk_index', { ascending: true }),
-    supabase
+    getSupabase()
       .from('organizations')
       .select('risk_profile_fields')
       .eq('id', orgId)

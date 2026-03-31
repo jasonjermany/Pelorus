@@ -3,7 +3,7 @@ import { getSupabase } from '../../../utils/supabase'
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params!
 
-  const { data: submission, error } = await supabase
+  const { data: submission, error } = await getSupabase()
     .from('submissions')
     .select('id, org_id, status, source, broker_email, created_at, extracted_fields')
     .eq('id', id)
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Submission not found' })
   }
 
-  const { data: evaluation } = await supabase
+  const { data: evaluation } = await getSupabase()
     .from('evaluations')
     .select('verdict, decision, composite_score')
     .eq('submission_id', id)

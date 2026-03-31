@@ -4,7 +4,7 @@ import { getOrgId } from '../../utils/org'
 export default defineEventHandler(async (event) => {
   const orgId = await getOrgId(event)
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('submissions')
     .select(`
       id,

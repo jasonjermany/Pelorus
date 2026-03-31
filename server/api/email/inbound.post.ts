@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     return { ok: true }
   }
 
-  const { data: org } = await supabase
+  const { data: org } = await getSupabase()
     .from('organizations')
     .select('id')
     .eq('inbound_email_handle', handle)
@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Insert immediately so it shows up in the inbox right away.
-  const { data: submission, error: insertError } = await supabase
+  const { data: submission, error: insertError } = await getSupabase()
     .from('submissions')
     .insert({
       org_id: orgId,
@@ -112,7 +112,7 @@ export default defineEventHandler(async (event) => {
       })
       if (evalError) throw new Error(`Failed to store evaluation: ${evalError.message}`)
 
-      const { error: completeError } = await supabase
+      const { error: completeError } = await getSupabase()
         .from('submissions')
         .update({ status: 'complete' })
         .eq('id', submission.id)
