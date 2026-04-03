@@ -1,6 +1,7 @@
 const ALLOWED_IPS = [
   '72.93.65.252', // owner
-  '96.237.115.113'
+  '96.237.115.113',
+  "::1"
 ]
 
 export default defineEventHandler((event) => {

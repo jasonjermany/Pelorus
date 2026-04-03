@@ -6,7 +6,7 @@
         <div class="flex flex-col gap-1.5">
           <NuxtLink
             to="/app"
-            class="text-[11px] text-white/35 hover:text-white/70 transition-colors tracking-[0.02em]"
+            class="text-[13px] text-white/70 hover:text-white transition-colors tracking-[0.02em]"
             >← Inbox</NuxtLink
           >
           <div class="flex items-center gap-2">
@@ -23,7 +23,7 @@
         <div class="flex items-start justify-between gap-6 mb-5">
           <div>
             <h2 class="font-sans text-[21px] text-primary-800 tracking-[-0.5px] mb-1.5">Upload Guidelines</h2>
-            <p class="text-[13px] text-black/45 leading-relaxed font-light max-w-[480px]">
+            <p class="text-[13px] text-black/65 leading-relaxed font-light max-w-[480px]">
               Upload your carrier's underwriting guidelines as a PDF. Hard stops
               and risk profile fields are automatically extracted and stored for
               every evaluation.
@@ -32,11 +32,11 @@
           <div v-if="chunks.length" class="flex gap-6 flex-shrink-0">
             <div class="text-right">
               <span class="block font-sans text-[26px] text-primary-800 tracking-[-1px] leading-none">{{ standardCount }}</span>
-              <span class="block text-[11px] text-black/30 mt-1">Guideline sections</span>
+              <span class="block text-[11px] text-black/55 mt-1">Guideline sections</span>
             </div>
             <div class="text-right">
               <span class="block font-sans text-[26px] text-danger-700 tracking-[-1px] leading-none">{{ pinnedCount }}</span>
-              <span class="block text-[11px] text-black/30 mt-1">Hard stops</span>
+              <span class="block text-[11px] text-black/55 mt-1">Hard stops</span>
             </div>
           </div>
         </div>
@@ -62,10 +62,10 @@
               @change="onFileSelected"
             />
             <div class="flex items-center gap-2.5 px-4 py-3 pointer-events-none">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :class="selectedFile ? 'text-primary-800' : 'text-black/25'">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :class="selectedFile ? 'text-primary-800' : 'text-black/50'">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span class="text-[13px]" :class="selectedFile ? 'text-primary-800 font-medium' : 'text-black/30'">
+              <span class="text-[13px]" :class="selectedFile ? 'text-primary-800 font-medium' : 'text-black/55'">
                 {{ selectedFile ? selectedFile.name : "PDF, DOCX, or TXT — click to browse" }}
               </span>
             </div>
@@ -79,7 +79,7 @@
           </button>
         </div>
 
-        <div v-if="isUploading" class="flex items-center gap-2.5 mt-4 text-[12px] text-black/40">
+        <div v-if="isUploading" class="flex items-center gap-2.5 mt-4 text-[12px] text-black/60">
           <span class="inline-block w-3.5 h-3.5 border-2 border-accent-500/30 border-t-accent-500 rounded-full animate-spin flex-shrink-0"/>
           Parsing document, extracting hard stops, generating embeddings — this may take 2–3 minutes.
         </div>
@@ -91,7 +91,7 @@
       <!-- Non-admin placeholder -->
       <div v-else class="bg-white rounded-2xl border border-black/[0.07] shadow-card p-8 text-center">
         <p class="text-[14px] font-semibold text-primary-800 mb-1">Guidelines</p>
-        <p class="text-[13px] text-black/40 font-light">Guidelines are managed by your account administrator.</p>
+        <p class="text-[13px] text-black/60 font-light">Guidelines are managed by your account administrator.</p>
       </div>
 
       <!-- Chunks Table -->
@@ -99,12 +99,12 @@
         <div class="flex items-center justify-between px-6 py-4 border-b border-black/[0.05]">
           <div>
             <h2 class="text-[14px] font-semibold text-primary-800">Guideline Library</h2>
-            <p class="text-[12px] text-black/30 mt-0.5">
+            <p class="text-[12px] text-black/55 mt-0.5">
               {{ chunks.length }} total · {{ standardCount }} sections · {{ pinnedCount }} hard stops
             </p>
           </div>
           <button
-            class="border border-black/10 hover:border-primary-800 text-[12px] font-medium text-black/40 hover:text-primary-800 px-3 py-1.5 rounded-md transition-all"
+            class="border border-black/20 hover:border-primary-800 text-[12px] font-medium text-black/65 hover:text-primary-800 px-3 py-1.5 rounded-md transition-all"
             @click="loadChunks"
           >
             Refresh
@@ -116,10 +116,10 @@
         <table class="w-full text-left text-[13px]">
           <thead>
             <tr class="border-b border-black/[0.05]">
-              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/25 w-16">Page</th>
-              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/25">Preview</th>
-              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/25 w-28">Type</th>
-              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/25 w-24">Added</th>
+              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/50 w-16">Page</th>
+              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/50">Preview</th>
+              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/50 w-28">Type</th>
+              <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/50 w-24">Added</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-black/[0.04]">
@@ -129,24 +129,24 @@
               class="hover:bg-surface-50 transition-colors"
               :class="chunk.is_pinned ? 'bg-danger-500/[0.015]' : ''"
             >
-              <td class="px-5 py-3 text-[12px] text-black/25 align-top">{{ chunk.page ?? "—" }}</td>
+              <td class="px-5 py-3 text-[13px] font-medium text-primary-800 align-top">{{ chunk.page ?? "—" }}</td>
               <td class="px-5 py-3 align-top cursor-pointer select-none" @click="expandedId = expandedId === chunk.id ? null : chunk.id">
                 <span class="flex items-start gap-1.5">
-                  <svg class="mt-0.5 flex-shrink-0 text-black/20 transition-transform" :class="expandedId === chunk.id ? 'rotate-90' : ''" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <svg class="mt-0.5 flex-shrink-0 text-black/65 transition-transform" :class="expandedId === chunk.id ? 'rotate-90' : ''" width="10" height="10" viewBox="0 0 10 10" fill="none">
                     <path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  <span v-if="expandedId === chunk.id" class="text-[12px] text-black/60 whitespace-pre-wrap leading-relaxed">{{ getCleanText(chunk.embed_text) }}</span>
-                  <span v-else class="text-[12px] text-black/50">{{ getChunkPreview(chunk.embed_text) }}</span>
+                  <span v-if="expandedId === chunk.id" class="text-[14px] text-black/80 whitespace-pre-wrap leading-relaxed">{{ getCleanText(chunk.embed_text) }}</span>
+                  <span v-else class="text-[14px] text-black/75">{{ getChunkPreview(chunk.embed_text) }}</span>
                 </span>
               </td>
               <td class="px-5 py-3 align-top">
                 <span
                   class="text-[10px] font-bold tracking-[0.06em] px-2.5 py-1 rounded-full whitespace-nowrap"
-                  :class="chunk.is_pinned ? 'bg-danger-500/10 text-danger-700' : 'bg-black/[0.05] text-black/40'"
+                  :class="chunk.is_pinned ? 'bg-danger-500/10 text-danger-700' : 'bg-black/[0.07] text-black/65'"
                   >{{ chunk.is_pinned ? "hard stop" : "standard" }}</span
                 >
               </td>
-              <td class="px-5 py-3 text-[11px] text-black/25 align-top">{{ formatDate(chunk.created_at) }}</td>
+              <td class="px-5 py-3 text-[12px] text-black/65 align-top">{{ formatDate(chunk.created_at) }}</td>
             </tr>
           </tbody>
         </table>
@@ -160,8 +160,8 @@
           <line x1="13" y1="20" x2="27" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <line x1="13" y1="26" x2="21" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        <p class="text-[14px] font-semibold text-black/40">No guidelines uploaded yet</p>
-        <p class="text-[13px] text-black/25 font-light">Upload your carrier's underwriting guidelines PDF to get started.</p>
+        <p class="text-[14px] font-semibold text-black/60">No guidelines uploaded yet</p>
+        <p class="text-[13px] text-black/50 font-light">Upload your carrier's underwriting guidelines PDF to get started.</p>
       </div>
     </main>
   </div>

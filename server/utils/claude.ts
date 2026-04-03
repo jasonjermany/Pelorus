@@ -204,13 +204,13 @@ Based on the submission and check results above, return ONLY valid JSON, no mark
   ],
   "favorable_factors": ["<positive finding — 1 sentence, max 4>"],
   "dimension_scores": {
-    "construction": <0-100>,
-    "fire_protection": <0-100>,
-    "management": <0-100>,
-    "submission_quality": <0-100>,
-    "loss_history": <0-100>,
-    "occupancy": <0-100>,
-    "cat_exposure": <0-100>
+    "construction": <0.0-10.0>,
+    "fire_protection": <0.0-10.0>,
+    "management": <0.0-10.0>,
+    "submission_quality": <0.0-10.0>,
+    "loss_history": <0.0-10.0>,
+    "occupancy": <0.0-10.0>,
+    "cat_exposure": <0.0-10.0>
   }
 }
 
@@ -351,15 +351,17 @@ export async function evaluateSubmission(
   const totalChecks = pinned.length
   const passCount = Math.max(0, totalChecks - failCount - reviewCount)
 
-  let score: number
+  // Score — server-side banded calculation, 1.0–10.0 scale with 1 decimal
+  let rawScore: number
   if (failCount > 0) {
-    score = Math.max(0, 25 - (failCount - 1) * 8)
+    rawScore = Math.max(0, 25 - (failCount - 1) * 8)
   } else if (reviewCount > 0) {
     const reviewRatio = reviewCount / totalChecks
-    score = Math.max(40, Math.min(74, Math.round(74 - reviewRatio * 34)))
+    rawScore = Math.max(40, Math.min(74, Math.round(74 - reviewRatio * 34)))
   } else {
-    score = Math.min(100, Math.round(80 + (passCount / totalChecks) * 20))
+    rawScore = Math.min(100, Math.round(80 + (passCount / totalChecks) * 20))
   }
+  const score = Math.round(rawScore) / 10
   console.log(`[eval] score        ${score}  (${passCount}p/${reviewCount}r/${failCount}f of ${totalChecks}) → ${checksResult.decision}`)
 
   // Await all parallel calls (flags already running since early in stream)

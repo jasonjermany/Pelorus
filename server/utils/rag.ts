@@ -32,5 +32,5 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
     ? orgResult.data.risk_profile_fields
     : ['named_insured', 'broker', 'prior_carrier', 'losses_5yr']
 
-  return { pinned: pinnedResult.data ?? [], similar: similar ?? [], riskProfileFields }
+  return { pinned: (pinnedResult.data ?? []) as any[], similar: (similar ?? []) as any[], riskProfileFields }
 }

@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', 'nuxt-auth-utils'],
+  typescript: {
+    include: ['types/**/*.d.ts'],
+  },
   css: ['~/assets/css/main.css'],
   vite: {
     optimizeDeps: {

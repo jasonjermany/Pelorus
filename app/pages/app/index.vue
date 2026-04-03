@@ -12,11 +12,11 @@
         <div class="flex items-center gap-4">
           <NuxtLink
             to="/app/settings"
-            class="text-[13px] font-medium text-white/40 hover:text-white/80 transition-colors"
+            class="text-[13px] font-medium text-white/75 hover:text-white transition-colors"
             >Guidelines</NuxtLink
           >
           <button
-            class="text-[13px] font-medium text-white/40 hover:text-white/80 transition-colors"
+            class="text-[13px] font-medium text-white/75 hover:text-white transition-colors"
             @click="logout"
           >
             Sign out
@@ -91,7 +91,7 @@
                 </svg>
                 <span
                   class="text-[13px]"
-                  :class="ingestFiles.length ? 'text-primary-800 font-medium' : 'text-black/35'"
+                  :class="ingestFiles.length ? 'text-primary-800 font-medium' : 'text-black/50'"
                 >
                   {{
                     ingestFiles.length
@@ -162,13 +162,13 @@
         <div
           class="flex items-center justify-between px-6 py-4 border-b border-black/[0.05]"
         >
-          <p class="text-[13px] text-black/40">
+          <p class="text-[13px] text-black/55">
             {{ submissions.length }} submission{{
               submissions.length !== 1 ? "s" : ""
             }}
           </p>
           <button
-            class="border border-black/10 hover:border-primary-800 text-[12px] font-medium text-black/40 hover:text-primary-800 px-3 py-1.5 rounded-md transition-all disabled:opacity-40"
+            class="border border-black/10 hover:border-primary-800 text-[12px] font-medium text-black/55 hover:text-primary-800 px-3 py-1.5 rounded-md transition-all disabled:opacity-40"
             :disabled="isLoading"
             @click="load"
           >
@@ -209,7 +209,7 @@
               <p class="text-[14px] font-semibold text-primary-800 truncate">
                 {{ sub.named_insured || sub.broker_email || "Unnamed submission" }}
               </p>
-              <p class="mt-0.5 text-[12px] text-black/40">
+              <p class="mt-0.5 text-[12px] text-black/55">
                 <span v-if="sub.broker">{{ sub.broker }}</span>
                 <span v-if="sub.broker && sub.prior_carrier" class="mx-1">·</span>
                 <span v-if="sub.prior_carrier">{{ sub.prior_carrier }}</span>
@@ -240,13 +240,13 @@
               <span
                 v-if="sub.composite_score != null"
                 class="text-[15px] font-bold text-primary-800 min-w-[28px] text-right"
-                >{{ sub.composite_score }}</span
+                >{{ (sub.composite_score > 10 ? Math.round(sub.composite_score) / 10 : sub.composite_score).toFixed(1) }}<span class="text-[11px] font-normal text-primary-800">/10</span></span
               >
               <span
                 v-if="!(sub.status === 'complete' && sub.decision)"
                 class="text-[11px] font-semibold px-2.5 py-1 rounded-full"
                 :class="{
-                  'bg-black/5 text-black/40': sub.status === 'pending',
+                  'bg-black/5 text-black/55': sub.status === 'pending',
                   'bg-accent-500/15 text-accent-600': sub.status === 'processing',
                   'bg-success-500/10 text-success-700': sub.status === 'complete',
                   'bg-danger-500/10 text-danger-700': sub.status === 'error',

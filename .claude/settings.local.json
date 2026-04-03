@@ -14,7 +14,9 @@
       "Bash(ls c:/Projects/Pelorus/server/api/submissions/[id]/)",
       "Bash(npx prettier:*)",
       "Bash(grep -n 'to=\"\"/\"\"' c:/Projects/Pelorus/app/pages/settings.vue c:/Projects/Pelorus/app/pages/submissions/[id].vue)",
-      "Bash(node -e \"console.log\\(require\\(''crypto''\\).randomBytes\\(32\\).toString\\(''hex''\\)\\)\")"
+      "Bash(node -e \"console.log\\(require\\(''crypto''\\).randomBytes\\(32\\).toString\\(''hex''\\)\\)\")",
+      "Bash(xargs wc:*)",
+      "Bash(find /c/Projects/Pelorus/server -type f -name \"*.ts\" -not -path \"*/node_modules/*\" -exec wc -l {} +)"
     ]
   }
 }

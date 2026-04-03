@@ -12,7 +12,7 @@
       <div class="bg-white rounded-2xl border border-black/[0.07] shadow-card overflow-hidden">
         <div class="px-8 pt-8 pb-2">
           <h1 class="text-[22px] font-bold text-primary-800 tracking-[-0.5px] mb-1">Sign in</h1>
-          <p class="text-[13px] text-black/40 font-light">Enter your credentials to access your account.</p>
+          <p class="text-[13px] text-black/65">Enter your credentials to access your account.</p>
         </div>
 
         <div class="px-8 py-6 flex flex-col gap-4">
@@ -22,7 +22,7 @@
               v-model="email"
               type="email"
               placeholder="you@carrier.com"
-              class="w-full border border-black/15 rounded-lg px-3.5 py-2.5 text-[13px] bg-surface-50 focus:outline-none focus:border-primary-800 focus:bg-white transition-colors font-sans text-primary-800 placeholder:text-black/25"
+              class="w-full border border-black/15 rounded-lg px-3.5 py-2.5 text-[13px] bg-surface-50 focus:outline-none focus:border-primary-800 focus:bg-white transition-colors font-sans text-primary-800 placeholder:text-black/40"
               @keyup.enter="login"
             />
           </div>
@@ -32,7 +32,7 @@
               v-model="password"
               type="password"
               placeholder="••••••••"
-              class="w-full border border-black/15 rounded-lg px-3.5 py-2.5 text-[13px] bg-surface-50 focus:outline-none focus:border-primary-800 focus:bg-white transition-colors font-sans text-primary-800 placeholder:text-black/25"
+              class="w-full border border-black/15 rounded-lg px-3.5 py-2.5 text-[13px] bg-surface-50 focus:outline-none focus:border-primary-800 focus:bg-white transition-colors font-sans text-primary-800 placeholder:text-black/40"
               @keyup.enter="login"
             />
           </div>
@@ -49,8 +49,8 @@
         </div>
 
         <div class="px-8 py-4 border-t border-black/[0.05] bg-surface-50">
-          <p class="text-[12px] text-black/30 text-center font-light">
-            Need access? <a href="mailto:hello@pelorus.ai" class="text-primary-800 font-medium hover:underline">Contact us</a>
+          <p class="text-[13px] text-black/65 text-center">
+            Need access? <a href="mailto:hello@pelorus.ai" class="text-primary-800 font-semibold hover:underline">Contact us</a>
           </p>
         </div>
       </div>
