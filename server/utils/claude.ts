@@ -211,8 +211,16 @@ Based on the submission and check results above, return ONLY valid JSON, no mark
     "loss_history": <0.0-10.0>,
     "occupancy": <0.0-10.0>,
     "cat_exposure": <0.0-10.0>
-  }
+  },
+  "composite_score": <0.0-10.0>
 }
+
+composite_score rules:
+- This is NOT an average of dimension scores — it is your holistic judgment of the overall risk
+- Hard stops should result in scores of 0-2 regardless of other dimensions
+- A clean risk with no flags and strong dimensions should score 8-10
+- Weight hard stops and eligibility failures most heavily
+- The score must feel coherent with your decision and reasoning
 
 FLAG TYPE RULES — follow exactly:
 - CONDITION = the corresponding guideline_check has status "fail"
@@ -344,26 +352,6 @@ export async function evaluateSubmission(
     flagsPromise = runFlagsCall(submissionText, checksResult)
   }
 
-  // Score — server-side banded calculation
-  const checks = checksResult.guideline_checks ?? []
-  const failCount = checks.filter((c: any) => c.status === 'fail').length
-  const reviewCount = checks.filter((c: any) => c.status === 'review').length
-  const totalChecks = pinned.length
-  const passCount = Math.max(0, totalChecks - failCount - reviewCount)
-
-  // Score — server-side banded calculation, 1.0–10.0 scale with 1 decimal
-  let rawScore: number
-  if (failCount > 0) {
-    rawScore = Math.max(0, 25 - (failCount - 1) * 8)
-  } else if (reviewCount > 0) {
-    const reviewRatio = reviewCount / totalChecks
-    rawScore = Math.max(40, Math.min(74, Math.round(74 - reviewRatio * 34)))
-  } else {
-    rawScore = Math.min(100, Math.round(80 + (passCount / totalChecks) * 20))
-  }
-  const score = Math.round(rawScore) / 10
-  console.log(`[eval] score        ${score}  (${passCount}p/${reviewCount}r/${failCount}f of ${totalChecks}) → ${checksResult.decision}`)
-
   // Await all parallel calls (flags already running since early in stream)
   const t_p2 = Date.now()
   const [flagsResult, insightsResult, riskProfile] = await Promise.all([
@@ -372,11 +360,12 @@ export async function evaluateSubmission(
     riskProfilePromise,
   ])
   console.log(`[eval] parallel     ${Date.now() - t_p2}ms remaining wait`)
+  console.log(`[eval] score        ${flagsResult.composite_score}  → ${checksResult.decision}`)
   console.log(`[eval] total        ${Date.now() - t0}ms`)
 
   return {
     decision: checksResult.decision,
-    composite_score: score,
+    composite_score: flagsResult.composite_score,
     guideline_checks: checksResult.guideline_checks,
     recommendation: flagsResult.recommendation,
     flags: flagsResult.flags,
