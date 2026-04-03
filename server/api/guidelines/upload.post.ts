@@ -1,8 +1,13 @@
 import { getSupabase } from '../../utils/supabase'
 import { embed } from '../../utils/embeddings'
-import { extractHardStops, extractRiskProfileFields } from '../../utils/claude'
+import { extractHardStops, extractRiskProfileFields, classifyChunks } from '../../utils/claude'
 import { parseFileToChunks, filterChunks, getChunkPage, getChunkBlockTypes } from '../../utils/reducto'
 import { getOrgId, requireAdmin } from '../../utils/org'
+
+function t() { return Date.now() }
+function lap(label: string, start: number) {
+  console.log(`[guidelines] ${label}: ${Date.now() - start}ms`)
+}
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -13,6 +18,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const orgId = await getOrgId(event)
+  const total = t()
 
   // Clear existing guidelines for this org before processing new ones
   const { error: deleteError } = await getSupabase()
@@ -37,14 +43,16 @@ export default defineEventHandler(async (event) => {
   const filename = filePart.filename!
 
   // 1. Parse with Reducto
+  let s = t()
   const rawChunks = await parseFileToChunks(Buffer.from(filePart.data), filename)
   const chunks = filterChunks(rawChunks)
+  lap(`reducto parse → ${rawChunks.length} raw, ${chunks.length} after filter`, s)
 
   if (!chunks.length) {
     throw createError({ statusCode: 422, statusMessage: 'No usable content extracted from file' })
   }
 
-  // 2. Extract hard stops via Claude
+  // 2. Extract hard stops + risk profile fields via Claude (parallel)
   const hardStopChunks = chunks.filter((chunk) => {
     const text = chunk.embed.toLowerCase()
     return (
@@ -60,16 +68,29 @@ export default defineEventHandler(async (event) => {
   const hardStopText = (hardStopChunks.length ? hardStopChunks : chunks)
     .map((c) => c.embed)
     .join('\n\n---\n\n')
+
+  s = t()
   const [hardStops, riskProfileFields] = await Promise.all([
     extractHardStops(hardStopText),
     extractRiskProfileFields(chunks.map((c) => c.embed).join('\n\n---\n\n')),
   ])
+  lap(`claude extractHardStops + extractRiskProfileFields (parallel) → ${hardStops.length} hard stops`, s)
 
-  await getSupabase().from('organizations').update({ risk_profile_fields: riskProfileFields }).eq('id', orgId)
+  await (getSupabase() as any).from('organizations').update({ risk_profile_fields: riskProfileFields }).eq('id', orgId)
 
-  // 3. Embed chunks (parallel)
+  // 3. Classify chunks via Claude (single call)
+  s = t()
+  const classifications = await classifyChunks(chunks)
+  const classMap = new Map(classifications.map((c) => [c.index, c]))
+  const keptChunks = chunks.filter((_, i) => classMap.get(i)?.keep !== false)
+  lap(`claude classifyChunks → kept ${keptChunks.length}/${chunks.length}`, s)
+
+  // 4. Embed chunks (parallel)
+  s = t()
   const chunkRows = await Promise.all(
-    chunks.map(async (chunk, i) => {
+    keptChunks.map(async (chunk, i) => {
+      const originalIndex = chunks.indexOf(chunk)
+      const cls = classMap.get(originalIndex)
       const vector = await embed(chunk.embed)
       return {
         org_id: orgId,
@@ -80,12 +101,15 @@ export default defineEventHandler(async (event) => {
         page: getChunkPage(chunk),
         block_types: getChunkBlockTypes(chunk),
         is_pinned: false,
-        rule_type: 'standard',
+        rule_type: cls?.rule_type ?? 'standard',
+        summary: cls?.summary ?? null,
       }
     })
   )
+  lap(`embed ${keptChunks.length} chunks (parallel)`, s)
 
-  // 4. Embed hard stop rows (parallel)
+  // 5. Embed hard stop rows (parallel)
+  s = t()
   const hardStopRows = await Promise.all(
     hardStops.map(async (hs, i) => {
       const text = `${hs.rule_name}: ${hs.condition} (${hs.section})`
@@ -103,17 +127,22 @@ export default defineEventHandler(async (event) => {
       }
     })
   )
+  lap(`embed ${hardStops.length} hard stop rows (parallel)`, s)
 
   const rows = [...chunkRows, ...hardStopRows]
 
-  // 5. Bulk insert into Supabase
-  const { error } = await getSupabase().from('guideline_chunks').insert(rows)
+  // 6. Bulk insert into Supabase
+  s = t()
+  const { error } = await getSupabase().from('guideline_chunks').insert(rows as any)
   if (error) {
     throw createError({ statusCode: 500, statusMessage: 'Failed to store chunks', data: { message: error.message } })
   }
+  lap(`supabase bulk insert ${rows.length} rows`, s)
+
+  lap(`TOTAL`, total)
 
   return {
-    chunks_stored: chunks.length,
+    chunks_stored: keptChunks.length,
     hard_stops_stored: hardStops.length,
     total_rows: rows.length,
   }

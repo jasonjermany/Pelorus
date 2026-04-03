@@ -388,6 +388,67 @@ export async function evaluateSubmission(
   }
 }
 
+export type ChunkClassification = {
+  index: number
+  keep: boolean
+  rule_type: 'hard_stop' | 'eligibility' | 'pricing' | 'coverage' | 'standard'
+  summary: string
+}
+
+const CLASSIFY_INSTRUCTIONS = `You are an expert insurance underwriting assistant. Classify each guideline chunk below.
+
+For each chunk return a JSON object with:
+- index: the chunk number (integer, as given in the === CHUNK N === header)
+- keep: Set keep=false for ANY of the following — cover pages, table of contents entries, section separators, version headers, confidentiality notices, document intro/purpose paragraphs, compliance statements, distribution restriction notices, "about this document" text, page markers like [[END OF PAGE 1]], repeated footer/header text, or any paragraph whose sole purpose is to describe the document itself rather than instruct an underwriter.
+  Set keep=true ONLY if the chunk contains a specific underwriting rule, criterion, threshold, or decision-making guideline that an underwriter would actually apply to a risk.
+  IMPORTANT: Phrases like "All risks must be evaluated against these guidelines", "Exceptions require prior written approval", "This document contains proprietary underwriting criteria", or "These guidelines are effective as of [date]" are document administration text — they are NOT underwriting rules. Set keep=false for chunks that consist primarily of such language even if they sound substantive.
+- rule_type: one of "hard_stop" | "eligibility" | "pricing" | "coverage" | "standard"
+  - hard_stop: absolute decline triggers, prohibited risks, no-exceptions rules
+  - eligibility: conditional acceptance criteria, minimum requirements, class restrictions
+  - pricing: premium, rate, surcharge, credit, deductible, limit guidance
+  - coverage: what is/isn't covered, exclusions, endorsement availability
+  - standard: general underwriting guidelines that don't fit above
+- summary: max 120 chars, plain text only (no ===, ---, ◆, ●, •, *, #), expand abbreviations (TIV→Total Insured Value, GL→General Liability, E&O→Errors & Omissions, WC→Workers Compensation), always include specific thresholds/numbers if present. For keep=false chunks, summary may be empty string.
+
+Return ONLY a JSON array with one object per chunk. No markdown, no backticks, no other text.`
+
+async function classifyBatch(batch: Array<{ index: number; embed: string }>): Promise<ChunkClassification[]> {
+  const numbered = batch
+    .map((c) => `=== CHUNK ${c.index} ===\n${c.embed.slice(0, 800)}`)
+    .join('\n\n')
+
+  const response = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4096,
+    temperature: 0,
+    messages: [{ role: 'user', content: `${CLASSIFY_INSTRUCTIONS}\n\n${numbered}\n\nReturn ONLY the JSON array:` }],
+  })
+
+  const text = (response.content[0] as any).text as string
+  const clean = text.replace(/```json|```/g, '').trim()
+
+  try {
+    return JSON.parse(clean) as ChunkClassification[]
+  } catch {
+    console.warn(`[guidelines] classifyBatch parse failed for indices ${batch.at(0)?.index}–${batch.at(-1)?.index} — keeping all`)
+    return batch.map((c) => ({ index: c.index, keep: true, rule_type: 'standard' as const, summary: '' }))
+  }
+}
+
+const BATCH_SIZE = 20
+
+export async function classifyChunks(chunks: import('./reducto').ReductoChunk[]): Promise<ChunkClassification[]> {
+  const batches: Array<Array<{ index: number; embed: string }>> = []
+  for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+    batches.push(chunks.slice(i, i + BATCH_SIZE).map((c, j) => ({ index: i + j, embed: c.embed })))
+  }
+
+  const batchResults = await Promise.all(batches.map(classifyBatch))
+  const results = batchResults.flat()
+  console.log(`[guidelines] classified ${results.length} chunks across ${batches.length} batches, keeping ${results.filter(r => r.keep).length}`)
+  return results
+}
+
 export async function extractRiskProfileFields(allChunksText: string): Promise<string[]> {
   const prompt = `You are an expert insurance underwriting system designer.
 

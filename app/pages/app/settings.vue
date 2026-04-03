@@ -136,7 +136,7 @@
                     <path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                   <span v-if="expandedId === chunk.id" class="text-[14px] text-black/80 whitespace-pre-wrap leading-relaxed">{{ getCleanText(chunk.embed_text) }}</span>
-                  <span v-else class="text-[14px] text-black/75">{{ getChunkPreview(chunk.embed_text) }}</span>
+                  <span v-else class="text-[14px] text-black/75">{{ chunk.summary || getChunkPreview(chunk.embed_text) }}</span>
                 </span>
               </td>
               <td class="px-5 py-3 align-top">
@@ -178,6 +178,7 @@ type GuidelineChunk = {
   is_pinned: boolean;
   rule_type: string;
   embed_text: string;
+  summary: string | null;
   created_at: string;
 };
 

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await getSupabase()
     .from('guideline_chunks')
-    .select('id, chunk_index, page, block_types, is_pinned, rule_type, embed_text, created_at')
+    .select('id, chunk_index, page, block_types, is_pinned, rule_type, embed_text, summary, created_at')
     .eq('org_id', orgId)
     .order('chunk_index', { ascending: true })
 
