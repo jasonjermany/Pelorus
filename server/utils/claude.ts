@@ -135,8 +135,32 @@ Call the submit_evaluation tool with your results.`,
 }
 
 
+const VOICE = `VOICE AND STYLE — apply to every word of output:
+- Write as a senior commercial underwriter documenting findings for a file
+- Declarative, present tense. State facts, not observations.
+- Never start a sentence with: "The submission", "Based on", "It appears", "It is noted", "This submission", "I"
+- No hedging language: avoid "may", "might", "could potentially", "appears to"
+- No filler openers: avoid "Additionally", "Furthermore", "It should be noted"
+- No em dashes. Use a period or comma instead.
+- Terse. If it can be said in 8 words, don't use 15.
+
+REQUIRED OPENERS — every field must start exactly as follows:
+- flag explanation (CONDITION type): "Hard stop confirmed. [rest of explanation]"
+- flag explanation (VERIFY type): "Requires verification. [rest of explanation]"
+- flag action_required: imperative verb ("Request...", "Obtain...", "Confirm...", "Issue...")
+- favorable_factors items: "Positive indicator. [rest of finding]"
+- recommendation summary: "Decision: [rationale]"
+- recommendation action_items: imperative verb ("Request...", "Obtain...", "Confirm...", "Issue...", "Advise...")
+- insights pattern_recognition: "Risk pattern: [observation]"
+- insights market_context: "Market context: [observation]"
+- insights consistency_check: "Consistency: [observation]"
+- insights coverage_gap: "Coverage gap: [observation]"
+- missing_info description: "Required: [what is needed and why]"`
+
 async function runInsightsCall(submissionText: string): Promise<any> {
   const prompt = `You are an expert commercial insurance underwriter analyzing a broker submission.
+
+${VOICE}
 
 SUBMISSION:
 ${submissionText}
@@ -144,9 +168,9 @@ ${submissionText}
 Return ONLY valid JSON, no markdown, no backticks:
 {
   "insights": {
-    "pattern_recognition": "<risk pattern analysis — 1-2 sentences>",
+    "pattern_recognition": "<risk pattern — 1-2 sentences>",
     "market_context": "<prior carrier and market context — 1-2 sentences>",
-    "consistency_check": "<cross-document consistency observations — 1-2 sentences>",
+    "consistency_check": "<cross-document consistency — 1-2 sentences>",
     "coverage_gap": "<missing coverages or gaps — 1-2 sentences>"
   },
   "missing_info": [
@@ -181,28 +205,30 @@ async function runFlagsCall(
 
   const prompt = `You are an expert commercial insurance underwriter.
 
+${VOICE}
+
 SUBMISSION:
 ${submissionText.slice(0, 10000)}
 
 GUIDELINE CHECK RESULTS (already evaluated):
 ${checksContext}
 
-Based on the submission and check results above, return ONLY valid JSON, no markdown, no backticks:
+Return ONLY valid JSON, no markdown, no backticks:
 {
   "recommendation": {
-    "summary": "<2 sentences explaining the decision>",
-    "action_items": ["<specific action — 1 sentence each, max 4>"]
+    "summary": "<decision rationale — 2 sentences max, declarative>",
+    "action_items": ["<specific next step — verb-first, 1 sentence, max 4>"]
   },
   "flags": [
     {
-      "title": "<short label — 6 words max>",
+      "title": "<issue label — 6 words max, noun phrase>",
       "type": "CONDITION" | "VERIFY",
-      "explanation": "<what the issue is — 2 sentences max>",
-      "action_required": "<what underwriter must do — 1 sentence>",
+      "explanation": "<what the issue is and why it matters — 2 sentences max>",
+      "action_required": "<what must be done — verb-first, 1 sentence>",
       "cited_section": "<section reference>"
     }
   ],
-  "favorable_factors": ["<positive finding — 1 sentence, max 4>"],
+  "favorable_factors": ["<positive finding — noun or verb phrase, 1 sentence max, max 4>"],
   "dimension_scores": {
     "construction": <0.0-10.0>,
     "fire_protection": <0.0-10.0>,
@@ -250,9 +276,10 @@ FLAG TYPE RULES — follow exactly:
 async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<Record<string, string>> {
   const schemaLines = fields.map((f) => `  "${f}": "<extracted value or 'Not disclosed'>"`).join(',\n')
   const prompt = `You are extracting structured data from an insurance submission.
-Read the submission carefully and extract the following fields exactly as stated.
-If a field is not explicitly stated, write "Not disclosed" — do not infer or guess.
-Be concise — one value per field, no explanation.
+Extract the following fields exactly as stated. If not explicitly stated, write "Not disclosed" — do not infer or guess.
+One value per field. No explanation, no credentials, no license numbers.
+For name fields (broker, agent, insured): company or person name only — omit titles, designations (CPCU, CIC), license numbers, addresses.
+Example: "Brendan Shea, CPCU, New England Commercial Insurance, License #NH-IA-031882" → "New England Commercial Insurance".
 
 SUBMISSION:
 ${submissionText}
