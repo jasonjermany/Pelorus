@@ -32,7 +32,7 @@
           <div class="flex gap-6 md:gap-8 mt-10 pt-10 border-t border-black/[0.07]">
             <div><span class="block text-[24px] md:text-[28px] font-bold text-primary-800 tracking-[-0.5px]">~80 sec</span><span class="text-[11px] text-black/55 uppercase tracking-[0.08em] font-medium">Full triage turnaround</span></div>
             <div><span class="block text-[24px] md:text-[28px] font-bold text-primary-800 tracking-[-0.5px]">Any line</span><span class="text-[11px] text-black/55 uppercase tracking-[0.08em] font-medium">Property, GL, casualty & more</span></div>
-            <div><span class="block text-[24px] md:text-[28px] font-bold text-primary-800 tracking-[-0.5px]">XX%</span><span class="text-[11px] text-black/55 uppercase tracking-[0.08em] font-medium">Extraction accuracy</span></div>
+            <div><span class="block text-[24px] md:text-[28px] font-bold text-primary-800 tracking-[-0.5px]">20–40 min</span><span class="text-[11px] text-black/55 uppercase tracking-[0.08em] font-medium">Saved per submission</span></div>
           </div>
         </div>
 
@@ -353,7 +353,7 @@ function submitForm() {
 }
 
 const features = [
-  { icon: '⚡', title: 'Instant Triage Decision', desc: 'Every submission returns a clear PROCEED, REFER, or DECLINE verdict with a composite score — not a generic AI opinion, but a specific comparison against your carrier\'s guidelines.' },
+  { icon: '⚡', title: 'Rapid Triage Decision', desc: 'Every submission returns a clear PROCEED, REFER, or DECLINE verdict with a composite score — not a generic AI opinion, but a specific comparison against your carrier\'s guidelines.' },
   { icon: '🛑', title: 'Hard Stop Detection', desc: 'Every automatic-decline rule in your guidelines is checked against every submission, every time. No similarity cutoffs. No missed exclusions. Every hard stop, every run.' },
   { icon: '📄', title: 'Multi-Document Parsing', desc: 'Upload the full broker package — ACORD forms, loss runs, inspection reports, Schedule of Values. Pelorus reads all of them and cross-references facts across documents.' },
   { icon: '🎯', title: 'Carrier-Specific Calibration', desc: 'Upload your guidelines once. Every evaluation runs against your rules — not industry averages. Two carriers with identical submissions can get completely different verdicts.' },
@@ -368,10 +368,10 @@ const steps = [
 ]
 
 const metrics = [
-  { num: 'X–Xh', label: 'Saved per submission on first-pass review' },
+  { num: '20–40 min', label: 'Saved per submission on first-pass review' },
   { num: 'Any line', label: 'Property, GL, casualty, workers comp & more' },
-  { num: 'XX%', label: 'Data extraction accuracy on real submissions' },
   { num: '~80 sec', label: 'Average time from upload to full triage verdict' },
+  { num: 'Email', label: 'Forward from Outlook directly — no portal needed' },
 ]
 
 const contactPoints = [

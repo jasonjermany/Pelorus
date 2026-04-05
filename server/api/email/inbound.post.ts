@@ -1,6 +1,8 @@
 import { getSupabase } from '../../utils/supabase'
 import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { evaluateSubmission } from '../../utils/claude'
+import { generatePdfBuffer } from '../../utils/pdfBuilder'
+import { sendInboundResultsEmail } from '../../utils/email'
 
 /** Pull the bare email address out of "Display Name <addr>" or plain "addr". */
 function extractEmail(raw: string): string {
@@ -126,6 +128,18 @@ export default defineEventHandler(async (event) => {
       if (completeError) throw new Error(`Failed to mark complete: ${completeError.message}`)
 
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
+
+      if (brokerEmail) {
+        const namedInsured = verdict.risk_profile?.named_insured || null
+        const sub = submission as any
+        const pdfBuffer = await generatePdfBuffer(
+          { ...verdict, analyzed_in_seconds: analyzedInSeconds } as any,
+          new Date(sub.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          namedInsured,
+        )
+        await sendInboundResultsEmail(brokerEmail, sub.id, verdict.decision, namedInsured, pdfBuffer)
+          .catch(err => console.error(`[email/inbound] reply failed  submission=${sub.id}  error=${err.message}`))
+      }
     } catch (err) {
       console.error('[email/inbound] background eval failed:', err)
       await getSupabase().from('submissions').update({ status: 'error' }).eq('id', submission.id)
