@@ -1,6 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getRelevantChunks } from './rag'
-
+import { CHECKS_TOOL, buildChecksMessages } from './prompts/checks'
+import { buildFlagsPrompt } from './prompts/flags'
+import { buildInsightsPrompt } from './prompts/insights'
+import { buildRiskProfilePrompt } from './prompts/riskProfile'
+import { CLASSIFY_INSTRUCTIONS } from './prompts/classify'
+import { buildHardStopsPrompt } from './prompts/hardStops'
+import { buildRiskFieldsPrompt } from './prompts/riskFields'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -9,177 +15,8 @@ const anthropic = new Anthropic({
   },
 })
 
-const CHECKS_TOOL = {
-  name: 'submit_evaluation',
-  description: 'Submit the structured underwriting evaluation results after analyzing all checks.',
-  input_schema: {
-    type: 'object' as const,
-    properties: {
-      decision: {
-        type: 'string',
-        enum: ['PROCEED', 'REFER', 'DECLINE'],
-        description: 'Overall underwriting decision based on the check results.',
-      },
-      guideline_checks: {
-        type: 'array',
-        description: 'Only include checks with status "review" or "fail". Omit passing checks entirely.',
-        items: {
-          type: 'object',
-          properties: {
-            rule: { type: 'string', description: 'Exact rule name from the mandatory check list.' },
-            required: { type: 'string', description: 'What the guideline requires.' },
-            submitted: { type: 'string', description: 'What the submission says.' },
-            status: { type: 'string', enum: ['review', 'fail'] },
-            cited_section: { type: 'string', description: 'Section or page reference.' },
-          },
-          required: ['rule', 'required', 'submitted', 'status', 'cited_section'],
-        },
-      },
-    },
-    required: ['decision', 'guideline_checks'],
-  },
-}
-
-const HARD_STOP_RULES = `HARD STOP STATUS RULES — apply these to every check, no exceptions:
-
-Assign "fail" when:
-- The condition is explicitly confirmed present in any submitted document
-- Any document mentions the condition existed, even if claimed remediated,
-  unless this submission contains written professional certification of
-  complete removal meeting program standards
-- The submission discloses materials or systems from an era when the
-  prohibited condition was common, without confirming the specific
-  safe type currently present
-
-Assign "review" when:
-- The condition cannot be confirmed absent from all portions of all buildings
-- Any system, material, or condition is described with vague language such
-  as "original", "predating modern standards", "unconfirmed", or similar
-- The submission does not explicitly address this condition at all
-- Claimed remediation exists but written professional documentation
-  confirming complete resolution is not included in this submission
-- The building age or location creates reasonable risk that the condition
-  may be present, even if not disclosed
-
-Assign "pass" only when all of the following are true:
-- The condition is explicitly confirmed absent from all portions of
-  all buildings in the submission
-- Confirmation comes from a named professional report, inspection
-  certificate, or explicit documented statement
-- No document in the submission mentions or implies the condition
-  may have existed or currently exists
-
-GENERAL RULES:
-- "It was fixed" without supporting documentation = "review", not "pass"
-- Any mention of a condition in any document = at minimum "review"
-- Silence on a condition for an older building = "review", not "pass"
-- Partial remediation of a building does not satisfy whole-building requirements
-- Program approvals not yet obtained = "review", not "pass"
-- Geographic or age-based risk factors warrant "review" even without
-  explicit disclosure`
-
-function buildChecksMessages(
-  submissionText: string,
-  hardStopsText: string,
-  guidelinesText: string,
-  hardStopCheckList: string,
-  pinnedCount: number,
-) {
-  return [
-    {
-      role: 'user' as const,
-      content: [
-        {
-          type: 'text' as const,
-          text: `You are an expert commercial insurance underwriter evaluating broker submissions.
-
-## HARD STOPS — carrier guidelines
-${hardStopsText || '(none)'}
-
-## RELEVANT GUIDELINES
-${guidelinesText || '(none)'}
-
----
-
-${HARD_STOP_RULES}
-
-You MUST evaluate ALL of the following checks. These are derived from this carrier's actual guidelines.
-Do not add checks. Do not remove checks. Do not rename checks. Evaluate every single one.
-
-MANDATORY CHECKS — evaluate all ${pinnedCount} of these:
-${hardStopCheckList}
-
-For each check:
-- status "pass" = clearly not present in submission
-- status "review" = unclear or cannot confirm from submission
-- status "fail" = confirmed present → triggers DECLINE or referral
-
-Only include checks with status "review" or "fail" in guideline_checks.
-Do NOT include passing checks — omit them entirely.
-
-DECISION RULES — follow exactly, no judgment:
-- If ANY guideline_check has status "fail" → decision MUST be "DECLINE"
-- If ANY guideline_check has status "review" → decision MUST be "REFER"
-- If ALL checks pass (guideline_checks is empty) → decision is "PROCEED"
-
-Call the submit_evaluation tool with your results.`,
-          cache_control: { type: 'ephemeral', ttl: '1h' } as any,
-        },
-        {
-          type: 'text' as const,
-          text: `## SUBMISSION TO EVALUATE\n${submissionText}`,
-        },
-      ],
-    },
-  ]
-}
-
-
-const VOICE = `VOICE AND STYLE — apply to every word of output:
-- Write as a senior commercial underwriter documenting findings for a file
-- Declarative, present tense. State facts, not observations.
-- Never start a sentence with: "The submission", "Based on", "It appears", "It is noted", "This submission", "I"
-- No hedging language: avoid "may", "might", "could potentially", "appears to"
-- No filler openers: avoid "Additionally", "Furthermore", "It should be noted"
-- No em dashes. Use a period or comma instead.
-- Terse. If it can be said in 8 words, don't use 15.
-
-REQUIRED OPENERS — every field must start exactly as follows:
-- flag explanation (CONDITION type): "Hard stop confirmed. [rest of explanation]"
-- flag explanation (VERIFY type): "Requires verification. [rest of explanation]"
-- flag action_required: imperative verb ("Request...", "Obtain...", "Confirm...", "Issue...")
-- favorable_factors items: "Positive indicator. [rest of finding]"
-- recommendation summary: "Decision: [rationale]"
-- recommendation action_items: imperative verb ("Request...", "Obtain...", "Confirm...", "Issue...", "Advise...")
-- insights pattern_recognition: "Risk pattern: [observation]"
-- insights market_context: "Market context: [observation]"
-- insights consistency_check: "Consistency: [observation]"
-- insights coverage_gap: "Coverage gap: [observation]"
-- missing_info description: "Required: [what is needed and why]"`
-
 async function runInsightsCall(submissionText: string): Promise<any> {
-  const prompt = `You are an expert commercial insurance underwriter analyzing a broker submission.
-
-${VOICE}
-
-SUBMISSION:
-${submissionText}
-
-Return ONLY valid JSON, no markdown, no backticks:
-{
-  "insights": {
-    "pattern_recognition": "<risk pattern — 1-2 sentences>",
-    "market_context": "<prior carrier and market context — 1-2 sentences>",
-    "consistency_check": "<cross-document consistency — 1-2 sentences>",
-    "coverage_gap": "<missing coverages or gaps — 1-2 sentences>"
-  },
-  "missing_info": [
-    {
-      "label": "<short label — 5 words max>",
-      "description": "<1 sentence — what is needed and why>"
-    }
-  ]
-}`
+  const prompt = buildInsightsPrompt(submissionText)
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     max_tokens: 2000,
@@ -201,60 +38,7 @@ async function runFlagsCall(
   submissionText: string,
   checksResult: { decision: string; guideline_checks: any[] },
 ): Promise<any> {
-  const checksContext = JSON.stringify(checksResult, null, 2)
-
-  const prompt = `You are an expert commercial insurance underwriter.
-
-${VOICE}
-
-SUBMISSION:
-${submissionText.slice(0, 10000)}
-
-GUIDELINE CHECK RESULTS (already evaluated):
-${checksContext}
-
-Return ONLY valid JSON, no markdown, no backticks:
-{
-  "recommendation": {
-    "summary": "<decision rationale — 2 sentences max, declarative>",
-    "action_items": ["<specific next step — verb-first, 1 sentence, max 4>"]
-  },
-  "flags": [
-    {
-      "title": "<issue label — 6 words max, noun phrase>",
-      "type": "CONDITION" | "VERIFY",
-      "explanation": "<what the issue is and why it matters — 2 sentences max>",
-      "action_required": "<what must be done — verb-first, 1 sentence>",
-      "cited_section": "<section reference>"
-    }
-  ],
-  "favorable_factors": ["<positive finding — noun or verb phrase, 1 sentence max, max 4>"],
-  "dimension_scores": {
-    "construction": <0.0-10.0>,
-    "fire_protection": <0.0-10.0>,
-    "management": <0.0-10.0>,
-    "submission_quality": <0.0-10.0>,
-    "loss_history": <0.0-10.0>,
-    "occupancy": <0.0-10.0>,
-    "cat_exposure": <0.0-10.0>
-  },
-  "composite_score": <0.0-10.0>
-}
-
-composite_score rules:
-- This is NOT an average of dimension scores — it is your holistic judgment of the overall risk
-- Hard stops should result in scores of 0-2 regardless of other dimensions
-- A clean risk with no flags and strong dimensions should score 8-10
-- Weight hard stops and eligibility failures most heavily
-- The score must feel coherent with your decision and reasoning
-
-FLAG TYPE RULES — follow exactly:
-- CONDITION = the corresponding guideline_check has status "fail"
-- VERIFY = the corresponding guideline_check has status "review"
-- Do not use your own judgment to upgrade or downgrade flag severity.
-- The type MUST match the status of the corresponding check exactly.
-- Only flag checks with status "fail" or "review" — never flag a "pass".
-- flags: max 6 items`
+  const prompt = buildFlagsPrompt(submissionText, checksResult)
 
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -274,20 +58,7 @@ FLAG TYPE RULES — follow exactly:
 }
 
 async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<Record<string, string>> {
-  const schemaLines = fields.map((f) => `  "${f}": "<extracted value or 'Not disclosed'>"`).join(',\n')
-  const prompt = `You are extracting structured data from an insurance submission.
-Extract the following fields exactly as stated. If not explicitly stated, write "Not disclosed" — do not infer or guess.
-One value per field. No explanation, no credentials, no license numbers.
-For name fields (broker, agent, insured): company or person name only — omit titles, designations (CPCU, CIC), license numbers, addresses.
-Example: "Brendan Shea, CPCU, New England Commercial Insurance, License #NH-IA-031882" → "New England Commercial Insurance".
-
-SUBMISSION:
-${submissionText}
-
-Return ONLY valid JSON with exactly these fields, no markdown, no backticks:
-{
-${schemaLines}
-}`
+  const prompt = buildRiskProfilePrompt(submissionText, fields)
 
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -411,23 +182,6 @@ export type ChunkClassification = {
   summary: string
 }
 
-const CLASSIFY_INSTRUCTIONS = `You are an expert insurance underwriting assistant. Classify each guideline chunk below.
-
-For each chunk return a JSON object with:
-- index: the chunk number (integer, as given in the === CHUNK N === header)
-- keep: Set keep=false for ANY of the following — cover pages, table of contents entries, section separators, version headers, confidentiality notices, document intro/purpose paragraphs, compliance statements, distribution restriction notices, "about this document" text, page markers like [[END OF PAGE 1]], repeated footer/header text, or any paragraph whose sole purpose is to describe the document itself rather than instruct an underwriter.
-  Set keep=true ONLY if the chunk contains a specific underwriting rule, criterion, threshold, or decision-making guideline that an underwriter would actually apply to a risk.
-  IMPORTANT: Phrases like "All risks must be evaluated against these guidelines", "Exceptions require prior written approval", "This document contains proprietary underwriting criteria", or "These guidelines are effective as of [date]" are document administration text — they are NOT underwriting rules. Set keep=false for chunks that consist primarily of such language even if they sound substantive.
-- rule_type: one of "hard_stop" | "eligibility" | "pricing" | "coverage" | "standard"
-  - hard_stop: absolute decline triggers, prohibited risks, no-exceptions rules
-  - eligibility: conditional acceptance criteria, minimum requirements, class restrictions
-  - pricing: premium, rate, surcharge, credit, deductible, limit guidance
-  - coverage: what is/isn't covered, exclusions, endorsement availability
-  - standard: general underwriting guidelines that don't fit above
-- summary: max 120 chars, plain text only (no ===, ---, ◆, ●, •, *, #), expand abbreviations (TIV→Total Insured Value, GL→General Liability, E&O→Errors & Omissions, WC→Workers Compensation), always include specific thresholds/numbers if present. For keep=false chunks, summary may be empty string.
-
-Return ONLY a JSON array with one object per chunk. No markdown, no backticks, no other text.`
-
 async function classifyBatch(batch: Array<{ index: number; embed: string }>): Promise<ChunkClassification[]> {
   const numbered = batch
     .map((c) => `=== CHUNK ${c.index} ===\n${c.embed.slice(0, 800)}`)
@@ -466,23 +220,7 @@ export async function classifyChunks(chunks: import('./reducto').ReductoChunk[])
 }
 
 export async function extractRiskProfileFields(allChunksText: string): Promise<string[]> {
-  const prompt = `You are an expert insurance underwriting system designer.
-
-Read the following carrier underwriting guidelines and identify the key data fields
-that an underwriter would need to extract from any submission to evaluate a risk.
-
-Return ONLY a JSON array of field names — no other text, no markdown, no backticks.
-Each field name must be snake_case and concise. Return 12-20 fields maximum.
-Focus on the most critical underwriting variables for this specific line of business.
-
-Examples for commercial property: ["tiv", "roof_age", "construction_class", "sprinklers", "electrical", "year_built", "losses_5yr", "vacancy", "protection_class", "named_insured", "broker", "prior_carrier"]
-Examples for cyber: ["annual_revenue", "employee_count", "mfa_enabled", "edr_solution", "prior_cyber_incidents", "data_types_stored", "backup_frequency", "named_insured", "broker", "prior_carrier"]
-Examples for workers comp: ["annual_payroll", "employee_count", "experience_mod_rate", "primary_operations", "prior_losses_3yr", "safety_program", "named_insured", "broker", "prior_carrier"]
-
-GUIDELINES:
-${allChunksText.slice(0, 30000)}
-
-Return ONLY the JSON array:`
+  const prompt = buildRiskFieldsPrompt(allChunksText)
 
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
@@ -509,19 +247,7 @@ export async function extractHardStops(allChunksText: string): Promise<Array<{
   condition: string
   section: string
 }>> {
-  const prompt = `Read these underwriting guidelines. Extract every HARD STOP — conditions that cause automatic DECLINE with no exceptions.
-
-Return ONLY a JSON array, no other text:
-[{
-  "rule_name": "short label",
-  "condition": "exactly what triggers this decline",
-  "section": "section or appendix reference"
-}]
-
-Only automatic declines. Not referral triggers. Not conditional rules.
-
-GUIDELINES:
-${allChunksText}`
+  const prompt = buildHardStopsPrompt(allChunksText)
 
   const estimatedOutputTokens = Math.ceil(allChunksText.length / 20)
   const maxTokens = Math.min(8000, Math.max(4000, estimatedOutputTokens))

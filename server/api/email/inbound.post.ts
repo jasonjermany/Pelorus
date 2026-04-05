@@ -58,6 +58,19 @@ export default defineEventHandler(async (event) => {
 
   const orgId = org.id
 
+  // Only process submissions from users who belong to this org
+  const { data: userRecord } = await getSupabase()
+    .from('users')
+    .select('id')
+    .eq('org_id', orgId)
+    .eq('email', brokerEmail)
+    .single()
+
+  if (!brokerEmail || !userRecord) {
+    console.warn(`[email/inbound] sender not whitelisted  from=${brokerEmail}  handle=${handle}`)
+    return { ok: true }
+  }
+
   // Collect all attachments; fall back to plain-text body wrapped as .txt
   const attachmentFiles = parts
     .filter((p) => !!p.filename && p.data?.length > 0)
