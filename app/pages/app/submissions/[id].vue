@@ -135,7 +135,7 @@
                   </div>
                   <p class="text-[13px] text-black/70 leading-relaxed mb-2">{{ flag.explanation }}</p>
                   <p class="text-[12px] text-black/65 font-medium mb-1.5"><strong class="text-primary-800">Action:</strong> {{ flag.action_required }}</p>
-                  <p class="text-[11px] text-black/55">Ref: {{ flag.cited_section }}</p>
+                  <p class="text-[11px] text-black/50"><span class="font-semibold text-primary-800">Ref:</span> {{ flag.cited_section }}</p>
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@
                     <td class="px-5 py-3 align-top">
                       <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
                       <span v-else class="text-black/25">—</span>
-                      <p v-if="rpSource(raw)" class="text-[11px] text-black/35 mt-0.5">{{ rpSource(raw) }}</p>
+                      <p v-if="rpSource(raw)" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -200,12 +200,12 @@
                   >
                     <td class="px-5 py-3 align-top">
                       <p class="font-semibold text-primary-800 text-[13px]">{{ check.rule }}</p>
-                      <p class="text-[11px] text-black/55 mt-0.5">{{ check.cited_section }}</p>
+                      <p class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Ref:</span> {{ check.cited_section }}</p>
                     </td>
                     <td class="px-5 py-3 text-[13px] text-black/65 leading-relaxed align-top">{{ check.required }}</td>
                     <td class="px-5 py-3 align-top">
                       <p class="text-[13px] text-black/65 leading-relaxed">{{ check.submitted }}</p>
-                      <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-black/35 mt-0.5">{{ check.submission_source }}</p>
+                      <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ check.submission_source }}</p>
                     </td>
                     <td class="px-5 py-3 align-top">
                       <span
@@ -269,7 +269,7 @@
                     <td class="px-5 py-3 align-top">
                       <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
                       <span v-else class="text-black/25">—</span>
-                      <p v-if="rpSource(raw)" class="text-[11px] text-black/35 mt-0.5">{{ rpSource(raw) }}</p>
+                      <p v-if="rpSource(raw)" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
                     </td>
                   </tr>
                 </tbody>
