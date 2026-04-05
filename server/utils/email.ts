@@ -16,7 +16,6 @@ function buildHtml(label: string, resultsUrl: string) {
 <html lang="en">
 <head><meta charset="UTF-8"></head>
 <body style="font-family:system-ui,sans-serif;color:#333;padding:40px;max-width:480px;">
-  <p>Hi,</p>
   <p>Your submission review for <strong>${label}</strong> is ready.</p>
   <p><a href="${resultsUrl}">View full results</a></p>
   <p style="color:#999;font-size:12px;">Pelorus</p>
