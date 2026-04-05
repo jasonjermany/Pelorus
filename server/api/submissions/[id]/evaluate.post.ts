@@ -1,21 +1,24 @@
 import { getSupabase } from '../../../utils/supabase'
 import { evaluateSubmission } from '../../../utils/claude'
+import { getSessionUser } from '../../../utils/org'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params!
+  const user = await getSessionUser(event)
 
   const { data: submission, error: fetchError } = await getSupabase()
     .from('submissions')
     .select('*')
     .eq('id', id)
+    .eq('org_id', user.org_id)
     .single()
 
   if (fetchError || !submission) {
     throw createError({ statusCode: 404, statusMessage: 'Submission not found' })
   }
 
-  if (!submission.org_id) {
-    throw createError({ statusCode: 400, statusMessage: 'Submission has no org_id' })
+  if (user.role === 'underwriter' && (submission as any).user_id !== user.id) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
 
   await getSupabase().from('submissions').update({ status: 'processing' }).eq('id', id)

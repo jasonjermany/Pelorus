@@ -203,7 +203,10 @@
                       <p class="text-[11px] text-black/55 mt-0.5">{{ check.cited_section }}</p>
                     </td>
                     <td class="px-5 py-3 text-[13px] text-black/65 leading-relaxed align-top">{{ check.required }}</td>
-                    <td class="px-5 py-3 text-[13px] text-black/65 leading-relaxed align-top">{{ check.submitted }}</td>
+                    <td class="px-5 py-3 align-top">
+                      <p class="text-[13px] text-black/65 leading-relaxed">{{ check.submitted }}</p>
+                      <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-black/35 mt-0.5">{{ check.submission_source }}</p>
+                    </td>
                     <td class="px-5 py-3 align-top">
                       <span
                         class="text-[10px] font-bold tracking-[0.06em] px-2.5 py-1 rounded-full whitespace-nowrap"
@@ -316,7 +319,7 @@ type Verdict = {
   recommendation: { summary: string; action_items: string[] };
   flags: Array<{ title: string; type: string; explanation: string; action_required: string; cited_section: string }>;
   favorable_factors: string[];
-  guideline_checks: Array<{ rule: string; required: string; submitted: string; status: string; cited_section: string }>;
+  guideline_checks: Array<{ rule: string; required: string; submitted: string; submission_source?: string; status: string; cited_section: string }>;
   insights: Record<string, string>;
   missing_info: Array<{ label: string; description: string }>;
   risk_profile: Record<string, { value: string; source?: string } | string>;
@@ -337,9 +340,10 @@ const route = useRoute();
 const id = route.params.id as string;
 const submission = ref<SubmissionResponse | null>(null);
 const verdict = computed(() => submission.value?.verdict ?? null);
-const namedInsured = computed(
-  () => submission.value?.named_insured || (verdict.value?.risk_profile?.named_insured as string | undefined) || null
-);
+const namedInsured = computed(() => {
+  const raw = verdict.value?.risk_profile?.named_insured;
+  return rpValue(raw ?? '') || null;
+});
 const isLoading = ref(false);
 const loadError = ref<string | null>(null);
 const isEvaluating = ref(false);

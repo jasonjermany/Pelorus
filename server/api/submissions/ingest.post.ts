@@ -1,6 +1,6 @@
 import { getSupabase } from '../../utils/supabase'
 import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
-import { getOrgId } from '../../utils/org'
+import { getSessionUser } from '../../utils/org'
 import { evaluateSubmission } from '../../utils/claude'
 import { sendResultsEmail } from '../../utils/email'
 
@@ -8,7 +8,9 @@ export default defineEventHandler(async (event) => {
   const contentType = getRequestHeader(event, 'content-type') || ''
   const isMultipart = contentType.toLowerCase().includes('multipart/form-data')
 
-  const orgId = await getOrgId(event)
+  const sessionUser = await getSessionUser(event)
+  const orgId = sessionUser.org_id
+  const userId = sessionUser.id
 
   let fileParts: { data: Buffer; filename: string }[] = []
   let brokerEmail: string | undefined
@@ -40,6 +42,7 @@ export default defineEventHandler(async (event) => {
     .from('submissions')
     .insert({
       org_id: orgId,
+      user_id: userId,
       raw_text: '',
       broker_email: brokerEmail ?? null,
       source,
@@ -95,7 +98,8 @@ export default defineEventHandler(async (event) => {
       console.log(`[ingest] total       ${Date.now() - t_total}ms`)
 
       if (submission.broker_email) {
-        const namedInsured = storedVerdict.risk_profile?.named_insured || null
+        const rawNamed = storedVerdict.risk_profile?.named_insured
+        const namedInsured = (typeof rawNamed === 'object' ? rawNamed?.value : rawNamed) || null
         await sendResultsEmail(
           submission.broker_email,
           submission.id,

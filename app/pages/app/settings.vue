@@ -81,7 +81,7 @@
 
         <div v-if="isUploading" class="flex items-center gap-2.5 mt-4 text-[12px] text-black/60">
           <span class="inline-block w-3.5 h-3.5 border-2 border-accent-500/30 border-t-accent-500 rounded-full animate-spin flex-shrink-0"/>
-          Parsing document, extracting hard stops, generating embeddings — this may take 2–3 minutes.
+          Parsing document, extracting hard stops — this may take 2–3 minutes.
         </div>
 
         <p v-if="uploadError" class="mt-3 text-[13px] text-danger-700">{{ uploadError }}</p>

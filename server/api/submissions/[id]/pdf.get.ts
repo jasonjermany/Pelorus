@@ -1,27 +1,31 @@
 import { getSupabase } from '../../../utils/supabase'
-import { getOrgId } from '../../../utils/org'
+import { getSessionUser } from '../../../utils/org'
 import { generatePdfBuffer } from '../../../utils/pdfBuilder'
 
 export default defineEventHandler(async (event) => {
-  const orgId = await getOrgId(event)
+  const user = await getSessionUser(event)
   const { id } = event.context.params!
 
   const { data: submission, error: subError } = await getSupabase()
     .from('submissions')
-    .select('id, created_at')
+    .select('id, user_id, created_at')
     .eq('id', id)
-    .eq('org_id', orgId)
+    .eq('org_id', user.org_id)
     .single()
 
   if (subError || !submission) {
     throw createError({ statusCode: 404, statusMessage: 'Submission not found' })
   }
 
+  if (user.role === 'underwriter' && (submission as any).user_id !== user.id) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+  }
+
   const { data: evaluation, error: evalError } = await getSupabase()
     .from('evaluations')
     .select('verdict')
     .eq('submission_id', id)
-    .eq('org_id', orgId)
+    .eq('org_id', user.org_id)
     .order('created_at', { ascending: false })
     .limit(1)
     .single()
@@ -31,7 +35,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const verdict = evaluation.verdict as any
-  const namedInsured: string | null = verdict.risk_profile?.named_insured || null
+  const rawNamed = verdict.risk_profile?.named_insured
+  const namedInsured: string | null = (typeof rawNamed === 'object' ? rawNamed?.value : rawNamed) || null
   const submissionDate = new Date(submission.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

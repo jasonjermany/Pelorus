@@ -113,13 +113,13 @@ export default defineEventHandler(async (event) => {
 
   setImmediate(async () => {
     try {
-      const texts = await Promise.all(
+      const fileResults = await Promise.all(
         attachmentFiles.map(async ({ data, filename }) => {
           const chunks = await parseFileToChunks(data, filename, PIPELINE_SUBMISSIONS)
-          return chunks.map((c) => c.embed || c.content).join('\n\n')
+          return { filename, text: chunks.map((c) => c.embed || c.content).join('\n\n') }
         })
       )
-      const rawText = texts.join('\n\n---\n\n')
+      const rawText = fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n')
 
       await getSupabase().from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 
@@ -144,7 +144,8 @@ export default defineEventHandler(async (event) => {
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
 
       if (brokerEmail) {
-        const namedInsured = verdict.risk_profile?.named_insured || null
+        const rawNamed = verdict.risk_profile?.named_insured
+        const namedInsured = (typeof rawNamed === 'object' ? rawNamed?.value : rawNamed) || null
         const sub = submission as any
         const pdfBuffer = await generatePdfBuffer(
           { ...verdict, analyzed_in_seconds: analyzedInSeconds } as any,
