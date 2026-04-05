@@ -1,5 +1,4 @@
 import { getSupabase } from '../../utils/supabase'
-import { embed } from '../../utils/embeddings'
 import { extractHardStops, extractRiskProfileFields, classifyChunks } from '../../utils/claude'
 import { parseFileToChunks, filterChunks, getChunkPage, getChunkBlockTypes } from '../../utils/reducto'
 import { getOrgId, requireAdmin } from '../../utils/org'
@@ -85,51 +84,38 @@ export default defineEventHandler(async (event) => {
   const keptChunks = chunks.filter((_, i) => classMap.get(i)?.keep !== false)
   lap(`claude classifyChunks → kept ${keptChunks.length}/${chunks.length}`, s)
 
-  // 4. Embed chunks (parallel)
-  s = t()
-  const chunkRows = await Promise.all(
-    keptChunks.map(async (chunk, i) => {
-      const originalIndex = chunks.indexOf(chunk)
-      const cls = classMap.get(originalIndex)
-      const vector = await embed(chunk.embed)
-      return {
-        org_id: orgId,
-        chunk_index: i,
-        content: chunk.content,
-        embed_text: chunk.embed,
-        embedding: vector,
-        page: getChunkPage(chunk),
-        block_types: getChunkBlockTypes(chunk),
-        is_pinned: false,
-        summary: cls?.summary ?? null,
-      }
-    })
-  )
-  lap(`embed ${keptChunks.length} chunks (parallel)`, s)
+  // 4. Build rows
+  const chunkRows = keptChunks.map((chunk, i) => {
+    const originalIndex = chunks.indexOf(chunk)
+    const cls = classMap.get(originalIndex)
+    return {
+      org_id: orgId,
+      chunk_index: i,
+      content: chunk.content,
+      embed_text: chunk.embed,
+      page: getChunkPage(chunk),
+      block_types: getChunkBlockTypes(chunk),
+      is_pinned: false,
+      summary: cls?.summary ?? null,
+    }
+  })
 
-  // 5. Embed hard stop rows (parallel)
-  s = t()
-  const hardStopRows = await Promise.all(
-    hardStops.map(async (hs, i) => {
-      const text = `${hs.rule_name}: ${hs.condition} (${hs.section})`
-      const vector = await embed(text)
-      return {
-        org_id: orgId,
-        chunk_index: chunks.length + i,
-        content: text,
-        embed_text: text,
-        embedding: vector,
-        page: null,
-        block_types: ['hard_stop'],
-        is_pinned: true,
-      }
-    })
-  )
-  lap(`embed ${hardStops.length} hard stop rows (parallel)`, s)
+  const hardStopRows = hardStops.map((hs, i) => {
+    const text = `${hs.rule_name}: ${hs.condition} (${hs.section})`
+    return {
+      org_id: orgId,
+      chunk_index: chunks.length + i,
+      content: text,
+      embed_text: text,
+      page: null,
+      block_types: ['hard_stop'],
+      is_pinned: true,
+    }
+  })
 
   const rows = [...chunkRows, ...hardStopRows]
 
-  // 6. Bulk insert into Supabase
+  // 5. Bulk insert into Supabase
   s = t()
   const { error } = await getSupabase().from('guideline_chunks').insert(rows as any)
   if (error) {

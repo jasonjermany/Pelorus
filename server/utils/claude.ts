@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { getRelevantChunks } from './rag'
+import { getGuidelineChunks } from './rag'
 import { CHECKS_TOOL, buildChecksMessages } from './prompts/checks'
 import { buildFlagsPrompt } from './prompts/flags'
 import { buildInsightsPrompt } from './prompts/insights'
@@ -85,11 +85,11 @@ export async function evaluateSubmission(
 
   console.log(`[eval] submission   ${submissionText.length} chars`)
   const t_rag = Date.now()
-  const { pinned, similar, riskProfileFields } = await getRelevantChunks(orgId ?? submission.org_id, submissionText)
-  console.log(`[eval] rag          ${Date.now() - t_rag}ms  (${pinned.length} pinned, ${similar.length} similar)`)
+  const { pinned, guidelines, riskProfileFields } = await getGuidelineChunks(orgId ?? submission.org_id)
+  console.log(`[eval] chunks       ${Date.now() - t_rag}ms  (${pinned.length} pinned, ${guidelines.length} guidelines)`)
 
   const hardStopsText = pinned.map((c: any) => `• ${c.content.slice(0, 240)}`).join('\n')
-  const guidelinesText = similar.map((c: any) => `[Page ${c.page}]\n${c.content}`).join('\n\n---\n\n')
+  const guidelinesText = guidelines.map((c: any) => `[Page ${c.page}]\n${c.content}`).join('\n\n---\n\n')
   const hardStopCheckList = pinned.map((c: any) => `- ${c.embed_text.split(':')[0].trim()}`).join('\n')
 
   // Fire insights + risk profile immediately — they need no check results
