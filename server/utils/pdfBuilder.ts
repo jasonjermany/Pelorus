@@ -1,6 +1,10 @@
 import { createRequire } from 'module'
+import { resolve } from 'path'
 
-const _require = createRequire(import.meta.url)
+// Resolve from process.cwd() (the server root at runtime) rather than
+// import.meta.url (a chunk file deep in the output tree), so that Node's
+// module resolution reliably finds pdfmake in .output/server/node_modules/.
+const _require = createRequire(resolve(process.cwd(), 'package.json'))
 
 // Lazily initialized — pdfmake + VFS fonts are large, load once
 let _pdfMake: any = null

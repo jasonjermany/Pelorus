@@ -28,6 +28,13 @@ export default defineNuxtConfig({
   nitro: {
     externals: {
       external: ['pdfmake'],
+      // Force Nitro's file tracer to include pdfmake in the deployment output.
+      // Without this, createRequire-based loading is invisible to static analysis
+      // and pdfmake never gets copied to .output/server/node_modules/.
+      traceInclude: [
+        './node_modules/pdfmake/build/pdfmake.js',
+        './node_modules/pdfmake/build/vfs_fonts.js',
+      ],
     },
   },
   compatibilityDate: '2025-07-15',
