@@ -18,7 +18,10 @@ export default defineEventHandler(async (event) => {
     return { ok: true }
   }
 
-  if (!parts?.length) return { ok: true }
+  if (!parts?.length) {
+    console.warn('[email/inbound] no parts — content-type:', getRequestHeader(event, 'content-type'))
+    return { ok: true }
+  }
 
   const field = (name: string) =>
     parts!.find((p) => p.name === name && !p.filename)?.data.toString('utf8').trim() ?? ''
