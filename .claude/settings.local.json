@@ -16,7 +16,17 @@
       "Bash(grep -n 'to=\"\"/\"\"' c:/Projects/Pelorus/app/pages/settings.vue c:/Projects/Pelorus/app/pages/submissions/[id].vue)",
       "Bash(node -e \"console.log\\(require\\(''crypto''\\).randomBytes\\(32\\).toString\\(''hex''\\)\\)\")",
       "Bash(xargs wc:*)",
-      "Bash(find /c/Projects/Pelorus/server -type f -name \"*.ts\" -not -path \"*/node_modules/*\" -exec wc -l {} +)"
+      "Bash(find /c/Projects/Pelorus/server -type f -name \"*.ts\" -not -path \"*/node_modules/*\" -exec wc -l {} +)",
+      "Bash(npm install:*)",
+      "Bash(npm ls:*)",
+      "Bash(node -e \"const p = require\\('pdfmake/build/vfs_fonts'\\); const keys = Object.keys\\(p.pdfMake?.vfs ?? p\\); console.log\\(keys.slice\\(0,8\\)\\)\")",
+      "Bash(node -e \"const P = require\\('pdfmake'\\); console.log\\(typeof P, Object.keys\\(P\\).slice\\(0,5\\)\\)\")",
+      "Bash(node -e \"const P = require\\('pdfmake'\\); console.log\\(P\\)\")",
+      "Bash(node -e ':*)",
+      "Bash(node -e \"const v = require\\('pdfmake/build/vfs_fonts'\\); console.log\\(Object.keys\\(v\\).slice\\(0,5\\)\\); console.log\\(typeof v.default\\)\")",
+      "Bash(node --input-type=commonjs --eval ':*)",
+      "Bash(node test-pdf.cjs)",
+      "Bash(node -e \"const p = require\\('./node_modules/pdfmake/build/pdfmake'\\); const doc = p.createPdf\\({content: 'hi'}\\); console.log\\(Object.keys\\(doc\\)\\)\")"
     ]
   }
 }

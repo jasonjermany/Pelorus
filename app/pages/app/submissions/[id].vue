@@ -21,6 +21,16 @@
             </div>
           </div>
         </div>
+        <button
+          v-if="verdict"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[13px] font-medium transition-colors disabled:opacity-50"
+          :disabled="isDownloading"
+          @click="downloadPdf"
+        >
+          <svg v-if="!isDownloading" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          {{ isDownloading ? 'Generating...' : 'Download PDF' }}
+        </button>
       </div>
     </AppHeader>
 
@@ -332,6 +342,7 @@ const isLoading = ref(false);
 const loadError = ref<string | null>(null);
 const isEvaluating = ref(false);
 const evalError = ref<string | null>(null);
+const isDownloading = ref(false);
 const tabs = ["Summary", "Guidelines", "Insights", "Risk Profile"] as const;
 const activeTab = ref<(typeof tabs)[number]>("Summary");
 
@@ -377,6 +388,22 @@ async function runEvaluation() {
     evalError.value = e?.data?.message || e?.message || "Evaluation failed";
   } finally {
     isEvaluating.value = false;
+  }
+}
+async function downloadPdf() {
+  isDownloading.value = true;
+  try {
+    const blob = await $fetch<Blob>(`/api/submissions/${id}/pdf`, { responseType: "blob" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `submission_review.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e: any) {
+    console.error("PDF download failed:", e?.message);
+  } finally {
+    isDownloading.value = false;
   }
 }
 onMounted(load);

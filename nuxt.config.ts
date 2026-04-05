@@ -25,6 +25,11 @@ export default defineNuxtConfig({
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
     },
   },
+  nitro: {
+    externals: {
+      external: ['pdfmake'],
+    },
+  },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 })
