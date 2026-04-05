@@ -54,7 +54,7 @@
             <span class="block font-sans text-[26px] tracking-[-0.5px] mb-2" :class="decisionTextClass">{{ verdict.decision }}</span>
             <p class="text-[13px] text-black/70 leading-relaxed mb-3">{{ verdict.recommendation?.summary }}</p>
             <div class="flex items-center flex-wrap gap-2.5">
-              <span v-if="verdict.risk_profile?.tiv && verdict.risk_profile.tiv !== 'N/A'" class="text-[12px] text-black/55">TIV: {{ verdict.risk_profile.tiv }}</span>
+              <span v-if="verdict.risk_profile?.tiv && !rpIsBlank(verdict.risk_profile.tiv)" class="text-[12px] text-black/55">TIV: {{ rpValue(verdict.risk_profile.tiv) }}</span>
               <span v-if="verdict.analyzed_in_seconds" class="bg-black/[0.06] text-[11px] text-black/60 font-medium px-2.5 py-1 rounded-full">Analyzed in {{ verdict.analyzed_in_seconds }}s</span>
             </div>
           </div>
@@ -159,11 +159,12 @@
               </div>
               <table class="w-full text-left text-[13px]">
                 <tbody class="divide-y divide-black/[0.04]">
-                  <tr v-for="(value, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
+                  <tr v-for="(raw, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
                     <td class="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-black/50 w-44 align-top">{{ formatKey(key) }}</td>
-                    <td class="px-5 py-3 text-[13px] text-black/75 leading-relaxed align-top">
-                      <span v-if="value && value !== 'null' && value !== 'N/A'">{{ value }}</span>
+                    <td class="px-5 py-3 align-top">
+                      <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
                       <span v-else class="text-black/25">—</span>
+                      <p v-if="rpSource(raw)" class="text-[11px] text-black/35 mt-0.5">{{ rpSource(raw) }}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -260,11 +261,12 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-black/[0.04]">
-                  <tr v-for="(value, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
+                  <tr v-for="(raw, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
                     <td class="px-5 py-3 text-[12px] font-semibold text-black/55 uppercase tracking-[0.06em] w-48 align-top">{{ formatKey(key) }}</td>
-                    <td class="px-5 py-3 text-[13px] text-black/75 leading-relaxed align-top">
-                      <span v-if="value && value !== 'null' && value !== 'N/A'">{{ value }}</span>
+                    <td class="px-5 py-3 align-top">
+                      <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
                       <span v-else class="text-black/25">—</span>
+                      <p v-if="rpSource(raw)" class="text-[11px] text-black/35 mt-0.5">{{ rpSource(raw) }}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -317,7 +319,7 @@ type Verdict = {
   guideline_checks: Array<{ rule: string; required: string; submitted: string; status: string; cited_section: string }>;
   insights: Record<string, string>;
   missing_info: Array<{ label: string; description: string }>;
-  risk_profile: Record<string, string>;
+  risk_profile: Record<string, { value: string; source?: string } | string>;
   analyzed_in_seconds?: string;
 };
 type SubmissionResponse = {
@@ -362,6 +364,17 @@ const decisionTextClass = computed(() => {
 
 function formatKey(key: string) {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+function rpValue(v: { value: string; source?: string } | string): string {
+  return typeof v === "object" ? v.value : v;
+}
+function rpSource(v: { value: string; source?: string } | string): string | null {
+  if (typeof v !== "object") return null;
+  return v.source && v.source !== "Not disclosed" ? v.source : null;
+}
+function rpIsBlank(v: { value: string; source?: string } | string): boolean {
+  const val = rpValue(v);
+  return !val || val === "null" || val === "N/A" || val === "Not disclosed";
 }
 // Handles both legacy 0-100 scores and new 0-10 scores
 function normalizeScore(score: number): number {

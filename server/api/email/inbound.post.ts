@@ -59,14 +59,15 @@ export default defineEventHandler(async (event) => {
   const orgId = org.id
 
   // Only process submissions from users who belong to this org
-  const { data: userRecord } = await getSupabase()
-    .from('users')
-    .select('id')
-    .eq('org_id', orgId)
-    .eq('email', brokerEmail)
-    .single()
+  // const { data: userRecord } = await getSupabase()
+  //   .from('users')
+  //   .select('id')
+  //   .eq('org_id', orgId)
+  //   .eq('email', brokerEmail)
+  //   .single()
 
-  if (!brokerEmail || !userRecord) {
+  // if (!brokerEmail || !userRecord) {
+  if (!brokerEmail) {
     console.warn(`[email/inbound] sender not whitelisted  from=${brokerEmail}  handle=${handle}`)
     return { ok: true }
   }

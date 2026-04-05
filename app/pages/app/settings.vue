@@ -176,7 +176,6 @@ type GuidelineChunk = {
   page: number | null;
   block_types: string[];
   is_pinned: boolean;
-  rule_type: string;
   embed_text: string;
   summary: string | null;
   created_at: string;
@@ -197,11 +196,14 @@ const expandedId = ref<string | null>(null);
 const pinnedCount = computed(() => chunks.value.filter((c) => c.is_pinned).length);
 const standardCount = computed(() => chunks.value.filter((c) => !c.is_pinned).length);
 
+function cleanLines(t: string) {
+  return t.replace(/^#+\s+/gm, "").split("\n").filter((l) => !l.includes("(cont.)") && !/^\s*={2,}\s*$/.test(l)).join("\n").trim();
+}
 function getCleanText(t: string) {
-  return t.replace(/^#+\s+/gm, "").split("\n").filter((l) => !l.includes("(cont.)")).join("\n").trim();
+  return cleanLines(t);
 }
 function getChunkPreview(t: string) {
-  let s = t.replace(/^#+\s+/gm, "").split("\n").filter((l) => !l.includes("(cont.)")).join("\n").replace(/\s+/g, " ").trim();
+  let s = cleanLines(t).replace(/\s+/g, " ").trim();
   if (s.length > 140) s = s.slice(0, 140).replace(/\s\S*$/, "") + " …";
   return s;
 }

@@ -62,13 +62,13 @@ export default defineEventHandler(async (event) => {
         rawText = inlineText
       } else {
         const t_reducto = Date.now()
-        const texts = await Promise.all(
+        const fileResults = await Promise.all(
           fileParts.map(async ({ data, filename }) => {
             const chunks = await parseFileToChunks(data, filename, PIPELINE_SUBMISSIONS)
-            return chunks.map((c) => c.embed || c.content).join('\n\n')
+            return { filename, text: chunks.map((c) => c.embed || c.content).join('\n\n') }
           })
         )
-        rawText = texts.join('\n\n---\n\n')
+        rawText = fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n')
         console.log(`[ingest] reducto     ${Date.now() - t_reducto}ms  (${fileParts.length} file${fileParts.length !== 1 ? 's' : ''})`)
       }
 

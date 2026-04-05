@@ -51,7 +51,7 @@ const RULE_BULLET = /[◆●✔•]/  // bullet chars = real rule content
 export function filterChunks(chunks: ReductoChunk[]): ReductoChunk[] {
   return chunks.filter((chunk) => {
     // Must have embed text of substance
-    if (!chunk.embed || chunk.embed.length < 80) return false
+    if (!chunk.embed || chunk.embed.length < 50) return false
 
     // Skip chunks made entirely of non-content block types
     const allSkippable = chunk.blocks.every((b) => SKIP_TYPES.has(b.type))

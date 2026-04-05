@@ -57,7 +57,7 @@ async function runFlagsCall(
   }
 }
 
-async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<Record<string, string>> {
+async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<Record<string, { value: string; source: string }>> {
   const prompt = buildRiskProfilePrompt(submissionText, fields)
 
   const response = await anthropic.messages.create({
@@ -178,7 +178,6 @@ export async function evaluateSubmission(
 export type ChunkClassification = {
   index: number
   keep: boolean
-  rule_type: 'hard_stop' | 'eligibility' | 'pricing' | 'coverage' | 'standard'
   summary: string
 }
 
@@ -201,7 +200,7 @@ async function classifyBatch(batch: Array<{ index: number; embed: string }>): Pr
     return JSON.parse(clean) as ChunkClassification[]
   } catch {
     console.warn(`[guidelines] classifyBatch parse failed for indices ${batch.at(0)?.index}–${batch.at(-1)?.index} — keeping all`)
-    return batch.map((c) => ({ index: c.index, keep: true, rule_type: 'standard' as const, summary: '' }))
+    return batch.map((c) => ({ index: c.index, keep: true, summary: '' }))
   }
 }
 

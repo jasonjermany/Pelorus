@@ -101,7 +101,6 @@ export default defineEventHandler(async (event) => {
         page: getChunkPage(chunk),
         block_types: getChunkBlockTypes(chunk),
         is_pinned: false,
-        rule_type: cls?.rule_type ?? 'standard',
         summary: cls?.summary ?? null,
       }
     })
@@ -123,7 +122,6 @@ export default defineEventHandler(async (event) => {
         page: null,
         block_types: ['hard_stop'],
         is_pinned: true,
-        rule_type: 'hard_stop',
       }
     })
   )

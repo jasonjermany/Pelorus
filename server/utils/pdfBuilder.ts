@@ -30,7 +30,7 @@ type Verdict = {
   guideline_checks?: Array<{ rule: string; required: string; submitted: string; status: string; cited_section: string }>
   insights?: Record<string, string>
   missing_info?: Array<{ label: string; description: string }>
-  risk_profile?: Record<string, string>
+  risk_profile?: Record<string, { value: string; source: string } | string>
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -114,8 +114,8 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
             { text: 'DECISION', style: 'label' },
             { text: verdict.decision, fontSize: 24, bold: true, color: colors.text, margin: [0, 4, 0, 8] },
             { text: verdict.recommendation?.summary ?? '', style: 'body' },
-            ...(verdict.risk_profile?.tiv && verdict.risk_profile.tiv !== 'N/A'
-              ? [{ text: `TIV: ${verdict.risk_profile.tiv}`, style: 'caption', margin: [0, 6, 0, 0] as [number, number, number, number] }]
+            ...(verdict.risk_profile?.tiv && (typeof verdict.risk_profile.tiv === 'object' ? verdict.risk_profile.tiv.value : verdict.risk_profile.tiv) !== 'N/A'
+              ? [{ text: `TIV: ${typeof verdict.risk_profile.tiv === 'object' ? verdict.risk_profile.tiv.value : verdict.risk_profile.tiv}`, style: 'caption', margin: [0, 6, 0, 0] as [number, number, number, number] }]
               : []),
             ...(verdict.analyzed_in_seconds
               ? [{ text: `Analyzed in ${verdict.analyzed_in_seconds}s`, style: 'caption', margin: [0, 3, 0, 0] as [number, number, number, number] }]
@@ -146,12 +146,30 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
 
   // ── Risk Profile ──
   const riskEntries = Object.entries(verdict.risk_profile ?? {})
-    .filter(([_, v]) => v && v !== 'null' && v !== 'N/A')
-    .map(([k, v]) => [formatKey(k), v] as [string, string])
+    .map(([k, raw]) => {
+      const value = typeof raw === 'object' ? raw.value : raw
+      const source = typeof raw === 'object' && raw.source && raw.source !== 'Not disclosed' ? raw.source : null
+      return { label: formatKey(k), value, source }
+    })
+    .filter(({ value }) => value && value !== 'null' && value !== 'N/A' && value !== 'Not disclosed')
 
   if (riskEntries.length) {
     content.push(sectionTitle('Risk Profile'))
-    content.push(kvTable(riskEntries))
+    content.push({
+      table: {
+        widths: [140, '*'],
+        body: riskEntries.map(({ label, value, source }) => [
+          { text: label, style: 'tableLabel' },
+          {
+            stack: [
+              { text: value || '—', style: 'tableValue' },
+              ...(source ? [{ text: source, fontSize: 8, color: '#94a3b8', margin: [0, 2, 0, 0] as [number, number, number, number] }] : []),
+            ],
+          },
+        ]),
+      },
+      layout: hairlineLayout,
+    })
   }
 
   // ── Dimension Scores ──

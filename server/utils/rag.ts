@@ -6,7 +6,7 @@ export async function getRelevantChunks(orgId: string, submissionText: string) {
   const [pinnedResult, orgResult, vector] = await Promise.all([
     getSupabase()
       .from('guideline_chunks')
-      .select('content, embed_text, page, rule_type')
+      .select('content, embed_text, page')
       .eq('org_id', orgId)
       .eq('is_pinned', true)
       .order('chunk_index', { ascending: true }),
