@@ -56,13 +56,12 @@ export default defineEventHandler(async (event) => {
 
   const orgId = org.id
 
-  // Prefer the first attachment; fall back to plain-text body, then HTML stripped of tags.
-  let filePart: { data: Buffer; filename: string }
+  // Collect all attachments; fall back to plain-text body wrapped as .txt
+  const attachmentFiles = parts
+    .filter((p) => !!p.filename && p.data?.length > 0)
+    .map((p) => ({ data: Buffer.from(p.data), filename: p.filename! }))
 
-  const attachmentFile = parts.find((p) => !!p.filename && p.data?.length > 0)
-  if (attachmentFile) {
-    filePart = { data: Buffer.from(attachmentFile.data), filename: attachmentFile.filename! }
-  } else {
+  if (!attachmentFiles.length) {
     const body =
       textBody ||
       htmlBody.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, ' ').trim() ||
@@ -71,7 +70,7 @@ export default defineEventHandler(async (event) => {
     const filename = subject
       ? `${subject.slice(0, 60).replace(/[^a-z0-9 ._-]/gi, '_')}.txt`
       : 'submission.txt'
-    filePart = { data: Buffer.from(body, 'utf8'), filename }
+    attachmentFiles.push({ data: Buffer.from(body, 'utf8'), filename })
   }
 
   // Insert immediately so it shows up in the inbox right away.
@@ -98,8 +97,13 @@ export default defineEventHandler(async (event) => {
 
   setImmediate(async () => {
     try {
-      const chunks = await parseFileToChunks(filePart.data, filePart.filename, PIPELINE_SUBMISSIONS)
-      const rawText = chunks.map((c) => c.embed || c.content).join('\n\n')
+      const texts = await Promise.all(
+        attachmentFiles.map(async ({ data, filename }) => {
+          const chunks = await parseFileToChunks(data, filename, PIPELINE_SUBMISSIONS)
+          return chunks.map((c) => c.embed || c.content).join('\n\n')
+        })
+      )
+      const rawText = texts.join('\n\n---\n\n')
 
       await getSupabase().from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 

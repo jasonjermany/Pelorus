@@ -26,7 +26,9 @@
       "Bash(node -e \"const v = require\\('pdfmake/build/vfs_fonts'\\); console.log\\(Object.keys\\(v\\).slice\\(0,5\\)\\); console.log\\(typeof v.default\\)\")",
       "Bash(node --input-type=commonjs --eval ':*)",
       "Bash(node test-pdf.cjs)",
-      "Bash(node -e \"const p = require\\('./node_modules/pdfmake/build/pdfmake'\\); const doc = p.createPdf\\({content: 'hi'}\\); console.log\\(Object.keys\\(doc\\)\\)\")"
+      "Bash(node -e \"const p = require\\('./node_modules/pdfmake/build/pdfmake'\\); const doc = p.createPdf\\({content: 'hi'}\\); console.log\\(Object.keys\\(doc\\)\\)\")",
+      "Bash(node -e \"const d = require\\('c:/Projects/Pelorus/node_modules/pdfmake/package.json'\\); console.log\\(JSON.stringify\\({main: d.main, module: d.module, exports: d.exports, type: d.type}, null, 2\\)\\)\")",
+      "Bash(node -e \"const d = require\\('c:/Projects/Pelorus/node_modules/@anthropic-ai/sdk/package.json'\\); console.log\\(JSON.stringify\\({main: d.main, module: d.module, type: d.type, exports: Object.keys\\(d.exports || {}\\).slice\\(0,4\\)}, null, 2\\)\\)\")"
     ]
   }
 }

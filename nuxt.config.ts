@@ -2,7 +2,9 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', 'nuxt-auth-utils'],
   typescript: {
-    include: ['types/**/*.d.ts'],
+    tsConfig: {
+      include: ['types/**/*.d.ts'],
+    },
   },
   css: ['~/assets/css/main.css'],
   vite: {
@@ -14,6 +16,8 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    sendgridApiKey: process.env.SENDGRID_API_KEY,
+    siteUrl: process.env.SITE_URL || 'https://www.pelorusai.io',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     anthropicModel: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
     supabaseUrl: process.env.SUPABASE_URL,

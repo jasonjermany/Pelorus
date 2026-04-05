@@ -2,6 +2,7 @@ import { getSupabase } from '../../utils/supabase'
 import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { getOrgId } from '../../utils/org'
 import { evaluateSubmission } from '../../utils/claude'
+import { sendResultsEmail } from '../../utils/email'
 
 export default defineEventHandler(async (event) => {
   const contentType = getRequestHeader(event, 'content-type') || ''
@@ -92,6 +93,16 @@ export default defineEventHandler(async (event) => {
         .eq('id', submission.id)
       if (completeError) throw new Error(`Failed to mark complete: ${completeError.message}`)
       console.log(`[ingest] total       ${Date.now() - t_total}ms`)
+
+      if (submission.broker_email) {
+        const namedInsured = storedVerdict.risk_profile?.named_insured || null
+        await sendResultsEmail(
+          submission.broker_email,
+          submission.id,
+          verdict.decision,
+          namedInsured,
+        ).catch(err => console.error(`[email] failed  submission=${submission.id}  error=${err.message}`))
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       const stack = err instanceof Error ? err.stack : undefined
