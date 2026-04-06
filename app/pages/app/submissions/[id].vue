@@ -345,7 +345,7 @@
               :class="
                 msg.role === 'user'
                   ? 'bg-primary-800 text-white rounded-2xl rounded-tr-sm max-w-[80%] whitespace-pre-wrap'
-                  : 'bg-[#f5f5f7] text-black/75 rounded-2xl rounded-tl-sm max-w-[85%] prose prose-sm prose-neutral max-w-none'
+                  : 'chat-assistant-msg bg-[#f5f5f7] text-black/75 rounded-2xl rounded-tl-sm max-w-[85%]'
               "
               v-html="msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content"
             />
@@ -403,7 +403,7 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 
 function renderMarkdown(content: string): string {
-  return DOMPurify.sanitize(marked.parse(content) as string);
+  return DOMPurify.sanitize(marked.parse(content, { breaks: true }) as string);
 }
 
 type Verdict = {
@@ -549,18 +549,36 @@ const chatError = ref<string | null>(null);
 const messagesContainer = ref<HTMLElement | null>(null);
 const chatInputEl = ref<HTMLTextAreaElement | null>(null);
 
-watch(chatOpen, (open) => {
+watch(chatOpen, async (open) => {
   if (open && messages.value.length === 0) {
-    const label = namedInsured.value || "this submission";
-    messages.value.push({
-      role: "assistant",
-      content: `Ask me anything about ${label} — I can search the web for business info, loss history, news, and more.`,
-    });
+    await loadChatHistory();
   }
   if (open) {
     nextTick(() => scrollToBottom());
   }
 });
+
+async function loadChatHistory() {
+  const label = namedInsured.value || "this submission";
+  try {
+    const { messages: history } = await $fetch<{ messages: ChatMessage[] }>(
+      `/api/chat/history?submissionId=${id}`
+    );
+    if (history.length > 0) {
+      messages.value = history;
+    } else {
+      messages.value = [{
+        role: "assistant",
+        content: `Ask me anything about ${label} — I can search the web for business info, loss history, news, and more.`,
+      }];
+    }
+  } catch {
+    messages.value = [{
+      role: "assistant",
+      content: `Ask me anything about ${label} — I can search the web for business info, loss history, news, and more.`,
+    }];
+  }
+}
 
 function scrollToBottom() {
   const el = messagesContainer.value;
@@ -608,3 +626,32 @@ async function sendMessage() {
   }
 }
 </script>
+
+<style scoped>
+.chat-assistant-msg :deep(p) {
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.chat-assistant-msg :deep(p:last-child) {
+  margin-bottom: 0;
+}
+.chat-assistant-msg :deep(ul),
+.chat-assistant-msg :deep(ol) {
+  padding-left: 1.25em;
+  margin-bottom: 8px;
+}
+.chat-assistant-msg :deep(li) {
+  margin-bottom: 4px;
+  line-height: 1.6;
+}
+.chat-assistant-msg :deep(li:last-child) {
+  margin-bottom: 0;
+}
+.chat-assistant-msg :deep(strong) {
+  display: inline-block;
+  margin-top: 12px;
+}
+.chat-assistant-msg :deep(strong:first-child) {
+  margin-top: 0;
+}
+</style>
