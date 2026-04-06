@@ -1,29 +1,20 @@
 <template>
-  <div class="min-h-screen bg-surface-50 font-sans">
+  <div class="min-h-screen bg-[#f5f5f7] font-sans">
     <!-- Header -->
     <AppHeader variant="app">
-      <div
-        class="mx-auto max-w-5xl px-8 py-3.5 flex items-center justify-between gap-4"
-      >
-        <div class="flex flex-col gap-1.5">
-          <NuxtLink
-            to="/app"
-            class="text-[13px] text-white/60 hover:text-white/90 transition-colors tracking-[0.02em]"
-            >← Inbox</NuxtLink
-          >
-          <div class="flex items-center gap-2">
-            <img src="/PelorusLogo.png" width="30" height="30" alt="Pelorus" />
-            <div class="flex flex-col">
-              <span class="font-sans text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
-                {{ namedInsured || 'Submission Review' }}
-              </span>
-              <span v-if="namedInsured" class="text-[14px] text-white/65 tracking-[0.01em]">Submission Review</span>
-            </div>
+      <div class="mx-auto max-w-4xl px-8 py-3.5 flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <NuxtLink to="/app" class="text-[13px] text-white/60 hover:text-white/90 transition-colors tracking-[0.02em]">← Inbox</NuxtLink>
+          <div class="flex items-center gap-2.5">
+            <img src="/PelorusLogo.png" width="28" height="28" alt="Pelorus" />
+            <span class="font-sans text-[20px] font-semibold text-white tracking-[-0.3px]">
+              {{ namedInsured || 'Submission Review' }}
+            </span>
           </div>
         </div>
         <button
           v-if="verdict"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[13px] font-medium transition-colors disabled:opacity-50"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[13px] font-medium transition-colors disabled:opacity-50"
           :disabled="isDownloading"
           @click="downloadPdf"
         >
@@ -34,64 +25,67 @@
       </div>
     </AppHeader>
 
-    <main class="mx-auto max-w-5xl px-8 py-8 flex flex-col gap-4">
+    <main class="mx-auto max-w-4xl px-8 py-8 flex flex-col gap-5">
       <div v-if="isLoading" class="py-16 text-center text-[13px] text-black/30">Loading...</div>
       <div v-else-if="loadError" class="py-16 text-center text-[13px] text-danger-700">{{ loadError }}</div>
 
       <template v-else>
-        <!-- Decision Banner -->
+
+        <!-- Decision Card -->
         <div
           v-if="verdict"
-          class="flex items-start justify-between gap-6 rounded-xl px-7 py-5 border"
-          :class="{
-            'bg-success-500/[0.04] border-success-500/20': verdict.decision === 'PROCEED',
-            'bg-accent-500/[0.06] border-accent-500/20': verdict.decision === 'REFER',
-            'bg-danger-500/[0.04] border-danger-500/15': verdict.decision === 'DECLINE',
-          }"
+          class="rounded-2xl p-7"
+          :style="decisionCardStyle"
         >
-          <div class="flex-1 min-w-0">
-            <span class="block text-[10px] font-bold tracking-[0.12em] uppercase text-black/50 mb-1">Decision</span>
-            <span class="block font-sans text-[26px] tracking-[-0.5px] mb-2" :class="decisionTextClass">{{ verdict.decision }}</span>
-            <p class="text-[13px] text-black/70 leading-relaxed mb-3">{{ verdict.recommendation?.summary }}</p>
-            <div class="flex items-center flex-wrap gap-2.5">
-              <span v-if="verdict.risk_profile?.tiv && !rpIsBlank(verdict.risk_profile.tiv)" class="text-[12px] text-black/55">TIV: {{ rpValue(verdict.risk_profile.tiv) }}</span>
-              <span v-if="verdict.analyzed_in_seconds" class="bg-black/[0.06] text-[11px] text-black/60 font-medium px-2.5 py-1 rounded-full">Analyzed in {{ verdict.analyzed_in_seconds }}s</span>
+          <div class="flex items-start justify-between gap-6">
+            <div class="flex-1 min-w-0">
+              <p class="text-[11px] font-semibold tracking-[0.1em] uppercase mb-3" :style="{ color: decisionColors.label }">Decision</p>
+              <!-- Decision pill -->
+              <span
+                class="inline-flex items-center px-4 py-1.5 rounded-full text-[13px] font-semibold tracking-[0.02em] mb-4"
+                :style="{ background: decisionColors.pillBg, color: decisionColors.pillText }"
+              >{{ verdict.decision }}</span>
+              <p class="text-[14px] leading-[1.6] mb-4" :style="{ color: decisionColors.body }">{{ verdict.recommendation?.summary }}</p>
+              <div class="flex items-center flex-wrap gap-2">
+                <span v-if="verdict.risk_profile?.tiv && !rpIsBlank(verdict.risk_profile.tiv)" class="text-[12px]" :style="{ color: decisionColors.meta }">TIV: {{ rpValue(verdict.risk_profile.tiv) }}</span>
+                <span v-if="verdict.analyzed_in_seconds" class="text-[11px] font-medium px-2.5 py-1 rounded-full" :style="{ background: decisionColors.metaBg, color: decisionColors.meta }">Analyzed in {{ verdict.analyzed_in_seconds }}s</span>
+              </div>
             </div>
-          </div>
-          <div class="text-right flex-shrink-0 flex items-baseline gap-1.5">
-            <span class="font-sans text-[48px] tracking-[-2px] leading-none" :class="decisionTextClass">{{ normalizeScore(verdict.composite_score).toFixed(1) }}</span>
-            <span class="text-[22px] font-light" :class="decisionTextClass">/ 10</span>
+            <!-- Hero score -->
+            <div class="flex-shrink-0 flex flex-col items-end">
+              <span class="font-sans leading-none tracking-[-3px]" style="font-size: 72px; font-weight: 300;" :style="{ color: decisionColors.score }">{{ normalizeScore(verdict.composite_score).toFixed(1) }}</span>
+              <span class="text-[13px] font-medium -mt-1" :style="{ color: decisionColors.scoreLabel }">out of 10</span>
+            </div>
           </div>
         </div>
 
         <!-- Dimension Scores -->
-        <div v-if="verdict?.dimension_scores" class="bg-white rounded-xl border border-black/[0.07] shadow-card p-5">
-          <h3 class="text-[12px] font-semibold text-primary-800 mb-4">Dimension Scores</h3>
-          <div class="grid grid-cols-2 gap-x-8 gap-y-3">
-            <div v-for="(score, key) in verdict.dimension_scores" :key="key">
-              <div class="flex justify-between mb-1.5">
-                <span class="text-[12px] font-medium text-black/65">{{ formatKey(key) }}</span>
-                <span class="text-[12px] font-bold text-primary-800">{{ normalizeScore(score).toFixed(1) }}<span class="text-[10px] font-normal text-primary-800">/10</span></span>
-              </div>
-              <div class="h-1.5 bg-black/[0.06] rounded-full overflow-hidden">
+        <div v-if="verdict?.dimension_scores" class="bg-white rounded-2xl p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+          <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40 mb-5">Dimension Scores</p>
+          <div class="flex flex-col divide-y divide-black/[0.04]">
+            <div v-for="(score, key) in verdict.dimension_scores" :key="key" class="flex items-center gap-4 py-3.5">
+              <span class="text-[13px] text-black/60 w-36 flex-shrink-0">{{ formatKey(key) }}</span>
+              <div class="flex-1 h-1 bg-black/[0.06] rounded-full overflow-hidden">
                 <div
-                  class="h-1.5 rounded-full transition-all duration-500"
+                  class="h-1 rounded-full transition-all duration-700"
                   :class="normalizeScore(score) >= 7.5 ? 'bg-success-500' : normalizeScore(score) >= 5.0 ? 'bg-accent-500' : 'bg-danger-500'"
                   :style="{ width: `${normalizeScore(score) * 10}%` }"
                 />
               </div>
+              <span class="text-[13px] font-semibold text-primary-800 w-8 text-right flex-shrink-0">{{ normalizeScore(score).toFixed(1) }}</span>
             </div>
           </div>
         </div>
 
         <!-- Tabs -->
         <div v-if="verdict">
-          <div class="flex gap-1 bg-white rounded-xl border border-black/[0.07] shadow-card p-1 mb-4">
+          <!-- iOS segmented control -->
+          <div class="bg-black/[0.06] rounded-xl p-1 mb-5 flex gap-0.5">
             <button
               v-for="tab in tabs"
               :key="tab"
-              class="flex-1 py-2.5 rounded-lg text-[13px] font-semibold transition-all"
-              :class="activeTab === tab ? 'bg-primary-800 text-white' : 'text-black/55 hover:bg-surface-50 hover:text-primary-800'"
+              class="flex-1 py-2 rounded-lg text-[13px] font-medium transition-all duration-200"
+              :class="activeTab === tab ? 'bg-white text-primary-800 shadow-sm' : 'text-black/50 hover:text-black/70'"
               @click="activeTab = tab"
             >
               {{ tab }}
@@ -102,121 +96,113 @@
           <div v-if="activeTab === 'Summary'" class="flex flex-col gap-4">
 
             <!-- Recommended Next Action -->
-            <div class="bg-primary-800 rounded-xl p-6">
-              <p class="text-[10px] font-bold tracking-[0.12em] uppercase text-white/50 mb-1.5">Recommended Next Action</p>
-              <p class="text-[14px] text-white/90 leading-relaxed mb-4">{{ verdict.recommendation?.summary }}</p>
-              <ol class="flex flex-col gap-2 list-none">
-                <li v-for="(item, i) in verdict.recommendation?.action_items" :key="i" class="flex gap-2.5 text-[13px] text-white/75 leading-relaxed">
-                  <span class="text-accent-500 font-bold flex-shrink-0">{{ i + 1 }}.</span>{{ item }}
+            <div class="bg-primary-800 rounded-2xl p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-white/40 mb-3">Recommended Next Action</p>
+              <ol class="flex flex-col gap-2.5 list-none">
+                <li v-for="(item, i) in verdict.recommendation?.action_items" :key="i" class="flex gap-3 text-[13px] text-white/80 leading-relaxed">
+                  <span class="text-accent-400 font-semibold flex-shrink-0 w-4">{{ i + 1 }}.</span>{{ item }}
                 </li>
               </ol>
             </div>
 
             <!-- Concerns & Flags -->
-            <div v-if="sortedFlags.length" class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05] flex items-center justify-between">
-                <h3 class="text-[13px] font-semibold text-primary-800">Concerns &amp; Flags</h3>
-                <span class="text-[11px] text-black/55">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
+            <div v-if="sortedFlags.length" class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 flex items-center justify-between border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Concerns &amp; Flags</p>
+                <span class="text-[12px] text-black/40">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
               </div>
               <div class="flex flex-col divide-y divide-black/[0.04]">
                 <div
                   v-for="(flag, i) in sortedFlags"
                   :key="i"
-                  class="p-5"
-                  :class="flag.type === 'CONDITION' ? 'bg-danger-500/[0.02]' : 'bg-accent-500/[0.02]'"
+                  class="px-6 py-5 flex gap-4"
                 >
-                  <div class="flex items-start justify-between gap-3 mb-2">
-                    <p class="text-[14px] font-semibold text-primary-800">{{ flag.title }}</p>
-                    <span
-                      class="flex-shrink-0 text-[10px] font-bold tracking-[0.06em] px-2.5 py-1 rounded-full"
-                      :class="flag.type === 'CONDITION' ? 'bg-danger-500/10 text-danger-700' : 'bg-accent-500/15 text-accent-600'"
-                      >{{ flag.type }}</span
-                    >
+                  <!-- Left accent bar -->
+                  <div class="w-[3px] rounded-full flex-shrink-0 mt-0.5" :class="flag.type === 'CONDITION' ? 'bg-danger-500' : 'bg-accent-400'" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[14px] font-medium text-primary-800 mb-1.5">{{ flag.title }}</p>
+                    <p class="text-[13px] text-black/60 leading-relaxed mb-2.5">{{ flag.explanation }}</p>
+                    <p class="text-[12px] text-black/55 mb-1.5"><span class="font-semibold text-primary-800">Action:</span> {{ flag.action_required }}</p>
+                    <p class="text-[11px] text-black/40"><span class="font-semibold text-primary-800">Ref:</span> {{ flag.cited_section }}</p>
                   </div>
-                  <p class="text-[13px] text-black/70 leading-relaxed mb-2">{{ flag.explanation }}</p>
-                  <p class="text-[12px] text-black/65 font-medium mb-1.5"><strong class="text-primary-800">Action:</strong> {{ flag.action_required }}</p>
-                  <p class="text-[11px] text-black/50"><span class="font-semibold text-primary-800">Ref:</span> {{ flag.cited_section }}</p>
                 </div>
               </div>
             </div>
 
             <!-- Favorable Factors -->
-            <div v-if="verdict.favorable_factors?.length" class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05]">
-                <h3 class="text-[13px] font-semibold text-success-700">Favorable Factors</h3>
+            <div v-if="verdict.favorable_factors?.length" class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Favorable Factors</p>
               </div>
               <ul class="flex flex-col divide-y divide-black/[0.04] list-none">
-                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 py-3 text-[13px] text-black/70 leading-relaxed">
-                  <span class="text-success-500 font-bold flex-shrink-0 mt-0.5">✓</span>{{ f }}
+                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-6 py-4 text-[13px] text-black/65 leading-relaxed">
+                  <span class="text-success-500 flex-shrink-0 mt-0.5">✓</span>{{ f }}
                 </li>
               </ul>
             </div>
 
             <!-- Risk Summary for Quoting -->
-            <div v-if="verdict.risk_profile" class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05]">
-                <h3 class="text-[13px] font-semibold text-primary-800">Risk Summary for Quoting</h3>
+            <div v-if="verdict.risk_profile" class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Risk Summary</p>
               </div>
-              <table class="w-full text-left text-[13px]">
-                <tbody class="divide-y divide-black/[0.04]">
-                  <tr v-for="(raw, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
-                    <td class="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-black/50 w-44 align-top">{{ formatKey(key) }}</td>
-                    <td class="px-5 py-3 align-top">
-                      <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
-                      <span v-else class="text-black/25">—</span>
-                      <p v-if="rpSource(raw)" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="divide-y divide-black/[0.04]">
+                <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="flex gap-4 px-6 py-3.5 hover:bg-black/[0.01] transition-colors">
+                  <span class="text-[11px] font-semibold uppercase tracking-[0.06em] text-black/40 w-40 flex-shrink-0 pt-0.5">{{ formatKey(key) }}</span>
+                  <div class="flex-1 min-w-0">
+                    <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75">{{ rpValue(raw) }}</span>
+                    <span v-else class="text-black/20">—</span>
+                    <p v-if="rpSource(raw)" class="text-[11px] text-black/40 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Guidelines -->
           <div v-else-if="activeTab === 'Guidelines'">
-            <div class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05] flex items-center justify-between">
-                <h3 class="text-[13px] font-semibold text-primary-800">Guideline Checks</h3>
-                <span class="text-[12px] text-black/50">
+            <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04] flex items-center justify-between">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Guideline Checks</p>
+                <span class="text-[12px] text-black/40">
                   <span v-if="verdict.guideline_checks?.length">{{ verdict.guideline_checks.length }} check{{ verdict.guideline_checks.length !== 1 ? "s" : "" }} require attention</span>
                   <span v-else class="text-success-700 font-medium">All checks passed</span>
                 </span>
               </div>
               <table class="w-full text-left text-[13px]">
                 <thead>
-                  <tr class="border-b border-black/[0.05] bg-surface-50">
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60">Rule</th>
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60">Required</th>
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60">Submitted</th>
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60 w-24">Status</th>
+                  <tr class="border-b border-black/[0.04] bg-black/[0.01]">
+                    <th class="px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-black/40">Rule</th>
+                    <th class="px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-black/40">Required</th>
+                    <th class="px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-black/40">Submitted</th>
+                    <th class="px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-black/40 w-20">Status</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-black/[0.04]">
                   <tr
                     v-for="(check, i) in verdict.guideline_checks"
                     :key="i"
-                    class="hover:bg-surface-50 transition-colors"
-                    :class="{ 'bg-danger-500/[0.02]': check.status === 'fail', 'bg-accent-500/[0.02]': check.status === 'review' }"
+                    class="hover:bg-black/[0.01] transition-colors"
+                    :class="{ 'bg-danger-500/[0.015]': check.status === 'fail', 'bg-accent-500/[0.015]': check.status === 'review' }"
                   >
-                    <td class="px-5 py-3 align-top">
-                      <p class="font-semibold text-primary-800 text-[13px]">{{ check.rule }}</p>
-                      <p class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Ref:</span> {{ check.cited_section }}</p>
+                    <td class="px-6 py-4 align-top">
+                      <p class="font-medium text-primary-800 text-[13px]">{{ check.rule }}</p>
+                      <p class="text-[11px] text-black/40 mt-1"><span class="font-semibold text-primary-800">Ref:</span> {{ check.cited_section }}</p>
                     </td>
-                    <td class="px-5 py-3 text-[13px] text-black/65 leading-relaxed align-top">{{ check.required }}</td>
-                    <td class="px-5 py-3 align-top">
-                      <p class="text-[13px] text-black/65 leading-relaxed">{{ check.submitted }}</p>
-                      <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ check.submission_source }}</p>
+                    <td class="px-6 py-4 text-[13px] text-black/55 leading-relaxed align-top">{{ check.required }}</td>
+                    <td class="px-6 py-4 align-top">
+                      <p class="text-[13px] text-black/55 leading-relaxed">{{ check.submitted }}</p>
+                      <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-black/40 mt-1"><span class="font-semibold text-primary-800">Source:</span> {{ check.submission_source }}</p>
                     </td>
-                    <td class="px-5 py-3 align-top">
+                    <td class="px-6 py-4 align-top">
                       <span
-                        class="text-[10px] font-bold tracking-[0.06em] px-2.5 py-1 rounded-full whitespace-nowrap"
+                        class="text-[10px] font-semibold tracking-[0.04em] px-2.5 py-1 rounded-full whitespace-nowrap"
                         :class="{
                           'bg-success-500/10 text-success-700': check.status === 'pass',
-                          'bg-accent-500/15 text-accent-600': check.status === 'review',
+                          'bg-accent-500/10 text-accent-600': check.status === 'review',
                           'bg-danger-500/10 text-danger-700': check.status === 'fail',
                         }"
-                        >{{ check.status }}</span
-                      >
+                      >{{ check.status }}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -226,25 +212,25 @@
 
           <!-- Insights -->
           <div v-else-if="activeTab === 'Insights'" class="flex flex-col gap-4">
-            <div v-if="verdict.insights" class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05]">
-                <h3 class="text-[13px] font-semibold text-primary-800">Underwriting Insights</h3>
+            <div v-if="verdict.insights" class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Underwriting Insights</p>
               </div>
-              <div class="grid grid-cols-2 gap-0 divide-x divide-y divide-black/[0.05]">
-                <div v-for="(value, key) in verdict.insights" :key="key" class="p-5">
-                  <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-black/60 mb-2">{{ formatKey(key) }}</p>
-                  <p class="text-[13px] text-black/70 leading-relaxed">{{ value }}</p>
+              <div class="divide-y divide-black/[0.04]">
+                <div v-for="(value, key) in verdict.insights" :key="key" class="px-6 py-5">
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.1em] text-black/40 mb-2">{{ formatKey(key) }}</p>
+                  <p class="text-[13px] text-black/65 leading-relaxed">{{ value }}</p>
                 </div>
               </div>
             </div>
-            <div v-if="verdict.missing_info?.length" class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05]">
-                <h3 class="text-[13px] font-semibold text-accent-600">Missing Information</h3>
+            <div v-if="verdict.missing_info?.length" class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Missing Information</p>
               </div>
               <div class="flex flex-col divide-y divide-black/[0.04]">
-                <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-5 py-4">
-                  <p class="text-[13px] font-semibold text-primary-800 mb-1">{{ item.label }}</p>
-                  <p class="text-[13px] text-black/65 leading-relaxed">{{ item.description }}</p>
+                <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-6 py-4">
+                  <p class="text-[13px] font-medium text-primary-800 mb-1">{{ item.label }}</p>
+                  <p class="text-[13px] text-black/55 leading-relaxed">{{ item.description }}</p>
                 </div>
               </div>
             </div>
@@ -252,38 +238,30 @@
 
           <!-- Risk Profile -->
           <div v-else-if="activeTab === 'Risk Profile'">
-            <div class="bg-white rounded-xl border border-black/[0.07] shadow-card overflow-hidden">
-              <div class="px-5 py-3.5 border-b border-black/[0.05]">
-                <h3 class="text-[13px] font-semibold text-primary-800">Extracted Risk Profile</h3>
+            <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
+              <div class="px-6 py-4 border-b border-black/[0.04]">
+                <p class="text-[11px] font-semibold tracking-[0.1em] uppercase text-black/40">Extracted Risk Profile</p>
               </div>
-              <table class="w-full text-left text-[13px]">
-                <thead>
-                  <tr class="border-b border-black/[0.05] bg-surface-50">
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60">Field</th>
-                    <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-black/60">Value</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-black/[0.04]">
-                  <tr v-for="(raw, key) in verdict.risk_profile" :key="key" class="hover:bg-surface-50 transition-colors">
-                    <td class="px-5 py-3 text-[12px] font-semibold text-black/55 uppercase tracking-[0.06em] w-48 align-top">{{ formatKey(key) }}</td>
-                    <td class="px-5 py-3 align-top">
-                      <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75 leading-relaxed">{{ rpValue(raw) }}</span>
-                      <span v-else class="text-black/25">—</span>
-                      <p v-if="rpSource(raw)" class="text-[11px] text-black/50 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="divide-y divide-black/[0.04]">
+                <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="flex gap-4 px-6 py-3.5 hover:bg-black/[0.01] transition-colors">
+                  <span class="text-[11px] font-semibold uppercase tracking-[0.06em] text-black/40 w-44 flex-shrink-0 pt-0.5">{{ formatKey(key) }}</span>
+                  <div class="flex-1 min-w-0">
+                    <span v-if="!rpIsBlank(raw)" class="text-[13px] text-black/75">{{ rpValue(raw) }}</span>
+                    <span v-else class="text-black/20">—</span>
+                    <p v-if="rpSource(raw)" class="text-[11px] text-black/40 mt-0.5"><span class="font-semibold text-primary-800">Source:</span> {{ rpSource(raw) }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- No verdict -->
-        <div v-else class="bg-white rounded-xl border border-black/[0.07] shadow-card p-16 text-center">
+        <div v-else class="bg-white rounded-2xl p-16 text-center" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08)">
           <template v-if="submission?.status === 'error'">
-            <p class="text-[14px] font-semibold text-danger-700 mb-4">Evaluation failed</p>
+            <p class="text-[14px] font-medium text-danger-700 mb-4">Evaluation failed</p>
             <button
-              class="bg-accent-500 hover:bg-accent-400 text-primary-800 px-5 py-2.5 rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50"
+              class="bg-accent-500 hover:bg-accent-400 text-primary-800 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-colors disabled:opacity-50"
               :disabled="isEvaluating"
               @click="runEvaluation"
             >
@@ -291,11 +269,11 @@
             </button>
           </template>
           <template v-else>
-            <p class="text-[14px] font-semibold text-black/50 mb-4">
+            <p class="text-[14px] text-black/40 mb-4">
               {{ submission?.status === "processing" ? "Analysis in progress..." : "Not yet evaluated" }}
             </p>
             <button
-              class="bg-accent-500 hover:bg-accent-400 text-primary-800 px-5 py-2.5 rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50"
+              class="bg-accent-500 hover:bg-accent-400 text-primary-800 px-5 py-2.5 rounded-xl text-[13px] font-semibold transition-colors disabled:opacity-50"
               :disabled="isEvaluating"
               @click="runEvaluation"
             >
@@ -360,11 +338,30 @@ const sortedFlags = computed(() => {
     return 0;
   });
 });
-const decisionTextClass = computed(() => {
-  if (verdict.value?.decision === "PROCEED") return "text-success-700";
-  if (verdict.value?.decision === "REFER") return "text-accent-600";
-  return "text-danger-700";
+
+const decisionColors = computed(() => {
+  const d = verdict.value?.decision;
+  if (d === "PROCEED") return {
+    bg: "#f0fdf4", label: "#15803d88", body: "#166534cc", meta: "#166534aa",
+    metaBg: "#dcfce7", score: "#15803d", scoreLabel: "#15803d88",
+    pillBg: "#dcfce7", pillText: "#15803d",
+  };
+  if (d === "REFER") return {
+    bg: "#fffbeb", label: "#92400e88", body: "#78350fcc", meta: "#92400eaa",
+    metaBg: "#fef3c7", score: "#b45309", scoreLabel: "#b4530988",
+    pillBg: "#fef3c7", pillText: "#b45309",
+  };
+  return {
+    bg: "#fff1f2", label: "#9f121888", body: "#9f1218cc", meta: "#9f1218aa",
+    metaBg: "#fee2e2", score: "#dc2626", scoreLabel: "#dc262688",
+    pillBg: "#fee2e2", pillText: "#dc2626",
+  };
 });
+
+const decisionCardStyle = computed(() => ({
+  background: decisionColors.value.bg,
+  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+}));
 
 function formatKey(key: string) {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -380,7 +377,6 @@ function rpIsBlank(v: { value: string; source?: string } | string): boolean {
   const val = rpValue(v);
   return !val || val === "null" || val === "N/A" || val === "Not disclosed";
 }
-// Handles both legacy 0-100 scores and new 0-10 scores
 function normalizeScore(score: number): number {
   return score > 10 ? Math.round(score) / 10 : score;
 }
