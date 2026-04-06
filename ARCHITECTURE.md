@@ -1,20 +1,22 @@
 # Pelorus — Architecture & Codebase Guide
 
-Pelorus is an AI-powered commercial insurance underwriting triage system. It automatically evaluates broker-submitted applications (PDFs, DOCX, text) against carrier underwriting guidelines, returning a structured decision (PROCEED / REFER / DECLINE), a composite risk score, detailed guideline compliance checks, and risk insights.
+Pelorus is an AI-powered commercial insurance underwriting triage platform. It evaluates broker submissions (PDFs, DOCX, text) against carrier underwriting guidelines and returns a structured decision (PROCEED / REFER / DECLINE), a composite risk score, guideline compliance checks, flags, insights, and a structured risk profile — all with source citations.
 
 ---
 
 ## Tech Stack
 
-| Component          | Technology                                      |
-| ------------------ | ----------------------------------------------- |
-| Framework          | Nuxt 4 (Vue 3 frontend + Nitro server backend)  |
-| Styling            | Tailwind CSS 3                                  |
-| Database           | Supabase (PostgreSQL + pgvector)                |
-| Document Parsing   | Reducto AI (custom pipelines)                   |
-| Embeddings         | Voyage AI (`voyage-law-2`, 1024-dim vectors)    |
-| LLM                | Anthropic Claude (`claude-sonnet-4-6`)          |
-| Validation         | Zod                                             |
+| Component        | Technology                                     |
+| ---------------- | ---------------------------------------------- |
+| Framework        | Nuxt 4 (Vue 3 frontend + Nitro server backend) |
+| Styling          | Tailwind CSS 3                                 |
+| Database         | Supabase (PostgreSQL)                          |
+| Document Parsing | Reducto AI                                     |
+| LLM              | Anthropic Claude (`claude-sonnet-4-6`, `claude-haiku-4-5`) |
+| Email (inbound)  | SendGrid Inbound Parse webhook                 |
+| Email (outbound) | SendGrid Mail (`@sendgrid/mail`)               |
+| PDF Generation   | pdfmake (server-side, CJS via `createRequire`) |
+| Auth             | nuxt-auth-utils (signed cookie sessions)       |
 
 ---
 
@@ -22,198 +24,278 @@ Pelorus is an AI-powered commercial insurance underwriting triage system. It aut
 
 ```
 Pelorus/
-├── app/                           # Frontend (Vue 3)
+├── app/
 │   ├── pages/
-│   │   ├── index.vue              # Submission inbox & upload
-│   │   ├── settings.vue           # Guidelines management
-│   │   └── submissions/[id].vue   # Verdict detail view
-│   ├── components/ui/             # Badge, Button, Card
-│   ├── layouts/default.vue        # Root layout
-│   ├── types/models.ts            # TypeScript interfaces
-│   ├── assets/css/main.css        # Tailwind imports
-│   └── app.vue                    # Root wrapper
+│   │   ├── index.vue                  # Marketing page
+│   │   └── app/
+│   │       ├── index.vue              # Submission inbox
+│   │       ├── settings.vue           # Guidelines management
+│   │       └── submissions/[id].vue   # Verdict detail view
+│   ├── middleware/
+│   │   └── auth.global.ts             # Redirect unauthenticated users
+│   └── app.vue
 │
-├── server/                        # Backend (Nitro)
+├── server/
 │   ├── api/
+│   │   ├── auth/
+│   │   │   ├── login.post.ts          # POST /api/auth/login
+│   │   │   ├── logout.post.ts         # POST /api/auth/logout
+│   │   │   └── me.get.ts              # GET  /api/auth/me
+│   │   ├── email/
+│   │   │   └── inbound.post.ts        # POST /api/email/inbound (SendGrid webhook)
 │   │   ├── guidelines/
-│   │   │   ├── index.get.ts       # GET  /api/guidelines
-│   │   │   └── upload.post.ts     # POST /api/guidelines/upload
-│   │   └── submissions/
-│   │       ├── index.get.ts       # GET  /api/submissions
-│   │       ├── ingest.post.ts     # POST /api/submissions/ingest
-│   │       └── [id]/
-│   │           ├── index.get.ts   # GET  /api/submissions/:id
-│   │           └── evaluate.post.ts # POST /api/submissions/:id/evaluate
-│   ├── plugins/startup.ts         # Reset stuck submissions on boot
+│   │   │   ├── index.get.ts           # GET  /api/guidelines
+│   │   │   └── upload.post.ts         # POST /api/guidelines/upload
+│   │   ├── submissions/
+│   │   │   ├── index.get.ts           # GET  /api/submissions
+│   │   │   ├── ingest.post.ts         # POST /api/submissions/ingest
+│   │   │   └── [id]/
+│   │   │       ├── index.get.ts       # GET  /api/submissions/:id
+│   │   │       ├── evaluate.post.ts   # POST /api/submissions/:id/evaluate
+│   │   │       └── pdf.get.ts         # GET  /api/submissions/:id/pdf
+│   │   └── users/
+│   │       └── index.get.ts           # GET  /api/users (admin only)
+│   ├── middleware/
+│   │   └── ipwhitelist.ts             # IP allowlist (bypassed for /api/email/inbound)
+│   ├── plugins/
+│   │   └── startup.ts                 # Reset stuck submissions on boot
 │   └── utils/
-│       ├── supabase.ts            # Supabase client singleton
-│       ├── org.ts                 # Single-tenant org resolver
-│       ├── reducto.ts             # Reducto document parsing
-│       ├── embeddings.ts          # Voyage AI embedding calls
-│       ├── rag.ts                 # RAG: pinned chunks + similarity search
-│       └── claude.ts              # Claude LLM prompts & evaluation logic
+│       ├── supabase.ts                # Supabase client singleton
+│       ├── org.ts                     # Session helpers: getSessionUser, getOrgId, requireAdmin
+│       ├── reducto.ts                 # Reducto document parsing + chunk filtering
+│       ├── rag.ts                     # Guideline chunk fetcher (all chunks, no vector search)
+│       ├── claude.ts                  # LLM orchestration: evaluate, classify, extract
+│       ├── email.ts                   # SendGrid outbound email helpers
+│       ├── pdfBuilder.ts              # pdfmake PDF generation from verdict
+│       └── prompts/
+│           ├── voice.ts               # VOICE style rules + HARD_STOP_RULES
+│           ├── checks.ts              # CHECKS_TOOL schema + buildChecksMessages()
+│           ├── flags.ts               # buildFlagsPrompt()
+│           ├── insights.ts            # buildInsightsPrompt()
+│           ├── riskProfile.ts         # buildRiskProfilePrompt()
+│           ├── classify.ts            # CLASSIFY_INSTRUCTIONS
+│           ├── hardStops.ts           # buildHardStopsPrompt()
+│           └── riskFields.ts          # buildRiskFieldsPrompt()
 │
+├── types/
+│   └── auth.d.ts                      # Augments nuxt-auth-utils User interface
 ├── nuxt.config.ts
-├── tailwind.config.ts
 └── package.json
 ```
 
 ---
 
+## Authentication & Authorization
+
+Auth is handled by `nuxt-auth-utils`. Login writes an encrypted cookie session containing `{ id, email, org_id, role }`. All server routes call `getSessionUser(event)` from `org.ts` to validate the session.
+
+### Roles
+
+| Role          | Capabilities                                                    |
+| ------------- | --------------------------------------------------------------- |
+| `admin`       | Upload guidelines, see all users, drill into any user's inbox   |
+| `underwriter` | Submit and view their own submissions only                      |
+
+### Submission Scoping
+
+- `submissions.user_id` stores who created the submission.
+- Underwriters: every DB query filters by `user_id = session.id`.
+- Admins: see all submissions, or filter by a specific user via `?userId=` query param.
+- Inbound email submissions have `user_id = null` (no session); only admins see them.
+
+---
+
 ## End-to-End Data Flow
 
-### 1. Guidelines Upload (one-time setup)
-
-An underwriter uploads a guidelines PDF on the **Settings** page (`/settings`).
+### 1. Guidelines Upload (admin only)
 
 ```
-PDF upload
-  → POST /api/guidelines/upload
+POST /api/guidelines/upload
   → Reducto parses PDF into chunks
-  → filterChunks() removes noise (headers, footers, short fragments)
-  → Claude extractHardStops() identifies automatic-decline rules
-  → Claude extractRiskProfileFields() identifies key data fields
-  → Voyage AI embeds all chunks (standard + hard stops) in parallel
-  → Bulk insert into guideline_chunks table (Supabase)
+  → filterChunks() removes noise (headers, footers, <80 char fragments)
+  → Claude extractHardStops() — identifies automatic-decline rules
+  → Claude extractRiskProfileFields() — identifies key submission data fields
+      → stored in organizations.risk_profile_fields
+  → Claude classifyChunks() — keep/discard + summary per chunk
+  → Build rows (no embeddings)
+  → Bulk insert into guideline_chunks
+      · Standard chunks: is_pinned = false
+      · Hard stop rows: is_pinned = true
 ```
 
-Hard stop chunks are stored with `is_pinned = true` and `rule_type = 'hard_stop'`. These are always included in every evaluation — they are never subject to similarity search cutoffs.
-
-### 2. Submission Ingestion
-
-A user uploads broker submission files (or pastes text) on the **Inbox** page (`/`).
+### 2. Submission Ingestion (upload)
 
 ```
-File upload / text paste
-  → POST /api/submissions/ingest
-  → Reducto parses files in parallel
-  → Concatenate all chunk text into raw_text
-  → INSERT into submissions table (status: pending)
-  → Return immediately to client (fire-and-forget)
-  → Background: run evaluation pipeline
+POST /api/submissions/ingest
+  → Parse multipart files via Reducto (all files in parallel)
+  → Label each document: "=== DOCUMENT: filename.pdf ===\n{text}"
+  → Concatenate with "---" separators → raw_text
+  → INSERT submission row (status: processing, user_id: session.id)
+  → Return immediately to client
+  → setImmediate → run evaluation pipeline in background
+  → On complete: send results email if broker_email present
 ```
 
-The inbox polls `/api/submissions` every 5 seconds while any submission is `pending` or `processing`.
-
-### 3. Evaluation Pipeline (background)
-
-Runs asynchronously via `setImmediate` after ingestion returns:
+### 3. Submission Ingestion (inbound email)
 
 ```
-raw_text (full, no truncation)
-  → getRelevantChunks():
-      - Fetch ALL pinned hard stop chunks (deterministic, ordered by chunk_index)
-      - Embed submission text → pgvector similarity search → top 6 similar chunks
-      - Fetch risk_profile_fields from organizations table
-  → Build prompt with hard stop checklist + guideline context
-  → Claude streaming call (temperature: 0) → guideline_checks + decision
-  → In parallel (fired as soon as decision is visible in stream):
-      - runFlagsCall() → flags, favorable factors, dimension scores, recommendation
-      - runInsightsCall() → pattern recognition, market context, coverage gaps
-      - runRiskProfileCall() → structured field extraction
-  → Server-side composite score calculation (not LLM-generated):
-      - Any fail → DECLINE (score: max 25)
-      - Any review → REFER (score: 40–74)
-      - All pass → PROCEED (score: 80–100)
-  → INSERT into evaluations table with full verdict JSON
-  → Update submission status to complete
+POST /api/email/inbound  (SendGrid Inbound Parse webhook)
+  → Parse multipart form: from, to, subject, text, html, attachments
+  → Derive org from inbound handle: {handle}@mail.pelorusai.io
+  → Verify sender email exists in org's users table
+  → Collect attachments; if none, wrap email body as .txt
+  → Label documents + concat → raw_text
+  → INSERT submission row (status: processing, user_id: null)
+  → setImmediate → run evaluation pipeline in background
+  → On complete: send email reply with PDF attachment
 ```
 
-### 4. Verdict Review
+### 4. Evaluation Pipeline (background, both paths)
 
-The underwriter views results on the **Detail** page (`/submissions/:id`):
+```
+raw_text
+  → getGuidelineChunks(orgId)
+      · Fetch ALL guideline_chunks for org, ordered by chunk_index
+      · Split into: pinned (hard stops) + guidelines (standard)
+      · Fetch risk_profile_fields from organizations table
+  → Build prompt context:
+      · hardStopsText  — pinned chunks as bullet list
+      · guidelinesText — standard chunks with page refs
+      · hardStopCheckList — one check per pinned chunk
+  → Fire in parallel:
+      · runInsightsCall()     — pattern recognition, market context, coverage gaps
+      · runRiskProfileCall()  — structured field extraction with source citations
+      · Stream checks call (claude-sonnet-4-6, tool_use: submit_evaluation)
+          · As soon as decision appears in stream → fire runFlagsCall() immediately
+  → Await all parallel results
+  → INSERT into evaluations (verdict JSON)
+  → UPDATE submission status → complete
+```
 
-- Decision banner with composite score
-- **Summary tab**: recommendation, action items, flags (CONDITION/VERIFY), favorable factors
-- **Guidelines tab**: full check table with pass/review/fail status per rule
-- **Insights tab**: pattern recognition, market context, consistency, coverage gaps, missing info
-- **Risk Profile tab**: all extracted fields in table format
+### 5. Verdict Review
 
-A "Re-run Evaluation" button triggers `POST /api/submissions/:id/evaluate` for retries.
+Users view results at `/app/submissions/:id`:
+
+- **Decision banner** — PROCEED / REFER / DECLINE with composite score
+- **Dimension Scores** — 7 dimensions, 0–10 scale
+- **Summary tab** — recommendation, flags (CONDITION/VERIFY), favorable factors, risk summary
+- **Guidelines tab** — full check table with source citations on submitted findings
+- **Insights tab** — pattern recognition, market context, consistency, coverage gaps, missing info
+- **Risk Profile tab** — all extracted fields with source citations (document + page)
+- **Download PDF** — full verdict as formatted PDF via pdfmake
+
+---
+
+## Guideline Chunk Strategy
+
+All chunks are fetched for every evaluation — no vector similarity search. This guarantees no relevant guideline is ever missed due to retrieval error.
+
+- **Pinned chunks** (`is_pinned = true`): hard stop rows derived from `extractHardStops()`. Always included first. Each becomes one mandatory check in the evaluation.
+- **Standard chunks** (`is_pinned = false`): classified, summarized guideline sections. Passed as context.
+
+---
+
+## Source Citations
+
+All AI-generated output includes source attribution:
+
+- **Risk profile fields**: each field returns `{ value, source }` where source is the document name and page (e.g. "2_ACORD_125.pdf, Page 1"). Claude can identify the source because documents are labeled with `=== DOCUMENT: filename ===` headers in the raw text.
+- **Guideline checks**: each check includes `submission_source` — which document and page the submitted finding came from.
+- **Flags**: `cited_section` references the carrier guideline section that triggered the flag.
+
+---
+
+## Prompt Architecture
+
+All Claude prompts live in `server/utils/prompts/`. `claude.ts` is orchestration-only.
+
+| File           | Exports                                          | Used by            |
+| -------------- | ------------------------------------------------ | ------------------ |
+| `voice.ts`     | `VOICE`, `HARD_STOP_RULES`                       | checks, flags, insights |
+| `checks.ts`    | `CHECKS_TOOL`, `buildChecksMessages()`           | evaluateSubmission |
+| `flags.ts`     | `buildFlagsPrompt()`                             | runFlagsCall       |
+| `insights.ts`  | `buildInsightsPrompt()`                          | runInsightsCall    |
+| `riskProfile.ts` | `buildRiskProfilePrompt()`                     | runRiskProfileCall |
+| `classify.ts`  | `CLASSIFY_INSTRUCTIONS`                          | classifyChunks     |
+| `hardStops.ts` | `buildHardStopsPrompt()`                         | extractHardStops   |
+| `riskFields.ts`| `buildRiskFieldsPrompt()`                        | extractRiskProfileFields |
+
+### Voice & Style
+
+All AI output follows a shared `VOICE` constant enforcing:
+- Senior underwriter register, declarative present tense
+- No em dashes, no hedging language, no filler openers
+- Required field openers (e.g. "Risk pattern:", "Decision:", "Hard stop confirmed.")
 
 ---
 
 ## API Endpoints
 
-### Guidelines
+### Auth
+| Method | Path                  | Purpose              |
+| ------ | --------------------- | -------------------- |
+| POST   | `/api/auth/login`     | Authenticate user    |
+| POST   | `/api/auth/logout`    | Clear session        |
+| GET    | `/api/auth/me`        | Current session user |
 
-| Method | Path                      | Purpose                              |
-| ------ | ------------------------- | ------------------------------------ |
-| GET    | `/api/guidelines`         | List all guideline chunks for org    |
-| POST   | `/api/guidelines/upload`  | Upload & process a guidelines document (replaces existing) |
+### Guidelines
+| Method | Path                     | Purpose                                     |
+| ------ | ------------------------ | ------------------------------------------- |
+| GET    | `/api/guidelines`        | List all guideline chunks for org           |
+| POST   | `/api/guidelines/upload` | Upload & process guidelines (admin only)    |
 
 ### Submissions
+| Method | Path                            | Purpose                                      |
+| ------ | ------------------------------- | -------------------------------------------- |
+| GET    | `/api/submissions`              | List submissions (scoped by role; `?userId=` for admin filter) |
+| POST   | `/api/submissions/ingest`       | Ingest new submission                        |
+| GET    | `/api/submissions/:id`          | Fetch submission + full verdict              |
+| POST   | `/api/submissions/:id/evaluate` | Re-run evaluation                            |
+| GET    | `/api/submissions/:id/pdf`      | Download verdict as PDF                      |
 
-| Method | Path                               | Purpose                                      |
-| ------ | ---------------------------------- | -------------------------------------------- |
-| GET    | `/api/submissions`                 | List all submissions with latest verdict info |
-| POST   | `/api/submissions/ingest`          | Ingest new submission (fire-and-forget eval)  |
-| GET    | `/api/submissions/:id`             | Fetch submission + full verdict               |
-| POST   | `/api/submissions/:id/evaluate`    | Manually re-run evaluation                    |
+### Users
+| Method | Path          | Purpose                         |
+| ------ | ------------- | ------------------------------- |
+| GET    | `/api/users`  | List org users (admin only)     |
 
----
-
-## Server Utilities
-
-### `supabase.ts`
-Singleton Supabase client. Note: Supabase JS client does not throw on errors — always destructure `{ error }` and check it.
-
-### `org.ts`
-Single-tenant organization resolver. Checks `ORG_ID` env var first, falls back to first org in DB, auto-creates one if none exists. Every DB query filters by `org_id`.
-
-### `reducto.ts`
-Integrates with Reducto AI for document parsing. Uses two pre-configured pipelines:
-- **PIPELINE_GUIDELINES** — optimized for underwriting guideline PDFs
-- **PIPELINE_SUBMISSIONS** — optimized for broker submission documents
-
-Key functions:
-- `parseFileToChunks(buffer, filename, pipelineId)` — uploads file, returns structured chunks
-- `filterChunks(chunks)` — removes noise (headers, footers, short text <80 chars)
-- `getChunkPage()` / `getChunkBlockTypes()` — chunk metadata helpers
-
-### `embeddings.ts`
-Calls Voyage AI `voyage-law-2` model to produce 1024-dimensional vectors. Input truncated to 16,000 chars.
-
-### `rag.ts`
-Retrieval-Augmented Generation layer:
-1. Fetches **all** pinned hard stop chunks (deterministic, always included)
-2. Embeds submission text and runs pgvector `match_chunks` RPC for top 6 similar standard chunks
-3. Returns both sets plus the org's `risk_profile_fields`
-
-### `claude.ts`
-Core LLM integration. Key functions:
-
-- **`evaluateSubmission()`** — orchestrates the full evaluation: RAG retrieval → streaming Claude call → parallel flags/insights/risk extraction → server-side scoring
-- **`extractHardStops()`** — identifies automatic-decline rules from guideline text; auto-retries with larger token budget if truncated
-- **`extractRiskProfileFields()`** — identifies key underwriting data fields from guidelines; falls back to sensible defaults
-- **`runFlagsCall()`** — generates flags (CONDITION/VERIFY), favorable factors, dimension scores, recommendation
-- **`runInsightsCall()`** — pattern recognition, market context, consistency analysis, coverage gaps
-- **`runRiskProfileCall()`** — extracts structured key-value risk data from submission text
-
-All evaluation calls use `temperature: 0` for deterministic output. The composite score and final decision are calculated server-side from check results — not by the LLM.
+### Email
+| Method | Path                  | Purpose                             |
+| ------ | --------------------- | ----------------------------------- |
+| POST   | `/api/email/inbound`  | SendGrid Inbound Parse webhook      |
 
 ---
 
-## Database Schema (Supabase / PostgreSQL)
+## Database Schema
 
 ### `organizations`
-| Column               | Type   | Notes                                  |
-| -------------------- | ------ | -------------------------------------- |
-| id                   | uuid   | PK                                     |
-| name                 | text   |                                        |
-| risk_profile_fields  | jsonb  | Field names extracted from guidelines  |
+| Column               | Type        | Notes                                       |
+| -------------------- | ----------- | ------------------------------------------- |
+| id                   | uuid        | PK                                          |
+| name                 | text        |                                             |
+| inbound_email_handle | text        | Subdomain handle for inbound email routing  |
+| risk_profile_fields  | jsonb       | Field names extracted from guidelines       |
+
+### `users`
+| Column     | Type        | Notes                        |
+| ---------- | ----------- | ---------------------------- |
+| id         | uuid        | PK                           |
+| org_id     | uuid        | FK → organizations           |
+| email      | text        |                              |
+| role       | text        | `admin` or `underwriter`     |
+| created_at | timestamptz |                              |
 
 ### `submissions`
-| Column           | Type        | Notes                                        |
-| ---------------- | ----------- | -------------------------------------------- |
-| id               | uuid        | PK                                           |
-| org_id           | uuid        | FK → organizations                           |
-| raw_text         | text        | Full extracted text from uploaded files       |
-| broker_email     | text        | Optional                                     |
-| source           | text        | `upload` or `email`                          |
-| status           | text        | `pending` → `processing` → `complete`/`error` |
-| extracted_fields | jsonb       | Reserved for future use                      |
-| created_at       | timestamptz |                                              |
+| Column           | Type        | Notes                                           |
+| ---------------- | ----------- | ----------------------------------------------- |
+| id               | uuid        | PK                                              |
+| org_id           | uuid        | FK → organizations                              |
+| user_id          | uuid        | FK → users (null for inbound email submissions) |
+| raw_text         | text        | Full extracted text, document-labeled           |
+| broker_email     | text        | Optional                                        |
+| source           | text        | `upload` or `email`                             |
+| status           | text        | `processing` → `complete` / `error`             |
+| extracted_fields | jsonb       | Reserved                                        |
+| created_at       | timestamptz |                                                 |
 
 ### `evaluations`
 | Column          | Type        | Notes                             |
@@ -221,63 +303,58 @@ All evaluation calls use `temperature: 0` for deterministic output. The composit
 | id              | uuid        | PK                                |
 | org_id          | uuid        | FK → organizations                |
 | submission_id   | uuid        | FK → submissions                  |
-| decision        | text        | PROCEED / REFER / DECLINE         |
-| composite_score | int         | 0–100, calculated server-side     |
+| decision        | text        | `PROCEED` / `REFER` / `DECLINE`   |
+| composite_score | float       | 0.0–10.0                          |
 | verdict         | jsonb       | Full structured evaluation result |
 | created_at      | timestamptz |                                   |
 
 ### `guideline_chunks`
-| Column      | Type         | Notes                                          |
-| ----------- | ------------ | ---------------------------------------------- |
-| id          | uuid         | PK                                             |
-| org_id      | uuid         | FK → organizations                             |
-| chunk_index | int          | Order within source document                   |
-| content     | text         | Raw chunk text from Reducto                    |
-| embed_text  | text         | Cleaned text used for embedding                |
-| embedding   | vector(1024) | Voyage AI vector (pgvector)                    |
-| page        | int          | Source page number                             |
-| block_types | text[]       | Reducto block types (Text, Table, List Item…)  |
-| is_pinned   | bool         | true = hard stop, always fetched in evaluation |
-| rule_type   | text         | `standard` or `hard_stop`                      |
-| created_at  | timestamptz  |                                                |
-
-### `match_chunks` (RPC)
-pgvector function for cosine similarity search. Takes `query_embedding`, `org_id`, `match_count`. Returns non-pinned chunks ranked by similarity.
+| Column      | Type        | Notes                                           |
+| ----------- | ----------- | ----------------------------------------------- |
+| id          | uuid        | PK                                              |
+| org_id      | uuid        | FK → organizations                              |
+| chunk_index | int         | Order within source document                    |
+| content     | text        | Raw chunk text from Reducto                     |
+| embed_text  | text        | Cleaned text used for prompts                   |
+| page        | int         | Source page number                              |
+| block_types | text[]      | Reducto block types                             |
+| is_pinned   | bool        | true = hard stop, always included in evaluation |
+| summary     | text        | Claude-generated 120-char summary               |
+| created_at  | timestamptz |                                                 |
 
 ---
 
 ## Verdict JSON Structure
 
-The `evaluations.verdict` column stores:
-
 ```ts
 {
   decision: "PROCEED" | "REFER" | "DECLINE",
-  composite_score: number,                // 0–100
+  composite_score: number,          // 0.0–10.0, LLM-generated holistic score
   analyzed_in_seconds: string,
 
-  guideline_checks: [{
+  guideline_checks: [{              // Only review/fail checks included
     rule: string,
-    required: string,      // What the guideline requires
-    submitted: string,     // What the submission says
-    status: "pass" | "review" | "fail",
-    cited_section: string
+    required: string,
+    submitted: string,
+    submission_source: string,      // e.g. "ACORD_125.pdf, Page 2"
+    status: "review" | "fail",
+    cited_section: string           // Carrier guideline section
   }],
 
   recommendation: {
     summary: string,
-    action_items: string[]  // Max 4
+    action_items: string[]          // Max 4, imperative verb-first
   },
 
-  flags: [{                 // Max 6
+  flags: [{                         // Max 6
     title: string,
-    type: "CONDITION" | "VERIFY",
+    type: "CONDITION" | "VERIFY",   // CONDITION = fail, VERIFY = review
     explanation: string,
     action_required: string,
     cited_section: string
   }],
 
-  favorable_factors: string[],  // Max 4
+  favorable_factors: string[],      // Max 4
 
   dimension_scores: {
     construction: number,
@@ -290,22 +367,22 @@ The `evaluations.verdict` column stores:
   },
 
   insights: {
-    pattern_recognition: string,
-    market_context: string,
-    consistency_check: string,
-    coverage_gap: string
+    pattern_recognition: string,    // Starts: "Risk pattern: ..."
+    market_context: string,         // Starts: "Market context: ..."
+    consistency_check: string,      // Starts: "Consistency: ..."
+    coverage_gap: string            // Starts: "Coverage gap: ..."
   },
 
-  missing_info: [{          // Max 5
+  missing_info: [{
     label: string,
-    description: string
+    description: string             // Starts: "Required: ..."
   }],
 
-  risk_profile: {           // Dynamic fields based on guidelines
-    named_insured: string,
-    broker: string,
-    tiv: string,
-    // ... additional org-specific fields
+  risk_profile: {
+    [field: string]: {
+      value: string,                // Extracted value or "Not disclosed"
+      source: string                // Document + page, or "Not disclosed"
+    }
   }
 }
 ```
@@ -314,43 +391,33 @@ The `evaluations.verdict` column stores:
 
 ## Key Design Decisions
 
-**Fire-and-forget ingestion** — `POST /api/submissions/ingest` returns immediately after inserting the submission row. Evaluation runs in background via `setImmediate`. The frontend polls every 5 seconds until all submissions reach a terminal state.
+**All-chunks evaluation** — All guideline chunks are fetched and passed to Claude for every evaluation. No vector similarity search. This eliminates the retrieval failure mode where a relevant guideline section is missed, and removes the need for embeddings, pgvector, and Voyage AI entirely.
 
-**Deterministic evaluation** — All Claude calls use `temperature: 0`. The guideline checks list is derived from hard stops stored in the DB, not chosen by the LLM. The composite score and final decision are calculated server-side from check pass/review/fail counts.
+**Hard stop architecture** — Hard stops are extracted once on guidelines upload and stored as pinned chunks. Every evaluation includes all pinned chunks as a mandatory checklist. Claude cannot omit or skip them.
 
-**Hard stop architecture** — Hard stops are extracted once during guidelines upload and stored as pinned chunks. At evaluation time, ALL pinned chunks are always included in the prompt (not subject to similarity search). This guarantees no automatic-decline rule is ever missed.
+**Streaming + parallel calls** — The checks call streams. As soon as the decision token is visible in the stream, `runFlagsCall()` fires immediately. Insights and risk profile fire at the start, before checks finish. This minimizes total wall-clock time despite 4 sequential/parallel LLM calls.
 
-**Server-side scoring** — The composite score uses a banded calculation: any fail → DECLINE (max 25), any review → REFER (40–74), all pass → PROCEED (80–100). This prevents the LLM from gaming or miscalculating scores.
+**Source attribution** — Documents are labeled (`=== DOCUMENT: filename ===`) before concatenation so Claude can cite which file and page each extracted value or finding came from.
 
-**Parallel LLM calls** — The main evaluation streams guideline checks first. As soon as the decision is visible in the stream, flags/insights/risk-profile calls fire in parallel to reduce total latency.
+**Prompt isolation** — All prompt text lives in `server/utils/prompts/`. `claude.ts` contains only orchestration logic (API calls, streaming, error handling, parallel coordination).
 
-**Crash recovery** — A server startup plugin (`server/plugins/startup.ts`) resets any submissions stuck in `processing` or `pending` to `error`, preventing permanently stuck rows after dev server restarts.
+**Role-based submission scoping** — Underwriters see only their own submissions. Admins see all submissions organized by user, with an "All Submissions" view and per-user drill-down.
 
-**Single-tenant with multi-tenant ready** — Every query filters by `org_id`. Currently uses a single org resolved by `getOrgId()`. Auth and multi-tenant isolation can be added later without schema changes.
+**Fire-and-forget ingestion** — Both upload and inbound email paths return immediately after inserting the submission row. Evaluation runs via `setImmediate`. The frontend uses Supabase Realtime to update the inbox without polling.
+
+**pdfmake on Railway** — pdfmake uses CJS and must be loaded via `createRequire`. Nitro's `traceInclude` config forces the build files into the Railway deployment bundle.
 
 ---
 
 ## Environment Variables
 
-| Variable           | Used by        | Purpose                     |
-| ------------------ | -------------- | --------------------------- |
-| `ANTHROPIC_API_KEY`| claude.ts      | Claude API auth             |
-| `ANTHROPIC_MODEL`  | claude.ts      | Model override (optional)   |
-| `SUPABASE_URL`     | supabase.ts    | Supabase project URL        |
-| `SUPABASE_KEY`     | supabase.ts    | Supabase service role key   |
-| `VOYAGE_API_KEY`   | embeddings.ts  | Voyage AI auth              |
-| `REDUCTO_API_KEY`  | reducto.ts     | Reducto AI auth             |
-| `ORG_ID`           | org.ts         | Hardcoded org ID (optional) |
-
----
-
-## Frontend Pages
-
-### Inbox (`/`) — `app/pages/index.vue`
-Main landing page. Lists all submissions with status, decision badge, and composite score. Includes a "New Submission" modal for uploading files or pasting text. Auto-polls while submissions are processing.
-
-### Settings (`/settings`) — `app/pages/settings.vue`
-Guidelines management. Upload a PDF/DOCX/TXT to replace existing guidelines. Shows extraction progress, then displays a chunk table with page numbers, previews, and rule types (standard vs hard stop).
-
-### Verdict Detail (`/submissions/:id`) — `app/pages/submissions/[id].vue`
-Full evaluation result with tabbed view: Summary (recommendation, flags, favorable factors), Guidelines (check table), Insights (patterns, market context, coverage gaps), and Risk Profile (extracted fields). Includes re-run button for failed evaluations.
+| Variable            | Purpose                                      |
+| ------------------- | -------------------------------------------- |
+| `ANTHROPIC_API_KEY` | Claude API authentication                    |
+| `ANTHROPIC_MODEL`   | Model override (default: `claude-sonnet-4-6`) |
+| `SUPABASE_URL`      | Supabase project URL                         |
+| `SUPABASE_KEY`      | Supabase service role key                    |
+| `REDUCTO_API_KEY`   | Reducto AI authentication                    |
+| `SENDGRID_API_KEY`  | SendGrid outbound mail                       |
+| `NUXT_SESSION_PASSWORD` | nuxt-auth-utils cookie encryption key    |
+| `SITE_URL`          | Base URL for email result links              |
