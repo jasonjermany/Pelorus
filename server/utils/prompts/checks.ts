@@ -71,10 +71,10 @@ For each check:
 Only include checks with status "review" or "fail" in guideline_checks.
 Do NOT include passing checks — omit them entirely.
 
-DECISION RULES — follow exactly, no judgment:
-- If ANY guideline_check has status "fail" → decision MUST be "DECLINE"
-- If ANY guideline_check has status "review" → decision MUST be "REFER"
-- If ALL checks pass (guideline_checks is empty) → decision is "PROCEED"
+DECISION RULES — follow exactly, no judgment, in strict priority order:
+1. If ANY guideline_check has status "fail" → decision MUST be "DECLINE". A single fail overrides all review checks.
+2. If NO checks have status "fail" but ANY has status "review" → decision MUST be "REFER"
+3. If guideline_checks is empty (all passed) → decision is "PROCEED"
 
 Call the submit_evaluation tool with your results.`,
           cache_control: { type: 'ephemeral', ttl: '1h' } as any,

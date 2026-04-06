@@ -144,11 +144,20 @@ export async function evaluateSubmission(
     throw new Error(`[eval] checks call returned no tool_use block (stop_reason: ${finalMsg.stop_reason})`)
   }
   const checksResult = (toolUseBlock as any).input as { decision: string; guideline_checks: any[] }
+
+  // Enforce decision priority server-side — Claude should follow the rules but this is the source of truth
+  const hasFail = checksResult.guideline_checks?.some((c: any) => c.status === 'fail')
+  const hasReview = checksResult.guideline_checks?.some((c: any) => c.status === 'review')
+  const enforcedDecision = hasFail ? 'DECLINE' : hasReview ? 'REFER' : 'PROCEED'
+  if (enforcedDecision !== checksResult.decision) {
+    console.warn(`[eval] decision overridden  claude=${checksResult.decision} → enforced=${enforcedDecision}`)
+    checksResult.decision = enforcedDecision
+  }
+
   console.log(`[eval] call 1 output  ${JSON.stringify(checksResult).length} chars  (${checksResult.guideline_checks?.length ?? 0} checks)`)
 
-  if (!flagsPromise) {
-    flagsPromise = runFlagsCall(submissionText, checksResult)
-  }
+  // Always re-run flags with the full, enforced checksResult (early-fired version had empty checks)
+  flagsPromise = runFlagsCall(submissionText, checksResult)
 
   // Await all parallel calls (flags already running since early in stream)
   const t_p2 = Date.now()
