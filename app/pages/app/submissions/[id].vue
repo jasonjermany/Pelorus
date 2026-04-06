@@ -284,11 +284,127 @@
         </div>
       </template>
     </main>
+
+    <!-- Floating Chat Button -->
+    <button
+      class="fixed bottom-6 right-6 z-40 flex items-center justify-center rounded-full bg-primary-800 text-white transition-all duration-200 hover:scale-105 active:scale-95"
+      style="width: 52px; height: 52px; box-shadow: 0 4px 16px rgba(0,0,0,0.18);"
+      aria-label="Open Research Assistant"
+      @click="chatOpen = !chatOpen"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </button>
+
+    <!-- Chat Panel -->
+    <Transition
+      enter-active-class="transition-transform duration-300 ease-out"
+      enter-from-class="translate-x-full"
+      enter-to-class="translate-x-0"
+      leave-active-class="transition-transform duration-200 ease-in"
+      leave-from-class="translate-x-0"
+      leave-to-class="translate-x-full"
+    >
+      <div
+        v-if="chatOpen"
+        class="fixed top-0 right-0 z-50 flex flex-col bg-white h-screen"
+        style="width: 680px; box-shadow: -4px 0 24px rgba(0,0,0,0.10);"
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-black/[0.06]">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-primary-800 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span class="text-[14px] font-semibold text-primary-800 tracking-[-0.2px]">Research Assistant</span>
+          </div>
+          <button
+            class="text-black/30 hover:text-black/60 transition-colors w-7 h-7 flex items-center justify-center rounded-lg hover:bg-black/[0.05]"
+            aria-label="Close"
+            @click="chatOpen = false"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Message Thread -->
+        <div ref="messagesContainer" class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+          <div
+            v-for="(msg, i) in messages"
+            :key="i"
+            class="flex"
+            :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
+          >
+            <div
+              class="px-3.5 py-2.5 text-[13px] leading-relaxed break-words"
+              :class="
+                msg.role === 'user'
+                  ? 'bg-primary-800 text-white rounded-2xl rounded-tr-sm max-w-[80%] whitespace-pre-wrap'
+                  : 'bg-[#f5f5f7] text-black/75 rounded-2xl rounded-tl-sm max-w-[85%] prose prose-sm prose-neutral max-w-none'
+              "
+              v-html="msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content"
+            />
+          </div>
+
+          <!-- Typing indicator -->
+          <div v-if="isThinking" class="flex justify-start">
+            <div class="bg-[#f5f5f7] rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" style="animation-delay: 0ms" />
+              <span class="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" style="animation-delay: 160ms" />
+              <span class="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" style="animation-delay: 320ms" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <p v-if="chatError" class="mx-4 mb-1 text-[12px] text-danger-700 text-center">{{ chatError }}</p>
+
+        <!-- Input Area -->
+        <div class="px-4 pb-4 pt-2 border-t border-black/[0.06]">
+          <div class="flex items-end gap-2 bg-[#f5f5f7] rounded-2xl px-3.5 py-2.5">
+            <textarea
+              ref="chatInputEl"
+              v-model="chatInput"
+              rows="1"
+              placeholder="Ask about this submission..."
+              class="flex-1 bg-transparent resize-none text-[13px] text-black/80 placeholder-black/30 focus:outline-none leading-relaxed"
+              style="max-height: 72px; overflow-y: auto;"
+              :disabled="isThinking"
+              @keydown.enter.exact.prevent="sendMessage"
+              @input="autoGrowTextarea"
+            />
+            <button
+              class="flex-shrink-0 w-7 h-7 rounded-full bg-primary-800 flex items-center justify-center transition-opacity"
+              :class="(!chatInput.trim() || isThinking) ? 'opacity-30' : 'opacity-100 hover:opacity-80'"
+              :disabled="!chatInput.trim() || isThinking"
+              aria-label="Send"
+              @click="sendMessage"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+          <p class="text-[10px] text-black/25 text-center mt-2">Shift+Enter for new line · Enter to send</p>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
+function renderMarkdown(content: string): string {
+  return DOMPurify.sanitize(marked.parse(content) as string);
+}
 
 type Verdict = {
   decision: "PROCEED" | "REFER" | "DECLINE";
@@ -420,4 +536,75 @@ async function downloadPdf() {
   }
 }
 onMounted(load);
+
+// ── Chat ──────────────────────────────────────────────────────────────────────
+
+type ChatMessage = { role: "user" | "assistant"; content: string }
+
+const chatOpen = ref(false);
+const messages = ref<ChatMessage[]>([]);
+const chatInput = ref("");
+const isThinking = ref(false);
+const chatError = ref<string | null>(null);
+const messagesContainer = ref<HTMLElement | null>(null);
+const chatInputEl = ref<HTMLTextAreaElement | null>(null);
+
+watch(chatOpen, (open) => {
+  if (open && messages.value.length === 0) {
+    const label = namedInsured.value || "this submission";
+    messages.value.push({
+      role: "assistant",
+      content: `Ask me anything about ${label} — I can search the web for business info, loss history, news, and more.`,
+    });
+  }
+  if (open) {
+    nextTick(() => scrollToBottom());
+  }
+});
+
+function scrollToBottom() {
+  const el = messagesContainer.value;
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function autoGrowTextarea() {
+  const el = chatInputEl.value;
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 72) + "px";
+}
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text || isThinking.value) return;
+
+  chatError.value = null;
+  chatInput.value = "";
+  if (chatInputEl.value) {
+    chatInputEl.value.style.height = "auto";
+  }
+
+  messages.value.push({ role: "user", content: text });
+  await nextTick();
+  scrollToBottom();
+
+  isThinking.value = true;
+  try {
+    const { reply } = await $fetch<{ reply: string }>("/api/chat/message", {
+      method: "POST",
+      body: {
+        message: text,
+        submissionId: id,
+        history: messages.value.slice(0, -1),
+      },
+    });
+    messages.value.push({ role: "assistant", content: reply });
+  } catch (e: any) {
+    chatError.value = e?.data?.statusMessage || e?.data?.message || e?.message || "Something went wrong.";
+  } finally {
+    isThinking.value = false;
+    await nextTick();
+    scrollToBottom();
+  }
+}
 </script>
