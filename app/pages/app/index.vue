@@ -131,23 +131,20 @@
           <div
             v-for="metric in metrics"
             :key="metric.label"
-            class="glass-card p-4 sm:p-5 hover:shadow-md transition-all duration-200 cursor-default"
+            class="glass-card px-4 py-3.5 hover:shadow-md transition-all duration-200 cursor-default"
           >
-            <div class="flex items-start justify-between mb-3 sm:mb-4">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="metric.iconBg">
-                <svg class="w-4 h-4" :class="metric.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" :class="metric.iconBg">
+                <svg class="w-3.5 h-3.5" :class="metric.iconColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path :d="metric.iconPath" />
                 </svg>
               </div>
-              <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em] hidden sm:block">{{ metric.label }}</span>
+              <span class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-600">{{ metric.label }}</span>
             </div>
-            <p class="text-[28px] sm:text-[32px] font-bold tracking-[-1.5px] leading-none" :class="metric.valueColor">
+            <p class="text-[32px] font-black tracking-[-2px] leading-none mb-1.5" :class="metric.valueColor">
               {{ metric.value }}
             </p>
-            <div class="flex items-center justify-between mt-2">
-              <p class="text-[13px] text-gray-700 leading-tight">{{ metric.sub }}</p>
-              <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em] sm:hidden">{{ metric.label }}</span>
-            </div>
+            <p class="text-[13px] text-gray-700 leading-tight">{{ metric.sub }}</p>
           </div>
         </div>
 
@@ -385,13 +382,13 @@
 
             <!-- Stat cards -->
             <div class="grid grid-cols-2 gap-3">
-              <div class="glass-card p-4 text-center hover:shadow-md transition-all duration-200 cursor-default">
-                <p class="text-[26px] font-bold tracking-[-1px] text-green-700">{{ approvalRate }}<span class="text-[16px] text-green-600/60">%</span></p>
-                <p class="text-[13px] text-gray-700 mt-1 font-medium">Approval Rate</p>
+              <div class="glass-card px-4 py-3 hover:shadow-md transition-all duration-200 cursor-default">
+                <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-600 mb-1.5">Approval Rate</p>
+                <p class="text-[28px] font-black tracking-[-1.5px] leading-none text-green-700">{{ approvalRate }}<span class="text-[16px] font-semibold text-green-600/70"> %</span></p>
               </div>
-              <div class="glass-card p-4 text-center hover:shadow-md transition-all duration-200 cursor-default">
-                <p class="text-[26px] font-bold tracking-[-1px] text-amber-700">{{ referRate }}<span class="text-[16px] text-amber-600/60">%</span></p>
-                <p class="text-[13px] text-gray-700 mt-1 font-medium">Refer Rate</p>
+              <div class="glass-card px-4 py-3 hover:shadow-md transition-all duration-200 cursor-default">
+                <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-600 mb-1.5">Refer Rate</p>
+                <p class="text-[28px] font-black tracking-[-1.5px] leading-none text-amber-700">{{ referRate }}<span class="text-[16px] font-semibold text-amber-600/70"> %</span></p>
               </div>
             </div>
 
@@ -838,11 +835,11 @@ onUnmounted(() => {
 }
 
 .th-cell {
-  @apply px-4 py-3 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em];
+  @apply px-4 py-2.5 text-left text-[11px] font-black text-gray-800 uppercase tracking-[0.1em];
 }
 
 .td-cell {
-  @apply px-4 py-3.5;
+  @apply px-4 py-3.5 text-[15px] text-gray-900;
 }
 
 .decision-pill {
@@ -854,7 +851,7 @@ onUnmounted(() => {
 }
 
 .modal-label {
-  @apply block text-[13px] font-semibold text-gray-700 uppercase tracking-[0.07em] mb-2;
+  @apply block text-[11px] font-black text-gray-800 uppercase tracking-[0.1em] mb-2;
 }
 
 .modal-input {

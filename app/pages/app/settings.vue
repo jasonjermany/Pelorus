@@ -35,14 +35,14 @@
               Upload your carrier's underwriting guidelines as a PDF. Hard stops and risk profile fields are automatically extracted for every evaluation.
             </p>
           </div>
-          <div v-if="chunks.length" class="flex gap-6 flex-shrink-0">
-            <div class="text-right">
-              <span class="block text-[26px] font-bold text-gray-900 tracking-[-1px] leading-none">{{ standardCount }}</span>
-              <span class="block text-[13px] text-gray-600 mt-1 uppercase tracking-[0.06em]">Sections</span>
+          <div v-if="chunks.length" class="flex gap-5 flex-shrink-0">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-600 mb-1">Sections</p>
+              <span class="block text-[28px] font-black text-gray-900 tracking-[-1.5px] leading-none">{{ standardCount }}</span>
             </div>
-            <div class="text-right">
-              <span class="block text-[26px] font-bold text-red-600 tracking-[-1px] leading-none">{{ pinnedCount }}</span>
-              <span class="block text-[13px] text-gray-600 mt-1 uppercase tracking-[0.06em]">Hard stops</span>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-600 mb-1">Hard Stops</p>
+              <span class="block text-[28px] font-black text-red-600 tracking-[-1.5px] leading-none">{{ pinnedCount }}</span>
             </div>
           </div>
         </div>
@@ -274,10 +274,10 @@ onMounted(loadChunks)
   @apply bg-white border border-gray-200 rounded-2xl shadow-card;
 }
 .th-cell {
-  @apply px-5 py-3 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em];
+  @apply px-5 py-2.5 text-left text-[11px] font-black text-gray-800 uppercase tracking-[0.1em];
 }
 .td-cell {
-  @apply px-5 py-3.5 text-[15px];
+  @apply px-5 py-3.5 text-[15px] text-gray-900;
 }
 .table-btn {
   @apply text-[13px] font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer;
