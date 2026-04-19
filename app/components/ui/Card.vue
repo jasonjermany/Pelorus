@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="rounded-2xl border border-primary-700/15 bg-white p-6 shadow-card"
-  >
+  <div class="rounded-2xl bg-white/[0.03] border border-white/[0.07] backdrop-blur-sm">
     <slot />
   </div>
 </template>

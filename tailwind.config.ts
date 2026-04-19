@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         serif: ['Instrument Serif', 'Georgia', 'serif'],
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Navy — primary brand color (replaces old primary-700 blue)

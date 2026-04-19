@@ -1,20 +1,34 @@
 <template>
   <!-- Marketing variant -->
-  <nav v-if="variant === 'marketing'" class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-[#faf8f3]/95 backdrop-blur-md border-b border-black/[0.06]">
+  <nav
+    v-if="variant === 'marketing'"
+    class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-white border-b border-gray-200 shadow-sm"
+  >
     <a href="#" class="flex items-center gap-2.5 no-underline">
-      <img src="/PelorusLogo.png" width="40" height="40" alt="Pelorus" class="md:w-[54px] md:h-[54px]" />
-      <span class="text-[18px] font-semibold text-primary-800 tracking-[-0.3px]">Pelorus</span>
+      <img src="/PelorusLogo.png" width="36" height="36" alt="Pelorus" />
+      <span class="text-[17px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
     </a>
-    <ul class="flex items-center gap-4 md:gap-8 list-none">
-      <li class="hidden md:block"><a href="#features" class="text-[14px] font-medium text-black/65 hover:text-primary-800 transition-colors no-underline">Features</a></li>
-      <li class="hidden md:block"><a href="#how" class="text-[14px] font-medium text-black/65 hover:text-primary-800 transition-colors no-underline">How it works</a></li>
-      <li class="hidden md:block"><NuxtLink to="/login" class="text-[14px] font-medium text-black/65 hover:text-primary-800 transition-colors no-underline">Sign in</NuxtLink></li>
-      <li><a href="#contact" class="bg-primary-800 hover:bg-primary-700 text-white text-[14px] font-medium px-4 md:px-5 py-2 rounded-md no-underline transition-colors">Contact Sales</a></li>
+    <ul class="flex items-center gap-1 list-none">
+      <li class="hidden md:block">
+        <a href="#features" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Features</a>
+      </li>
+      <li class="hidden md:block">
+        <a href="#how" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">How it works</a>
+      </li>
+      <li class="hidden md:block">
+        <NuxtLink to="/login" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Sign in</NuxtLink>
+      </li>
+      <li>
+        <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] text-[13px] font-bold px-4 py-1.5 rounded-lg no-underline transition-colors duration-150">Contact Sales</a>
+      </li>
     </ul>
   </nav>
 
   <!-- App variant -->
-  <header v-else-if="variant === 'app'" class="sticky top-0 z-50 bg-primary-800 border-b border-white/5">
+  <header
+    v-else-if="variant === 'app'"
+    class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm"
+  >
     <slot />
   </header>
 </template>

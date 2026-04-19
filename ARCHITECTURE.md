@@ -1,6 +1,6 @@
 # Pelorus — Architecture & Codebase Guide
 
-Pelorus is an AI-powered commercial insurance underwriting triage platform. It evaluates broker submissions (PDFs, DOCX, text) against carrier underwriting guidelines and returns a structured decision (PROCEED / REFER / DECLINE), a composite risk score, guideline compliance checks, flags, insights, and a structured risk profile — all with source citations.
+Pelorus is an AI-powered commercial insurance underwriting triage platform. It evaluates broker submissions (PDFs, DOCX, spreadsheets, text) against carrier underwriting guidelines and returns a structured decision (PROCEED / REFER / DECLINE), a composite risk score, guideline compliance checks, flags, insights, and a structured risk profile — all with source citations.
 
 ---
 
@@ -10,13 +10,15 @@ Pelorus is an AI-powered commercial insurance underwriting triage platform. It e
 | ---------------- | ---------------------------------------------- |
 | Framework        | Nuxt 4 (Vue 3 frontend + Nitro server backend) |
 | Styling          | Tailwind CSS 3                                 |
-| Database         | Supabase (PostgreSQL)                          |
-| Document Parsing | Reducto AI                                     |
+| Database         | Supabase (PostgreSQL + Realtime)               |
+| Document Parsing | Reducto AI (primary); `pdf-parse`, `mammoth`, `xlsx` (dev console) |
 | LLM              | Anthropic Claude (`claude-sonnet-4-6`, `claude-haiku-4-5`) |
+| LLM Tool Use     | `web_search_20250305` (chat assistant)         |
 | Email (inbound)  | SendGrid Inbound Parse webhook                 |
 | Email (outbound) | SendGrid Mail (`@sendgrid/mail`)               |
 | PDF Generation   | pdfmake (server-side, CJS via `createRequire`) |
 | Auth             | nuxt-auth-utils (signed cookie sessions)       |
+| Deployment       | Vercel (region: pdx1)                          |
 
 ---
 
@@ -27,12 +29,27 @@ Pelorus/
 ├── app/
 │   ├── pages/
 │   │   ├── index.vue                  # Marketing page
+│   │   ├── login.vue                  # Login page
+│   │   ├── dev.vue                    # Dev console (rules playground)
 │   │   └── app/
 │   │       ├── index.vue              # Submission inbox
 │   │       ├── settings.vue           # Guidelines management
-│   │       └── submissions/[id].vue   # Verdict detail view
+│   │       └── submissions/[id].vue   # Verdict detail + chat panel
+│   ├── components/
+│   │   ├── AppHeader.vue
+│   │   └── ui/
+│   │       ├── Badge.vue
+│   │       ├── Button.vue
+│   │       └── Card.vue
+│   ├── layouts/
+│   │   ├── default.vue
+│   │   └── marketing.vue
 │   ├── middleware/
 │   │   └── auth.global.ts             # Redirect unauthenticated users
+│   ├── plugins/
+│   │   └── supabase.client.ts         # Client-side Supabase (Realtime)
+│   ├── types/
+│   │   └── models.ts                  # Shared types for rules-based system
 │   └── app.vue
 │
 ├── server/
@@ -41,6 +58,9 @@ Pelorus/
 │   │   │   ├── login.post.ts          # POST /api/auth/login
 │   │   │   ├── logout.post.ts         # POST /api/auth/logout
 │   │   │   └── me.get.ts              # GET  /api/auth/me
+│   │   ├── chat/
+│   │   │   ├── history.get.ts         # GET  /api/chat/history?submissionId=
+│   │   │   └── message.post.ts        # POST /api/chat/message
 │   │   ├── email/
 │   │   │   └── inbound.post.ts        # POST /api/email/inbound (SendGrid webhook)
 │   │   ├── guidelines/
@@ -56,7 +76,8 @@ Pelorus/
 │   │   └── users/
 │   │       └── index.get.ts           # GET  /api/users (admin only)
 │   ├── middleware/
-│   │   └── ipwhitelist.ts             # IP allowlist (bypassed for /api/email/inbound)
+│   │   ├── ipwhitelist.ts             # IP allowlist (bypassed for /api/email/inbound)
+│   │   └── logger.ts                  # Request/response timing logs for /api/*
 │   ├── plugins/
 │   │   └── startup.ts                 # Reset stuck submissions on boot
 │   └── utils/
@@ -80,6 +101,7 @@ Pelorus/
 ├── types/
 │   └── auth.d.ts                      # Augments nuxt-auth-utils User interface
 ├── nuxt.config.ts
+├── vercel.json
 └── package.json
 ```
 
@@ -182,7 +204,48 @@ Users view results at `/app/submissions/:id`:
 - **Guidelines tab** — full check table with source citations on submitted findings
 - **Insights tab** — pattern recognition, market context, consistency, coverage gaps, missing info
 - **Risk Profile tab** — all extracted fields with source citations (document + page)
+- **Chat panel** — AI research assistant scoped to this submission (see below)
 - **Download PDF** — full verdict as formatted PDF via pdfmake
+
+---
+
+## Chat Assistant
+
+Each submission detail page includes an AI chat panel backed by `/api/chat/message`. The assistant is a restricted underwriting research tool scoped to the named insured on the submission.
+
+### Security model
+
+| Control            | Implementation                                                              |
+| ------------------ | --------------------------------------------------------------------------- |
+| Input validation   | Max 500 characters per message                                              |
+| Injection detection | Regex patterns block prompt-injection attempts; flagged messages are logged and rejected |
+| Output sanitization | Same regex patterns applied to Claude's response; flagged responses are logged |
+| Rate limiting      | 30 user messages per hour per user (enforced via DB count)                  |
+| Org scoping        | Submission `org_id` must match session `org_id` before any Claude call      |
+| Role scoping       | Underwriters can only chat on their own submissions                         |
+
+### Tool use
+
+The assistant calls Claude with the `web_search_20250305` built-in tool, allowing it to look up publicly available business information about the insured. The system prompt instructs Claude to ignore any instructions found in retrieved web content.
+
+### Persistence
+
+Conversation history is stored in the `chat_messages` table. History is loaded when the chat panel opens (`GET /api/chat/history`) and passed as prior context on each new message. Only non-flagged messages are returned from history.
+
+---
+
+## Dev Console (`/dev`)
+
+A developer-facing rules playground at `/dev`. It implements an alternative, deterministic evaluation approach without Reducto or the main evaluation pipeline:
+
+1. **Guidelines upload** → calls `/api/rules` → Claude converts guideline text into structured `Rule[]` objects (field, operator, value, normalizedExpression)
+2. **Submission upload** → calls `/api/facts` → Claude extracts `ExtractedFact[]` with confidence scores from submission text
+3. **Rule evaluation** → runs client-side deterministically: each fact is matched against rules to produce `EvaluationResult[]` (PASS / FAIL / UNKNOWN / N/A)
+4. **Save to DB** → calls `POST /api/submissions` to persist the processed submission
+
+Documents are parsed locally via `pdf-parse` (PDF), `mammoth` (DOCX), and `xlsx` (spreadsheets) — no Reducto dependency. This makes the dev console self-contained for prototyping.
+
+The shared types for this system live in `app/types/models.ts`: `Rule`, `ExtractedFact`, `EvaluationResult`, `ProcessedSubmission`.
 
 ---
 
@@ -209,16 +272,16 @@ All AI-generated output includes source attribution:
 
 All Claude prompts live in `server/utils/prompts/`. `claude.ts` is orchestration-only.
 
-| File           | Exports                                          | Used by            |
-| -------------- | ------------------------------------------------ | ------------------ |
-| `voice.ts`     | `VOICE`, `HARD_STOP_RULES`                       | checks, flags, insights |
-| `checks.ts`    | `CHECKS_TOOL`, `buildChecksMessages()`           | evaluateSubmission |
-| `flags.ts`     | `buildFlagsPrompt()`                             | runFlagsCall       |
-| `insights.ts`  | `buildInsightsPrompt()`                          | runInsightsCall    |
-| `riskProfile.ts` | `buildRiskProfilePrompt()`                     | runRiskProfileCall |
-| `classify.ts`  | `CLASSIFY_INSTRUCTIONS`                          | classifyChunks     |
-| `hardStops.ts` | `buildHardStopsPrompt()`                         | extractHardStops   |
-| `riskFields.ts`| `buildRiskFieldsPrompt()`                        | extractRiskProfileFields |
+| File             | Exports                                          | Used by                    |
+| ---------------- | ------------------------------------------------ | -------------------------- |
+| `voice.ts`       | `VOICE`, `HARD_STOP_RULES`                       | checks, flags, insights    |
+| `checks.ts`      | `CHECKS_TOOL`, `buildChecksMessages()`           | evaluateSubmission         |
+| `flags.ts`       | `buildFlagsPrompt()`                             | runFlagsCall               |
+| `insights.ts`    | `buildInsightsPrompt()`                          | runInsightsCall            |
+| `riskProfile.ts` | `buildRiskProfilePrompt()`                       | runRiskProfileCall         |
+| `classify.ts`    | `CLASSIFY_INSTRUCTIONS`                          | classifyChunks             |
+| `hardStops.ts`   | `buildHardStopsPrompt()`                         | extractHardStops           |
+| `riskFields.ts`  | `buildRiskFieldsPrompt()`                        | extractRiskProfileFields   |
 
 ### Voice & Style
 
@@ -237,6 +300,12 @@ All AI output follows a shared `VOICE` constant enforcing:
 | POST   | `/api/auth/login`     | Authenticate user    |
 | POST   | `/api/auth/logout`    | Clear session        |
 | GET    | `/api/auth/me`        | Current session user |
+
+### Chat
+| Method | Path                  | Purpose                                          |
+| ------ | --------------------- | ------------------------------------------------ |
+| GET    | `/api/chat/history`   | Load chat history for a submission               |
+| POST   | `/api/chat/message`   | Send a message; returns assistant reply          |
 
 ### Guidelines
 | Method | Path                     | Purpose                                     |
@@ -322,6 +391,18 @@ All AI output follows a shared `VOICE` constant enforcing:
 | summary     | text        | Claude-generated 120-char summary               |
 | created_at  | timestamptz |                                                 |
 
+### `chat_messages`
+| Column        | Type        | Notes                                             |
+| ------------- | ----------- | ------------------------------------------------- |
+| id            | uuid        | PK                                                |
+| org_id        | uuid        | FK → organizations                                |
+| user_id       | uuid        | FK → users                                        |
+| submission_id | uuid        | FK → submissions                                  |
+| role          | text        | `user` or `assistant`                             |
+| content       | text        | Message text                                      |
+| flagged       | bool        | true if injection pattern detected                |
+| created_at    | timestamptz |                                                   |
+
 ---
 
 ## Verdict JSON Structure
@@ -405,19 +486,22 @@ All AI output follows a shared `VOICE` constant enforcing:
 
 **Fire-and-forget ingestion** — Both upload and inbound email paths return immediately after inserting the submission row. Evaluation runs via `setImmediate`. The frontend uses Supabase Realtime to update the inbox without polling.
 
-**pdfmake on Railway** — pdfmake uses CJS and must be loaded via `createRequire`. Nitro's `traceInclude` config forces the build files into the Railway deployment bundle.
+**Chat security-in-depth** — The chat assistant applies four independent controls: input length limits, regex injection detection on input, rate limiting via DB count, and the same injection patterns applied to Claude's output. Flagged messages are stored with `flagged = true` for audit purposes and excluded from history returned to the client.
+
+**pdfmake on Vercel** — pdfmake uses CJS and must be loaded via `createRequire`. Nitro's `traceInclude` config forces the build files into the Vercel deployment bundle.
 
 ---
 
 ## Environment Variables
 
-| Variable            | Purpose                                      |
-| ------------------- | -------------------------------------------- |
-| `ANTHROPIC_API_KEY` | Claude API authentication                    |
-| `ANTHROPIC_MODEL`   | Model override (default: `claude-sonnet-4-6`) |
-| `SUPABASE_URL`      | Supabase project URL                         |
-| `SUPABASE_KEY`      | Supabase service role key                    |
-| `REDUCTO_API_KEY`   | Reducto AI authentication                    |
-| `SENDGRID_API_KEY`  | SendGrid outbound mail                       |
-| `NUXT_SESSION_PASSWORD` | nuxt-auth-utils cookie encryption key    |
-| `SITE_URL`          | Base URL for email result links              |
+| Variable                        | Purpose                                      |
+| ------------------------------- | -------------------------------------------- |
+| `ANTHROPIC_API_KEY`             | Claude API authentication                    |
+| `ANTHROPIC_MODEL`               | Model override (default: `claude-sonnet-4-6`) |
+| `SUPABASE_URL`                  | Supabase project URL                         |
+| `SUPABASE_KEY`                  | Supabase service role key                    |
+| `NUXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (client-side Realtime)     |
+| `REDUCTO_API_KEY`               | Reducto AI authentication                    |
+| `SENDGRID_API_KEY`              | SendGrid outbound mail                       |
+| `NUXT_SESSION_PASSWORD`         | nuxt-auth-utils cookie encryption key        |
+| `SITE_URL`                      | Base URL for email result links              |

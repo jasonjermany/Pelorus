@@ -3,7 +3,7 @@
     :type="type"
     :disabled="disabled"
     :class="buttonClass"
-    class="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2"
+    class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050A18] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
     @click="$emit('click')"
   >
     <slot />
@@ -11,31 +11,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue'
 
 const props = defineProps<{
-  variant?: "primary" | "secondary" | "ghost" | "accent";
-  disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-}>();
-defineEmits<{
-  (e: "click"): void;
-}>();
+  variant?: 'primary' | 'secondary' | 'ghost' | 'accent'
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
+}>()
+defineEmits<{ (e: 'click'): void }>()
 
 const buttonClass = computed(() => {
-  if (props.disabled) {
-    return "cursor-not-allowed bg-slate-200 text-slate-400";
-  }
-
   switch (props.variant) {
-    case "accent":
-      return "bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-500/40";
-    case "secondary":
-      return "bg-white text-primary-700 border border-primary-700 hover:bg-primary-700/5 focus:ring-primary-700/30";
-    case "ghost":
-      return "bg-transparent text-primary-700 hover:bg-primary-700/10 focus:ring-primary-700/20";
+    case 'accent':
+    case 'primary':
+      return 'bg-accent-500 hover:bg-accent-400 text-[#050A18]'
+    case 'secondary':
+      return 'bg-white/[0.06] border border-white/[0.10] text-white/70 hover:text-white hover:border-white/[0.20] hover:bg-white/[0.09]'
+    case 'ghost':
+      return 'text-white/50 hover:text-white hover:bg-white/[0.06]'
     default:
-      return "bg-primary-700 text-white hover:bg-primary-600 focus:ring-primary-700/40";
+      return 'bg-accent-500 hover:bg-accent-400 text-[#050A18]'
   }
-});
+})
 </script>
