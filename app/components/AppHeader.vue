@@ -10,16 +10,16 @@
     </a>
     <ul class="flex items-center gap-1 list-none">
       <li class="hidden md:block">
-        <a href="#features" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Features</a>
+        <a href="#features" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Features</a>
       </li>
       <li class="hidden md:block">
-        <a href="#how" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">How it works</a>
+        <a href="#how" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">How it works</a>
       </li>
       <li class="hidden md:block">
-        <NuxtLink to="/login" class="text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Sign in</NuxtLink>
+        <NuxtLink to="/login" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Sign in</NuxtLink>
       </li>
       <li>
-        <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] text-[13px] font-bold px-4 py-1.5 rounded-lg no-underline transition-colors duration-150">Contact Sales</a>
+        <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] text-[15px] font-bold px-4 py-1.5 rounded-lg no-underline transition-colors duration-150">Contact Sales</a>
       </li>
     </ul>
   </nav>

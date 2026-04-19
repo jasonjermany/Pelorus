@@ -3,7 +3,7 @@
     :type="type"
     :disabled="disabled"
     :class="buttonClass"
-    class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050A18] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+    class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-[15px] font-semibold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050A18] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
     @click="$emit('click')"
   >
     <slot />

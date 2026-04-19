@@ -7,17 +7,17 @@
         <div class="flex items-center gap-4 min-w-0">
           <NuxtLink
             to="/app"
-            class="flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-gray-700 transition-colors duration-150 flex-shrink-0"
+            class="flex items-center gap-1.5 text-[14px] text-gray-600 hover:text-gray-800 transition-colors duration-150 flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7"/>
             </svg>
             Dashboard
           </NuxtLink>
-          <span class="text-gray-300 flex-shrink-0">·</span>
+          <span class="text-gray-500 flex-shrink-0">·</span>
           <div class="flex items-center gap-2 min-w-0">
             <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" class="flex-shrink-0" />
-            <span class="text-[14px] font-semibold text-gray-800 tracking-[-0.3px] truncate">
+            <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] truncate">
               {{ namedInsured || 'Submission Review' }}
             </span>
           </div>
@@ -26,7 +26,7 @@
           <!-- Download PDF -->
           <button
             v-if="verdict"
-            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-100 border border-gray-200 hover:bg-gray-200/70 hover:border-gray-300 text-gray-600 hover:text-gray-900 text-[12px] font-medium transition-all duration-150 disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-100 border border-gray-200 hover:bg-gray-200/70 hover:border-gray-300 text-gray-800 hover:text-gray-900 text-[14px] font-medium transition-all duration-150 disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
             :disabled="isDownloading"
             @click="downloadPdf"
           >
@@ -47,8 +47,8 @@
       class="mx-auto px-4 sm:px-6 py-7 flex flex-col gap-5 transition-all duration-200"
       :class="activeTab === 'Risk Profile' && verdict ? 'max-w-[1400px]' : 'max-w-4xl'"
     >
-      <div v-if="isLoading" class="py-20 text-center text-[13px] text-gray-400">Loading…</div>
-      <div v-else-if="loadError" class="py-20 text-center text-[13px] text-red-600">{{ loadError }}</div>
+      <div v-if="isLoading" class="py-20 text-center text-[15px] text-gray-600">Loading…</div>
+      <div v-else-if="loadError" class="py-20 text-center text-[15px] text-red-600">{{ loadError }}</div>
 
       <template v-else>
 
@@ -60,15 +60,15 @@
         >
           <div class="flex items-start justify-between gap-6">
             <div class="flex-1 min-w-0">
-              <p class="text-[10px] font-bold tracking-[0.12em] uppercase mb-3" :style="{ color: decisionColors.label }">Decision</p>
+              <p class="text-[12px] font-bold tracking-[0.12em] uppercase mb-3" :style="{ color: decisionColors.label }">Decision</p>
               <span
-                class="inline-flex items-center px-3.5 py-1 rounded-full text-[12px] font-bold tracking-[0.04em] uppercase mb-4"
+                class="inline-flex items-center px-3.5 py-1 rounded-full text-[14px] font-bold tracking-[0.04em] uppercase mb-4"
                 :style="{ background: decisionColors.pillBg, color: decisionColors.pillText }"
               >{{ verdict.decision }}</span>
-              <p class="text-[14px] leading-[1.7] mb-4 text-gray-700">{{ verdict.recommendation?.summary }}</p>
+              <p class="text-[16px] leading-[1.7] mb-4 text-gray-800">{{ verdict.recommendation?.summary }}</p>
               <div class="flex items-center flex-wrap gap-2">
-                <span v-if="portfolioTiv" class="text-[12px] text-gray-500">TIV: {{ portfolioTiv }}</span>
-                <span v-if="verdict.analyzed_in_seconds" class="text-[11px] font-medium px-2.5 py-1 rounded-full" :style="{ background: decisionColors.metaBg, color: decisionColors.meta }">
+                <span v-if="portfolioTiv" class="text-[14px] text-gray-700">TIV: {{ portfolioTiv }}</span>
+                <span v-if="verdict.analyzed_in_seconds" class="text-[13px] font-medium px-2.5 py-1 rounded-full" :style="{ background: decisionColors.metaBg, color: decisionColors.meta }">
                   Analyzed in {{ verdict.analyzed_in_seconds }}s
                 </span>
               </div>
@@ -77,14 +77,14 @@
               <span class="leading-none tracking-[-3px]" style="font-size:68px;font-weight:300" :style="{ color: decisionColors.score }">
                 {{ normalizeScore(verdict.composite_score).toFixed(1) }}
               </span>
-              <span class="text-[12px] font-medium -mt-1" :style="{ color: decisionColors.scoreLabel }">out of 10</span>
+              <span class="text-[14px] font-medium -mt-1" :style="{ color: decisionColors.scoreLabel }">out of 10</span>
             </div>
           </div>
         </div>
 
         <!-- Dimension Scores -->
         <div v-if="dimGroups.length" class="glass-card p-5 sm:p-6">
-          <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400 mb-5">Dimension Scores</p>
+          <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600 mb-5">Dimension Scores</p>
           <div v-for="(group, gi) in dimGroups" :key="group.locationId || gi">
             <!-- Location header — only when grouped by location -->
             <div
@@ -92,13 +92,13 @@
               class="flex items-center gap-2 mb-3"
               :class="gi > 0 ? 'mt-5 pt-5 border-t border-gray-100' : ''"
             >
-              <span class="text-[10px] font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded tracking-[0.04em]">{{ group.locationId }}</span>
-              <span v-if="group.address" class="text-[11px] text-gray-400 truncate">{{ group.address }}</span>
+              <span class="text-[12px] font-bold text-gray-800 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded tracking-[0.04em]">{{ group.locationId }}</span>
+              <span v-if="group.address" class="text-[13px] text-gray-600 truncate">{{ group.address }}</span>
             </div>
             <div class="flex flex-col divide-y divide-gray-100">
               <!-- Numeric fields → bar chart -->
-              <div v-for="f in group.numericFields" :key="f.label" class="flex items-center gap-4 py-3.5">
-                <span class="text-[12px] text-gray-500 w-36 flex-shrink-0">{{ f.label }}</span>
+              <div v-for="f in group.numericFields" :key="f.label" class="flex items-center gap-4 py-2.5">
+                <span class="text-[11px] font-bold uppercase tracking-[0.08em] text-gray-800 w-36 flex-shrink-0">{{ f.label }}</span>
                 <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     class="h-1.5 rounded-full transition-all duration-700"
@@ -106,12 +106,12 @@
                     :style="{ width: `${f.score * 10}%` }"
                   />
                 </div>
-                <span class="text-[13px] font-semibold text-gray-700 w-8 text-right flex-shrink-0">{{ f.score.toFixed(1) }}</span>
+                <span class="text-[15px] font-semibold text-gray-800 w-8 text-right flex-shrink-0">{{ f.score.toFixed(1) }}</span>
               </div>
-              <!-- Text fields → label / value pairs -->
-              <div v-for="f in group.textFields" :key="f.label" class="flex items-center gap-4 py-3.5">
-                <span class="text-[12px] text-gray-500 w-36 flex-shrink-0">{{ f.label }}</span>
-                <span class="text-[13px] text-gray-700 flex-1">{{ f.value }}</span>
+              <!-- Text fields → stacked label / value -->
+              <div v-for="f in group.textFields" :key="f.label" class="py-2 border-b border-gray-100 last:border-0">
+                <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-gray-700 mb-0.5">{{ f.label }}</p>
+                <span class="text-[15px] text-gray-900">{{ f.value }}</span>
               </div>
             </div>
           </div>
@@ -123,8 +123,8 @@
             <button
               v-for="tab in tabs"
               :key="tab"
-              class="flex-1 py-2 rounded-lg text-[12px] font-medium transition-all duration-150 cursor-pointer"
-              :class="activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+              class="flex-1 py-2 rounded-lg text-[14px] font-medium transition-all duration-150 cursor-pointer"
+              :class="activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-700 hover:text-gray-800'"
               @click="activeTab = tab"
             >
               {{ tab }}
@@ -136,9 +136,9 @@
 
             <!-- Recommended Next Action -->
             <div class="glass-card p-5 sm:p-6">
-              <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400 mb-3">Recommended Next Action</p>
+              <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600 mb-3">Recommended Next Action</p>
               <ol class="flex flex-col gap-2.5 list-none">
-                <li v-for="(item, i) in verdict.recommendation?.action_items" :key="i" class="flex gap-3 text-[13px] text-gray-700 leading-relaxed">
+                <li v-for="(item, i) in verdict.recommendation?.action_items" :key="i" class="flex gap-3 text-[15px] text-gray-800 leading-relaxed">
                   <span class="text-[#92700A] font-bold flex-shrink-0 w-4">{{ i + 1 }}.</span>{{ item }}
                 </li>
               </ol>
@@ -147,8 +147,8 @@
             <!-- Concerns & Flags -->
             <div v-if="sortedFlags.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Concerns &amp; Flags</p>
-                <span class="text-[12px] text-gray-400">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Concerns &amp; Flags</p>
+                <span class="text-[14px] text-gray-600">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
               </div>
               <div class="flex flex-col divide-y divide-gray-100 overflow-y-auto" style="max-height:min(50vh,480px)">
                 <div v-for="(flag, i) in sortedFlags" :key="i" class="px-5 sm:px-6 py-5 flex gap-4"
@@ -156,15 +156,15 @@
                   <div class="w-[3px] rounded-full flex-shrink-0 mt-0.5" :class="flag.type === 'CONDITION' ? 'bg-red-500' : 'bg-amber-500'" />
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start gap-2 mb-1.5">
-                      <p class="text-[13px] font-semibold text-gray-800 flex-1 min-w-0">{{ flag.title }}</p>
+                      <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ flag.title }}</p>
                       <span
-                        class="text-[9px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
+                        class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
                         :class="flag.type === 'CONDITION' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-800 border border-amber-200'"
                       >{{ flag.type }}</span>
                     </div>
-                    <p class="text-[13px] text-gray-600 leading-relaxed mb-2.5">{{ flag.explanation }}</p>
-                    <p class="text-[12px] text-gray-500 mb-1.5"><span class="font-semibold text-gray-700">Action:</span> {{ flag.action_required }}</p>
-                    <p class="text-[11px] text-gray-400"><span class="font-semibold text-gray-500">Ref:</span> {{ flag.cited_section }}</p>
+                    <p class="text-[15px] text-gray-800 leading-relaxed mb-2.5">{{ flag.explanation }}</p>
+                    <p class="text-[14px] text-gray-700 mb-1.5"><span class="font-semibold text-gray-800">Action:</span> {{ flag.action_required }}</p>
+                    <p class="text-[13px] text-gray-600"><span class="font-semibold text-gray-700">Ref:</span> {{ flag.cited_section }}</p>
                   </div>
                 </div>
               </div>
@@ -173,10 +173,10 @@
             <!-- Favorable Factors -->
             <div v-if="verdict.favorable_factors?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Favorable Factors</p>
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Favorable Factors</p>
               </div>
               <ul class="flex flex-col divide-y divide-gray-100 list-none">
-                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 sm:px-6 py-4 text-[13px] text-gray-600 leading-relaxed">
+                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 sm:px-6 py-4 text-[15px] text-gray-800 leading-relaxed">
                   <svg class="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 13l4 4L19 7"/>
                   </svg>
@@ -188,52 +188,32 @@
             <!-- Portfolio Risk Summary -->
             <div v-if="verdict.portfolio" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Risk Summary</p>
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Risk Summary</p>
               </div>
-              <div class="divide-y divide-gray-100">
-                <div v-for="(raw, key) in portfolioSummaryFields" :key="key" class="flex gap-4 px-5 sm:px-6 py-3.5 hover:bg-gray-50 transition-colors duration-150">
-                  <span class="text-[10px] font-semibold uppercase tracking-[0.07em] text-gray-400 w-40 flex-shrink-0 pt-0.5">{{ formatKey(key) }}</span>
-                  <div class="flex-1 min-w-0">
-                    <span v-if="!rpIsBlank(raw)" class="text-[13px] text-gray-600">{{ rpValue(raw) }}</span>
-                    <span v-else class="text-gray-300">—</span>
-                    <p v-if="rpSource(raw)" class="text-[11px] text-gray-400 mt-0.5"><span class="font-semibold text-gray-500">Source:</span> {{ rpSource(raw) }}</p>
-                    <p v-if="rpContext(raw)" class="text-[11px] text-gray-400 italic mt-0.5 truncate" :title="rpContext(raw) ?? undefined">"{{ rpContext(raw) }}"</p>
-                  </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-px bg-gray-100">
+                <div v-for="(raw, key) in portfolioSummaryFields" :key="key" class="bg-white px-4 py-2.5">
+                  <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-gray-700 mb-0.5">{{ formatKey(key) }}</p>
+                  <span v-if="!rpIsBlank(raw)" class="text-[15px] font-medium text-gray-900">{{ rpValue(raw) }}</span>
+                  <span v-else class="text-[15px] text-gray-500">—</span>
+                  <p v-if="rpSource(raw)" class="text-[12px] text-gray-600 mt-0.5 truncate">{{ rpSource(raw) }}</p>
                 </div>
               </div>
             </div>
 
-            <!-- Legacy risk_profile fallback -->
-            <div v-else-if="verdict.risk_profile" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Risk Summary</p>
-              </div>
-              <div class="divide-y divide-gray-100">
-                <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="flex gap-4 px-5 sm:px-6 py-3.5 hover:bg-gray-50 transition-colors duration-150">
-                  <span class="text-[10px] font-semibold uppercase tracking-[0.07em] text-gray-400 w-40 flex-shrink-0 pt-0.5">{{ formatKey(key) }}</span>
-                  <div class="flex-1 min-w-0">
-                    <span v-if="!rpIsBlank(raw)" class="text-[13px] text-gray-600">{{ rpValue(raw) }}</span>
-                    <span v-else class="text-gray-300">—</span>
-                    <p v-if="rpSource(raw)" class="text-[11px] text-gray-400 mt-0.5"><span class="font-semibold text-gray-500">Source:</span> {{ rpSource(raw) }}</p>
-                    <p v-if="rpContext(raw)" class="text-[11px] text-gray-400 italic mt-0.5 truncate" :title="rpContext(raw) ?? undefined">"{{ rpContext(raw) }}"</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- ── Guidelines tab ───────────────────────────────── -->
           <div v-else-if="activeTab === 'Guidelines'">
             <div class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Guideline Checks</p>
-                <span class="text-[12px] text-gray-400">
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Guideline Checks</p>
+                <span class="text-[14px] text-gray-600">
                   <span v-if="verdict.guideline_checks?.length">{{ verdict.guideline_checks.length }} check{{ verdict.guideline_checks.length !== 1 ? 's' : '' }} require attention</span>
                   <span v-else class="text-green-700 font-medium">All checks passed</span>
                 </span>
               </div>
               <div class="overflow-x-auto overflow-y-auto" style="max-height:min(62vh,600px)">
-                <table class="w-full text-left text-[13px]">
+                <table class="w-full text-left text-[15px]">
                   <thead class="sticky top-0 z-10">
                     <tr class="border-b border-gray-100 bg-gray-50">
                       <th class="th-cell">Rule</th>
@@ -250,17 +230,17 @@
                       :class="{ 'bg-red-50/40': check.status === 'fail', 'bg-amber-50/30': check.status === 'review' }"
                     >
                       <td class="td-cell align-top">
-                        <p class="font-medium text-gray-800">{{ check.rule }}</p>
-                        <p class="text-[11px] text-gray-400 mt-1"><span class="font-semibold text-gray-500">Ref:</span> {{ check.cited_section }}</p>
+                        <p class="font-medium text-gray-900">{{ check.rule }}</p>
+                        <p class="text-[13px] text-gray-600 mt-1"><span class="font-semibold text-gray-700">Ref:</span> {{ check.cited_section }}</p>
                       </td>
-                      <td class="td-cell text-gray-600 leading-relaxed align-top">{{ check.required }}</td>
+                      <td class="td-cell text-gray-800 leading-relaxed align-top">{{ check.required }}</td>
                       <td class="td-cell align-top">
-                        <p class="text-gray-600 leading-relaxed">{{ check.submitted }}</p>
-                        <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[11px] text-gray-400 mt-1"><span class="font-semibold text-gray-500">Source:</span> {{ check.submission_source }}</p>
+                        <p class="text-gray-800 leading-relaxed">{{ check.submitted }}</p>
+                        <p v-if="check.submission_source && check.submission_source !== 'Not disclosed'" class="text-[13px] text-gray-600 mt-1"><span class="font-semibold text-gray-700">Source:</span> {{ check.submission_source }}</p>
                       </td>
                       <td class="td-cell align-top">
                         <span
-                          class="text-[10px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
+                          class="text-[12px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
                           :class="{
                             'bg-green-50 text-green-800 border border-green-200': check.status === 'pass',
                             'bg-amber-50 text-amber-800 border border-amber-200': check.status === 'review',
@@ -279,30 +259,30 @@
           <div v-else-if="activeTab === 'Insights'" class="flex flex-col gap-4">
             <div v-if="verdict.insights" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Underwriting Insights</p>
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Underwriting Insights</p>
               </div>
               <div class="divide-y divide-gray-100 overflow-y-auto" style="max-height:min(55vh,520px)">
                 <div v-for="(value, key) in verdict.insights" :key="key" class="px-5 sm:px-6 py-5">
-                  <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2">{{ formatKey(key) }}</p>
-                  <p class="text-[13px] text-gray-600 leading-relaxed">{{ value }}</p>
+                  <p class="text-[12px] font-bold uppercase tracking-[0.1em] text-gray-600 mb-2">{{ formatKey(key) }}</p>
+                  <p class="text-[15px] text-gray-800 leading-relaxed">{{ value }}</p>
                 </div>
               </div>
             </div>
             <div v-if="verdict.missing_info?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Missing Information</p>
+                <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Missing Information</p>
               </div>
               <div class="flex flex-col divide-y divide-gray-100">
                 <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-5 sm:px-6 py-4">
                   <div class="flex items-center gap-2 mb-1.5">
-                    <p class="text-[13px] font-semibold text-gray-800">{{ item.label }}</p>
+                    <p class="text-[15px] font-semibold text-gray-900">{{ item.label }}</p>
                     <span
                       v-if="item.priority"
-                      class="text-[9px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full"
-                      :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-600'"
+                      class="text-[11px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full"
+                      :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-800'"
                     >{{ item.priority }}</span>
                   </div>
-                  <p class="text-[13px] text-gray-600 leading-relaxed">{{ item.description }}</p>
+                  <p class="text-[15px] text-gray-800 leading-relaxed">{{ item.description }}</p>
                 </div>
               </div>
             </div>
@@ -326,11 +306,11 @@
                     @click="toggleLocation(loc.id)"
                   >
                     <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="text-[10px] font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex-shrink-0 tracking-[0.04em]">{{ loc.id }}</span>
-                      <span v-if="loc.address" class="text-[13px] text-gray-800 font-medium truncate">{{ loc.address }}</span>
+                      <span class="text-[12px] font-bold text-gray-800 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex-shrink-0 tracking-[0.04em]">{{ loc.id }}</span>
+                      <span v-if="loc.address" class="text-[15px] text-gray-900 font-medium truncate">{{ loc.address }}</span>
                     </div>
                     <svg
-                      class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                      class="w-3.5 h-3.5 text-gray-600 transition-transform duration-200 flex-shrink-0"
                       :class="expandedLocations.has(loc.id) ? 'rotate-180' : ''"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
                     ><polyline points="6 9 12 15 18 9"/></svg>
@@ -338,27 +318,25 @@
 
                   <!-- Expanded: sections → fields -->
                   <div v-if="expandedLocations.has(loc.id)" class="border-t border-gray-100 divide-y divide-gray-100">
-                    <div v-for="section in loc.sections" :key="section.name" class="px-5 py-4">
-                      <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-2.5">{{ section.name }}</p>
-                      <div class="flex flex-col">
+                    <div v-for="section in loc.sections" :key="section.name" class="px-4 py-3">
+                      <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-800 mb-2">{{ section.name }}</p>
+                      <div class="grid grid-cols-2 gap-px bg-gray-100">
                         <div
                           v-for="field in section.fields"
                           :key="field.label"
-                          class="flex items-start justify-between gap-4 py-2 border-b border-gray-50 last:border-0"
+                          class="bg-white px-2.5 py-1.5"
                           :class="severityRowClass(field.severity)"
                         >
-                          <span class="text-[11px] text-gray-500 flex-shrink-0 pt-0.5">{{ field.label }}</span>
-                          <div class="flex flex-col items-end gap-1 min-w-0">
-                            <div class="flex items-center gap-1.5">
-                              <span class="text-[12px] text-gray-700 text-right leading-snug">{{ field.value }}</span>
-                              <span
-                                v-if="field.severity"
-                                class="text-[8px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded-full flex-shrink-0"
-                                :class="severityBadgeClass(field.severity)"
-                              >{{ field.severity }}</span>
-                            </div>
-                            <p v-if="field.description" class="text-[11px] text-gray-400 text-right leading-relaxed max-w-[280px]">{{ field.description }}</p>
+                          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-gray-700 mb-0.5">{{ field.label }}</p>
+                          <div class="flex items-center gap-1.5">
+                            <span class="text-[14px] font-medium text-gray-900 leading-snug">{{ field.value }}</span>
+                            <span
+                              v-if="field.severity"
+                              class="text-[11px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded-full flex-shrink-0"
+                              :class="severityBadgeClass(field.severity)"
+                            >{{ field.severity }}</span>
                           </div>
+                          <p v-if="field.description" class="text-[12px] text-gray-600 leading-relaxed mt-0.5">{{ field.description }}</p>
                         </div>
                       </div>
                     </div>
@@ -374,29 +352,29 @@
               <div class="bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden mb-4">
                 <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-gray-200">
                   <div class="px-5 py-5">
-                    <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-1.5">Portfolio TIV</p>
+                    <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-gray-600 mb-1.5">Portfolio TIV</p>
                     <p class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] leading-tight">{{ verdict.portfolio?.total_tiv || '—' }}</p>
                   </div>
                   <div class="px-5 py-5">
-                    <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-1.5">Locations</p>
+                    <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-gray-600 mb-1.5">Locations</p>
                     <p class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] leading-tight">{{ verdict.portfolio?.location_count || verdict.locations.length }}</p>
                   </div>
                   <div class="px-5 py-5">
-                    <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-1.5">Total SF</p>
+                    <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-gray-600 mb-1.5">Total SF</p>
                     <p class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] leading-tight">{{ verdict.portfolio?.total_sf || '—' }}</p>
                   </div>
                   <div class="px-5 py-5">
-                    <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-1.5">5yr Losses</p>
+                    <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-gray-600 mb-1.5">5yr Losses</p>
                     <p class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] leading-tight">{{ truncateLosses(rpValue(verdict.portfolio?.losses_5yr as RpField)) }}</p>
                   </div>
                 </div>
                 <!-- Location status strip -->
                 <div class="px-5 py-3 border-t border-gray-200 flex items-center gap-2 flex-wrap">
-                  <span class="text-[9px] font-bold tracking-[0.1em] uppercase text-gray-400 mr-1">Locations</span>
+                  <span class="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-600 mr-1">Locations</span>
                   <button
                     v-for="loc in verdict.locations"
                     :key="loc.id"
-                    class="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-[0.03em] transition-all duration-150 hover:opacity-80 cursor-pointer"
+                    class="px-2.5 py-1 rounded-full text-[12px] font-semibold tracking-[0.03em] transition-all duration-150 hover:opacity-80 cursor-pointer"
                     :class="locStatusPillClass(loc.status)"
                     @click="scrollToLocation(loc.id)"
                   >{{ loc.id }}</button>
@@ -408,8 +386,8 @@
                 <button
                   v-for="ft in visibleFilterTabs"
                   :key="ft.value"
-                  class="px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all duration-150 cursor-pointer"
-                  :class="locationFilter === ft.value ? 'bg-gray-200 text-gray-900' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'"
+                  class="px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all duration-150 cursor-pointer"
+                  :class="locationFilter === ft.value ? 'bg-gray-200 text-gray-900' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800'"
                   @click="locationFilter = ft.value"
                 >{{ ft.label }}</button>
               </div>
@@ -428,19 +406,19 @@
                     @click="toggleLocation(loc.id)"
                   >
                     <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="text-[10px] font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex-shrink-0 tracking-[0.04em]">{{ loc.id }}</span>
-                      <span class="text-[13px] text-gray-800 font-medium truncate">{{ loc.address }}</span>
-                      <span class="text-[12px] text-gray-500 flex-shrink-0">{{ loc.city_state_zip }}</span>
-                      <span v-if="loc.source_doc" class="text-[10px] text-gray-400 italic flex-shrink-0 hidden sm:block">{{ loc.source_doc }}</span>
+                      <span class="text-[12px] font-bold text-gray-800 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex-shrink-0 tracking-[0.04em]">{{ loc.id }}</span>
+                      <span class="text-[15px] text-gray-900 font-medium truncate">{{ loc.address }}</span>
+                      <span class="text-[14px] text-gray-700 flex-shrink-0">{{ loc.city_state_zip }}</span>
+                      <span v-if="loc.source_doc" class="text-[12px] text-gray-600 italic flex-shrink-0 hidden sm:block">{{ loc.source_doc }}</span>
                     </div>
                     <div class="flex items-center gap-2.5 flex-shrink-0 ml-4">
-                      <span class="text-[13px] font-semibold text-gray-700">{{ loc.tiv }}</span>
+                      <span class="text-[15px] font-semibold text-gray-800">{{ loc.tiv }}</span>
                       <span
-                        class="text-[9px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
+                        class="text-[11px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
                         :class="locStatusClass(loc.status)"
                       >{{ locStatusLabel(loc.status) }}</span>
                       <svg
-                        class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                        class="w-3.5 h-3.5 text-gray-600 transition-transform duration-200 flex-shrink-0"
                         :class="expandedLocations.has(loc.id) ? 'rotate-180' : ''"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
                       ><polyline points="6 9 12 15 18 9"/></svg>
@@ -448,41 +426,21 @@
                   </button>
 
                   <!-- Expanded Content -->
-                  <div v-if="expandedLocations.has(loc.id)" class="border-t border-gray-100 px-5 py-5">
-                    <div class="grid grid-cols-2 gap-x-10 gap-y-5">
-                      <div class="flex flex-col gap-5">
-                        <div v-for="sec in leftSections" :key="sec.key">
-                          <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-2">{{ sec.label }}</p>
-                          <div class="flex flex-col overflow-y-auto" style="max-height:200px">
-                            <div
-                              v-for="(value, fkey) in (loc as any)[sec.key]"
-                              :key="fkey"
-                              class="flex items-baseline justify-between py-1.5 gap-4 border-b border-gray-100 last:border-0"
-                            >
-                              <span class="text-[11px] text-gray-500 flex-shrink-0">{{ fieldLabel(String(fkey)) }}</span>
-                              <span
-                                class="text-[12px] text-right font-normal leading-snug"
-                                :class="isFlaggedValue(String(fkey), value) ? 'text-amber-700 font-medium' : isBlankField(value) ? 'text-gray-300' : 'text-gray-600'"
-                              >{{ isBlankField(value) ? '—' : value }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex flex-col gap-5">
-                        <div v-for="sec in rightSections" :key="sec.key">
-                          <p class="text-[9px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-2">{{ sec.label }}</p>
-                          <div class="flex flex-col overflow-y-auto" style="max-height:200px">
-                            <div
-                              v-for="(value, fkey) in (loc as any)[sec.key]"
-                              :key="fkey"
-                              class="flex items-baseline justify-between py-1.5 gap-4 border-b border-gray-100 last:border-0"
-                            >
-                              <span class="text-[11px] text-gray-500 flex-shrink-0">{{ fieldLabel(String(fkey)) }}</span>
-                              <span
-                                class="text-[12px] text-right font-normal leading-snug"
-                                :class="isFlaggedValue(String(fkey), value) ? 'text-amber-700 font-medium' : isBlankField(value) ? 'text-gray-300' : 'text-gray-600'"
-                              >{{ isBlankField(value) ? '—' : value }}</span>
-                            </div>
+                  <div v-if="expandedLocations.has(loc.id)" class="border-t border-gray-100 px-4 py-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-3">
+                      <div v-for="sec in [...leftSections, ...rightSections]" :key="sec.key">
+                        <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-800 mb-1.5">{{ sec.label }}</p>
+                        <div class="grid grid-cols-2 gap-px bg-gray-100">
+                          <div
+                            v-for="(value, fkey) in (loc as any)[sec.key]"
+                            :key="fkey"
+                            class="bg-white px-2 py-1.5"
+                          >
+                            <p class="text-[11px] font-bold uppercase tracking-[0.07em] text-gray-700 mb-0.5">{{ fieldLabel(String(fkey)) }}</p>
+                            <span
+                              class="text-[14px] font-medium leading-snug"
+                              :class="isFlaggedValue(String(fkey), value) ? 'text-amber-700' : isBlankField(value) ? 'text-gray-500' : 'text-gray-900'"
+                            >{{ isBlankField(value) ? '—' : value }}</span>
                           </div>
                         </div>
                       </div>
@@ -496,23 +454,20 @@
             <template v-else-if="verdict.risk_profile">
               <div class="glass-card overflow-hidden">
                 <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                  <p class="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400">Extracted Risk Profile</p>
+                  <p class="text-[12px] font-bold tracking-[0.1em] uppercase text-gray-600">Extracted Risk Profile</p>
                 </div>
-                <div class="divide-y divide-gray-100 overflow-y-auto" style="max-height:min(60vh,580px)">
-                  <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="flex gap-4 px-5 sm:px-6 py-3.5 hover:bg-gray-50 transition-colors duration-150">
-                    <span class="text-[10px] font-semibold uppercase tracking-[0.07em] text-gray-400 w-44 flex-shrink-0 pt-0.5">{{ formatKey(key) }}</span>
-                    <div class="flex-1 min-w-0">
-                      <span v-if="!rpIsBlank(raw)" class="text-[13px] text-gray-600">{{ rpValue(raw) }}</span>
-                      <span v-else class="text-gray-300">—</span>
-                      <p v-if="rpSource(raw)" class="text-[11px] text-gray-400 mt-0.5"><span class="font-semibold text-gray-500">Source:</span> {{ rpSource(raw) }}</p>
-                      <p v-if="rpContext(raw)" class="text-[11px] text-gray-400 italic mt-0.5 truncate" :title="rpContext(raw) ?? undefined">"{{ rpContext(raw) }}"</p>
-                    </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-px bg-gray-100 overflow-y-auto" style="max-height:min(60vh,580px)">
+                  <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="bg-white px-4 py-2.5">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-gray-700 mb-0.5">{{ formatKey(key) }}</p>
+                    <span v-if="!rpIsBlank(raw)" class="text-[15px] font-medium text-gray-900">{{ rpValue(raw) }}</span>
+                    <span v-else class="text-[15px] text-gray-500">—</span>
+                    <p v-if="rpSource(raw)" class="text-[12px] text-gray-600 mt-0.5 truncate">{{ rpSource(raw) }}</p>
                   </div>
                 </div>
               </div>
             </template>
 
-            <div v-else class="py-12 text-center text-[13px] text-gray-400">No risk profile data available.</div>
+            <div v-else class="py-12 text-center text-[15px] text-gray-600">No risk profile data available.</div>
           </div>
         </div>
 
@@ -524,29 +479,29 @@
                 <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <p class="text-[14px] font-medium text-red-600 mb-4">Evaluation failed</p>
+            <p class="text-[16px] font-medium text-red-600 mb-4">Evaluation failed</p>
             <button
-              class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-5 py-2.5 rounded-xl text-[13px] font-bold transition-colors duration-150 disabled:opacity-50 cursor-pointer"
+              class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-5 py-2.5 rounded-xl text-[15px] font-bold transition-colors duration-150 disabled:opacity-50 cursor-pointer"
               :disabled="isEvaluating"
               @click="runEvaluation"
             >{{ isEvaluating ? 'Evaluating…' : 'Retry Evaluation' }}</button>
           </template>
           <template v-else>
             <div class="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center mx-auto mb-4">
-              <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
             </div>
-            <p class="text-[14px] text-gray-500 mb-4">
+            <p class="text-[16px] text-gray-700 mb-4">
               {{ submission?.status === 'processing' ? 'Analysis in progress…' : 'Not yet evaluated' }}
             </p>
             <button
-              class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-5 py-2.5 rounded-xl text-[13px] font-bold transition-colors duration-150 disabled:opacity-50 cursor-pointer"
+              class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-5 py-2.5 rounded-xl text-[15px] font-bold transition-colors duration-150 disabled:opacity-50 cursor-pointer"
               :disabled="isEvaluating"
               @click="runEvaluation"
             >{{ isEvaluating ? 'Evaluating…' : 'Run Evaluation' }}</button>
           </template>
-          <p v-if="evalError" class="mt-3 text-[12px] text-red-600">{{ evalError }}</p>
+          <p v-if="evalError" class="mt-3 text-[14px] text-red-600">{{ evalError }}</p>
         </div>
 
       </template>
@@ -586,10 +541,10 @@
                 <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
               </svg>
             </div>
-            <span class="text-[14px] font-semibold text-gray-800 tracking-[-0.2px]">Research Assistant</span>
+            <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.2px]">Research Assistant</span>
           </div>
           <button
-            class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
             aria-label="Close"
             @click="chatOpen = false"
           >
@@ -608,11 +563,11 @@
             :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
           >
             <div
-              class="px-3.5 py-2.5 text-[13px] leading-relaxed break-words"
+              class="px-3.5 py-2.5 text-[15px] leading-relaxed break-words"
               :class="
                 msg.role === 'user'
-                  ? 'bg-accent-500/10 border border-accent-500/20 text-gray-800 rounded-2xl rounded-tr-sm max-w-[80%] whitespace-pre-wrap'
-                  : 'chat-assistant-msg bg-white border border-gray-200 text-gray-700 rounded-2xl rounded-tl-sm max-w-[85%]'
+                  ? 'bg-accent-500/10 border border-accent-500/20 text-gray-900 rounded-2xl rounded-tr-sm max-w-[80%] whitespace-pre-wrap'
+                  : 'chat-assistant-msg bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-sm max-w-[85%]'
               "
               v-html="msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content"
             />
@@ -626,7 +581,7 @@
           </div>
         </div>
 
-        <p v-if="chatError" class="mx-4 mb-1 text-[12px] text-red-600 text-center">{{ chatError }}</p>
+        <p v-if="chatError" class="mx-4 mb-1 text-[14px] text-red-600 text-center">{{ chatError }}</p>
 
         <!-- Input area -->
         <div class="px-4 pb-4 pt-2 border-t border-gray-100 bg-white flex-shrink-0">
@@ -636,7 +591,7 @@
               v-model="chatInput"
               rows="1"
               placeholder="Ask about this submission…"
-              class="flex-1 bg-transparent resize-none text-[13px] text-gray-800 placeholder-gray-400 focus:outline-none leading-relaxed"
+              class="flex-1 bg-transparent resize-none text-[15px] text-gray-900 placeholder-gray-400 focus:outline-none leading-relaxed"
               style="max-height:72px;overflow-y:auto"
               :disabled="isThinking"
               @keydown.enter.exact.prevent="sendMessage"
@@ -654,7 +609,7 @@
               </svg>
             </button>
           </div>
-          <p class="text-[10px] text-gray-400 text-center mt-2">Shift+Enter for new line · Enter to send</p>
+          <p class="text-[12px] text-gray-600 text-center mt-2">Shift+Enter for new line · Enter to send</p>
         </div>
       </div>
     </Transition>
@@ -830,10 +785,7 @@ function rpSource(v: RpField | undefined | null): string | null {
   if (!v || typeof v !== 'object') return null
   return v.source && v.source !== 'Not disclosed' ? v.source : null
 }
-function rpContext(v: RpField | undefined | null): string | null {
-  if (!v || typeof v !== 'object') return null
-  return v.context && v.context !== 'Not disclosed' ? v.context : null
-}
+
 function rpIsBlank(v: RpField | undefined | null): boolean {
   const val = rpValue(v)
   return !val || val === 'null' || val === 'N/A' || val === 'Not disclosed'
@@ -880,7 +832,7 @@ function isFlaggedValue(fieldKey: string, value: string): boolean {
   }
   if (fieldKey === 'tenants') {
     const m = value.match(/\b(\d+)\b/)
-    if (m) return parseInt(m[1]) > 3
+    if (m?.[1]) return parseInt(m[1]) > 3
   }
   return false
 }
@@ -955,7 +907,7 @@ function severityBadgeClass(severity?: string | null): string {
   if (severity === 'high') return 'bg-red-50 text-red-700 border border-red-200'
   if (severity === 'medium') return 'bg-amber-50 text-amber-800 border border-amber-200'
   if (severity === 'low') return 'bg-green-50 text-green-700 border border-green-200'
-  return 'bg-gray-100 text-gray-500'
+  return 'bg-gray-100 text-gray-700'
 }
 function severityRowClass(severity?: string | null): string {
   if (severity === 'high') return 'bg-red-50/30'
@@ -1163,10 +1115,10 @@ async function sendMessage() {
   @apply bg-white border border-gray-200 rounded-2xl;
 }
 .th-cell {
-  @apply px-5 sm:px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-[0.07em];
+  @apply px-5 sm:px-6 py-3 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em];
 }
 .td-cell {
-  @apply px-5 sm:px-6 py-4 text-[13px];
+  @apply px-5 sm:px-6 py-4 text-[15px];
 }
 .chat-assistant-msg :deep(p) { line-height: 1.6; margin-bottom: 8px; }
 .chat-assistant-msg :deep(p:last-child) { margin-bottom: 0; }

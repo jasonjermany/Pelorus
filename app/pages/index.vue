@@ -15,20 +15,20 @@
         <div>
           <div class="inline-flex items-center gap-2 bg-accent-500/[0.08] border border-accent-500/20 rounded-full px-3.5 py-1.5 mb-7">
             <span class="w-1.5 h-1.5 rounded-full bg-accent-500 flex-shrink-0"/>
-            <span class="text-[11px] font-semibold text-[#92700A] tracking-[0.05em]">AI-Powered Underwriting Triage</span>
+            <span class="text-[13px] font-semibold text-[#92700A] tracking-[0.05em]">AI-Powered Underwriting Triage</span>
           </div>
           <h1 class="text-[clamp(36px,7vw,60px)] font-bold text-gray-900 leading-[1.08] tracking-[-1.5px] mb-6">
             Know your bearing<br>on <em class="not-italic text-[#92700A]">every risk</em>
           </h1>
-          <p class="text-[16px] md:text-[17px] text-gray-500 leading-[1.75] mb-10 max-w-[480px]">
+          <p class="text-[16px] md:text-[17px] text-gray-700 leading-[1.75] mb-10 max-w-[480px]">
             Pelorus reads any insurance submission and delivers a complete triage verdict, severity-ranked concerns, and underwriting insights faster than any manual first pass — calibrated to your specific guidelines, not industry averages.
           </p>
           <div class="flex items-center gap-4 flex-wrap">
-            <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-6 py-3 rounded-xl text-[14px] font-bold no-underline inline-flex items-center gap-2 transition-all duration-150 hover:-translate-y-px">
+            <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] px-6 py-3 rounded-xl text-[16px] font-bold no-underline inline-flex items-center gap-2 transition-all duration-150 hover:-translate-y-px">
               Contact Sales
               <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a href="#how" class="text-gray-500 hover:text-gray-900 text-[14px] font-medium no-underline inline-flex items-center gap-1.5 transition-colors duration-150">
+            <a href="#how" class="text-gray-700 hover:text-gray-900 text-[16px] font-medium no-underline inline-flex items-center gap-1.5 transition-colors duration-150">
               See how it works
               <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
@@ -38,15 +38,15 @@
           <div class="flex gap-6 md:gap-10 mt-10 pt-8 border-t border-gray-100">
             <div>
               <span class="block text-[22px] md:text-[26px] font-bold text-gray-900 tracking-[-0.5px]">~80 sec</span>
-              <span class="text-[10px] text-gray-400 uppercase tracking-[0.08em] font-semibold">Full triage turnaround</span>
+              <span class="text-[12px] text-gray-600 uppercase tracking-[0.08em] font-semibold">Full triage turnaround</span>
             </div>
             <div>
               <span class="block text-[22px] md:text-[26px] font-bold text-gray-900 tracking-[-0.5px]">Any line</span>
-              <span class="text-[10px] text-gray-400 uppercase tracking-[0.08em] font-semibold">Property, GL, casualty &amp; more</span>
+              <span class="text-[12px] text-gray-600 uppercase tracking-[0.08em] font-semibold">Property, GL, casualty &amp; more</span>
             </div>
             <div>
               <span class="block text-[22px] md:text-[26px] font-bold text-gray-900 tracking-[-0.5px]">xx–xx min</span>
-              <span class="text-[10px] text-gray-400 uppercase tracking-[0.08em] font-semibold">Saved per submission</span>
+              <span class="text-[12px] text-gray-600 uppercase tracking-[0.08em] font-semibold">Saved per submission</span>
             </div>
           </div>
         </div>
@@ -56,69 +56,69 @@
           <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white" style="animation:float 6s ease-in-out infinite;transform:rotate(-1deg);box-shadow:0 32px 80px rgba(0,0,0,0.12)">
             <!-- Mini nav -->
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-100">
-              <span class="block text-[8px] text-gray-400 tracking-[0.04em] mb-0.5">← Inbox</span>
+              <span class="block text-[11px] text-gray-600 tracking-[0.04em] mb-0.5">← Inbox</span>
               <div class="flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 bg-accent-500 rounded-full flex-shrink-0"/>
-                <span class="text-[13px] font-semibold text-gray-900 leading-tight">Harborlight Marina &amp; Boat Storage</span>
+                <span class="text-[15px] font-semibold text-gray-900 leading-tight">Harborlight Marina &amp; Boat Storage</span>
               </div>
-              <span class="text-[9px] text-gray-400 ml-3">Submission Review</span>
+              <span class="text-[11px] text-gray-600 ml-3">Submission Review</span>
             </div>
             <!-- Decision banner -->
             <div class="mx-3 mt-3 rounded-xl p-4 flex items-start justify-between gap-3 bg-red-100 border border-red-200">
               <div class="flex-1">
-                <span class="block text-[8px] font-bold tracking-[0.12em] uppercase text-gray-400 mb-1">Decision</span>
+                <span class="block text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600 mb-1">Decision</span>
                 <span class="block text-[20px] font-bold text-red-600 tracking-[-0.5px] mb-1">DECLINE</span>
-                <span class="block text-[10px] text-gray-600 leading-relaxed mb-2">Two hard stops triggered. Federal Pacific panel confirmed in certified loss runs.</span>
+                <span class="block text-[12px] text-gray-800 leading-relaxed mb-2">Two hard stops triggered. Federal Pacific panel confirmed in certified loss runs.</span>
                 <div class="flex items-center gap-2">
-                  <span class="text-[10px] text-gray-400">TIV: $20,975,000</span>
-                  <span class="bg-red-200/60 text-[9px] text-red-700 font-medium px-2 py-0.5 rounded-full">45.2s</span>
+                  <span class="text-[12px] text-gray-600">TIV: $20,975,000</span>
+                  <span class="bg-red-200/60 text-[11px] text-red-700 font-medium px-2 py-0.5 rounded-full">45.2s</span>
                 </div>
               </div>
               <div class="flex-shrink-0 flex items-baseline gap-0.5">
                 <span class="text-[30px] font-bold text-red-600 tracking-[-1.5px] leading-none">2.5</span>
-                <span class="text-[13px] font-medium text-red-400">/ 10</span>
+                <span class="text-[15px] font-medium text-red-400">/ 10</span>
               </div>
             </div>
             <!-- Tabs -->
             <div class="mx-3 mt-3 flex gap-0.5 bg-gray-100 rounded-xl border border-gray-200 p-0.5">
-              <span class="flex-1 py-1.5 rounded-lg text-[9px] font-semibold text-center bg-white text-gray-900 shadow-sm">Summary</span>
-              <span class="flex-1 py-1.5 rounded-lg text-[9px] font-semibold text-center text-gray-400">Guidelines</span>
-              <span class="flex-1 py-1.5 rounded-lg text-[9px] font-semibold text-center text-gray-400">Insights</span>
-              <span class="flex-1 py-1.5 rounded-lg text-[9px] font-semibold text-center text-gray-400">Risk Profile</span>
+              <span class="flex-1 py-1.5 rounded-lg text-[11px] font-semibold text-center bg-white text-gray-900 shadow-sm">Summary</span>
+              <span class="flex-1 py-1.5 rounded-lg text-[11px] font-semibold text-center text-gray-600">Guidelines</span>
+              <span class="flex-1 py-1.5 rounded-lg text-[11px] font-semibold text-center text-gray-600">Insights</span>
+              <span class="flex-1 py-1.5 rounded-lg text-[11px] font-semibold text-center text-gray-600">Risk Profile</span>
             </div>
             <!-- Summary body -->
             <div class="mx-3 mt-3 mb-3 flex flex-col gap-2.5">
               <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
-                <p class="text-[8px] font-bold tracking-[0.12em] uppercase text-gray-400 mb-1.5">Recommended Next Action</p>
-                <p class="text-[10px] text-gray-600 leading-relaxed mb-2.5">Decline — two confirmed hard stops. Issue formal declination citing Section 4.4.1 and Section 4.2.</p>
+                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600 mb-1.5">Recommended Next Action</p>
+                <p class="text-[12px] text-gray-800 leading-relaxed mb-2.5">Decline — two confirmed hard stops. Issue formal declination citing Section 4.4.1 and Section 4.2.</p>
                 <div class="flex flex-col gap-1.5">
-                  <div class="flex gap-1.5 text-[9px] text-gray-500 leading-relaxed">
+                  <div class="flex gap-1.5 text-[11px] text-gray-700 leading-relaxed">
                     <span class="text-[#92700A] font-bold flex-shrink-0">1.</span>Issue formal declination citing FP Stab-Lok panel confirmed in loss runs
                   </div>
-                  <div class="flex gap-1.5 text-[9px] text-gray-500 leading-relaxed">
+                  <div class="flex gap-1.5 text-[11px] text-gray-700 leading-relaxed">
                     <span class="text-[#92700A] font-bold flex-shrink-0">2.</span>Advise broker Location 4 requires complete gut rehab documentation
                   </div>
                 </div>
               </div>
               <div class="rounded-xl border border-gray-100 bg-white overflow-hidden">
                 <div class="px-3 py-2 border-b border-gray-100 flex items-center justify-between">
-                  <span class="text-[9px] font-semibold text-gray-600">Concerns &amp; Flags</span>
-                  <span class="text-[8px] text-gray-400">2 items</span>
+                  <span class="text-[11px] font-semibold text-gray-800">Concerns &amp; Flags</span>
+                  <span class="text-[11px] text-gray-600">2 items</span>
                 </div>
                 <div class="divide-y divide-gray-100">
                   <div class="p-3 bg-red-50/40">
                     <div class="flex items-start justify-between gap-2 mb-1">
-                      <span class="text-[9px] font-semibold text-gray-800">Federal Pacific Stab-Lok Panel — Confirmed</span>
+                      <span class="text-[11px] font-semibold text-gray-900">Federal Pacific Stab-Lok Panel — Confirmed</span>
                       <span class="text-[7px] font-bold bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded-full flex-shrink-0">CONDITION</span>
                     </div>
-                    <p class="text-[8px] text-gray-500 leading-relaxed">Certified loss runs confirm FP panel caused 2021 fire. Hard stop applies.</p>
+                    <p class="text-[11px] text-gray-700 leading-relaxed">Certified loss runs confirm FP panel caused 2021 fire. Hard stop applies.</p>
                   </div>
                   <div class="p-3 bg-amber-50/30">
                     <div class="flex items-start justify-between gap-2 mb-1">
-                      <span class="text-[9px] font-semibold text-gray-800">Location 4 — Roof Age 22 Years</span>
+                      <span class="text-[11px] font-semibold text-gray-900">Location 4 — Roof Age 22 Years</span>
                       <span class="text-[7px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-full flex-shrink-0">VERIFY</span>
                     </div>
-                    <p class="text-[8px] text-gray-500 leading-relaxed">BUR roof approaching 25-year hard stop threshold. Senior UW referral required.</p>
+                    <p class="text-[11px] text-gray-700 leading-relaxed">BUR roof approaching 25-year hard stop threshold. Senior UW referral required.</p>
                   </div>
                 </div>
               </div>
@@ -133,8 +133,8 @@
               </svg>
             </div>
             <div>
-              <div class="text-[12px] font-semibold text-gray-800">All checks evaluated</div>
-              <div class="text-[11px] text-gray-400">Against your guidelines</div>
+              <div class="text-[14px] font-semibold text-gray-900">All checks evaluated</div>
+              <div class="text-[13px] text-gray-600">Against your guidelines</div>
             </div>
           </div>
 
@@ -146,8 +146,8 @@
               </svg>
             </div>
             <div>
-              <div class="text-[12px] font-semibold text-gray-800">12 fields extracted</div>
-              <div class="text-[11px] text-gray-400">Risk profile ready</div>
+              <div class="text-[14px] font-semibold text-gray-900">12 fields extracted</div>
+              <div class="text-[13px] text-gray-600">Risk profile ready</div>
             </div>
           </div>
         </div>
@@ -157,9 +157,9 @@
     <!-- ── BUILT FOR ──────────────────────────────────────────── -->
     <div class="border-t border-b border-gray-100 bg-gray-50 py-7 px-6 md:px-12">
       <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-12" data-fade>
-        <span class="text-[10px] uppercase tracking-[0.12em] text-gray-400 font-semibold whitespace-nowrap flex-shrink-0">Built for</span>
+        <span class="text-[12px] uppercase tracking-[0.12em] text-gray-600 font-semibold whitespace-nowrap flex-shrink-0">Built for</span>
         <div class="flex items-center gap-6 md:gap-12 flex-wrap">
-          <span v-for="type in ['Regional Carriers', 'Mutual Companies', 'MGAs', 'Program Administrators', 'Specialty Lines']" :key="type" class="text-[14px] md:text-[15px] font-semibold text-gray-400">{{ type }}</span>
+          <span v-for="type in ['Regional Carriers', 'Mutual Companies', 'MGAs', 'Program Administrators', 'Specialty Lines']" :key="type" class="text-[16px] md:text-[15px] font-semibold text-gray-600">{{ type }}</span>
         </div>
       </div>
     </div>
@@ -167,9 +167,9 @@
     <!-- ── FEATURES ───────────────────────────────────────────── -->
     <section id="features" class="py-16 md:py-24 px-6 md:px-12">
       <div class="max-w-[1200px] mx-auto">
-        <p class="text-[11px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Platform</p>
+        <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Platform</p>
         <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-4" data-fade data-fade-delay="60">Everything your underwriters need<br class="hidden md:block"> to triage and underwrite deals faster</h2>
-        <p class="text-[16px] md:text-[17px] text-gray-500 leading-[1.75] mb-12 max-w-[540px]" data-fade data-fade-delay="120">No implementation burden. No enterprise contract. Upload your guidelines once and start triaging in minutes.</p>
+        <p class="text-[16px] md:text-[17px] text-gray-700 leading-[1.75] mb-12 max-w-[540px]" data-fade data-fade-delay="120">No implementation burden. No enterprise contract. Upload your guidelines once and start triaging in minutes.</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-2xl overflow-hidden bg-gray-100">
           <div
@@ -183,8 +183,8 @@
                 <path :d="feature.icon" />
               </svg>
             </div>
-            <h3 class="text-[15px] font-semibold text-gray-800 mb-2.5 leading-snug">{{ feature.title }}</h3>
-            <p class="text-[14px] text-gray-500 leading-[1.75]">{{ feature.desc }}</p>
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-2.5 leading-snug">{{ feature.title }}</h3>
+            <p class="text-[16px] text-gray-700 leading-[1.75]">{{ feature.desc }}</p>
           </div>
         </div>
       </div>
@@ -193,14 +193,14 @@
     <!-- ── HOW IT WORKS ───────────────────────────────────────── -->
     <section id="how" class="bg-gray-50 border-t border-b border-gray-100 py-16 md:py-24 px-6 md:px-12">
       <div class="max-w-[1200px] mx-auto">
-        <p class="text-[11px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Process</p>
+        <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Process</p>
         <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-4" data-fade data-fade-delay="60">From submission to verdict<br class="hidden md:block"> in under two minutes</h2>
-        <p class="text-[16px] md:text-[17px] text-gray-500 leading-[1.75] mb-14 max-w-[540px]" data-fade data-fade-delay="120">No manual data entry. No formatting requirements. Upload the broker's documents and let Pelorus do the first-pass work.</p>
+        <p class="text-[16px] md:text-[17px] text-gray-700 leading-[1.75] mb-14 max-w-[540px]" data-fade data-fade-delay="120">No manual data entry. No formatting requirements. Upload the broker's documents and let Pelorus do the first-pass work.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14">
           <div v-for="step in steps" :key="step.num" data-fade>
             <div class="text-[52px] md:text-[60px] font-bold text-accent-500 leading-none mb-4 tracking-[-2px]">{{ step.num }}</div>
-            <h3 class="text-[17px] font-semibold text-gray-800 mb-2.5">{{ step.title }}</h3>
-            <p class="text-[14px] text-gray-500 leading-[1.75]">{{ step.desc }}</p>
+            <h3 class="text-[17px] font-semibold text-gray-900 mb-2.5">{{ step.title }}</h3>
+            <p class="text-[16px] text-gray-700 leading-[1.75]">{{ step.desc }}</p>
           </div>
         </div>
       </div>
@@ -209,12 +209,12 @@
     <!-- ── METRICS ─────────────────────────────────────────────── -->
     <section class="py-16 md:py-24 px-6 md:px-12">
       <div class="max-w-[1200px] mx-auto">
-        <p class="text-[11px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Impact</p>
+        <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Impact</p>
         <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-12" data-fade data-fade-delay="60">The numbers that matter</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden bg-gray-100">
           <div v-for="metric in metrics" :key="metric.num" class="bg-white px-6 md:px-8 py-8 md:py-10 text-center" data-fade>
             <span class="block text-[34px] md:text-[42px] font-bold text-gray-900 leading-none mb-2 tracking-[-1.5px]">{{ metric.num }}</span>
-            <span class="text-[12px] text-gray-500 leading-relaxed">{{ metric.label }}</span>
+            <span class="text-[14px] text-gray-700 leading-relaxed">{{ metric.label }}</span>
           </div>
         </div>
       </div>
@@ -223,19 +223,19 @@
     <!-- ── PRICING ────────────────────────────────────────────── -->
     <section id="pricing" class="py-16 md:py-24 px-6 md:px-12 bg-gray-50 border-t border-gray-100">
       <div class="max-w-[1200px] mx-auto">
-        <p class="text-[11px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Pricing</p>
+        <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Pricing</p>
         <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-4" data-fade data-fade-delay="60">Simple, transparent pricing</h2>
-        <p class="text-[16px] md:text-[17px] text-gray-500 leading-[1.75] mb-12" data-fade data-fade-delay="120">Priced based on your submission volume and lines of business. No implementation fees, no long-term contracts.</p>
+        <p class="text-[16px] md:text-[17px] text-gray-700 leading-[1.75] mb-12" data-fade data-fade-delay="120">Priced based on your submission volume and lines of business. No implementation fees, no long-term contracts.</p>
         <div class="flex justify-center">
           <div class="bg-white border border-gray-200 rounded-2xl p-8 md:p-9 w-full max-w-[440px]" style="box-shadow:0 24px 64px rgba(0,0,0,0.06)" data-fade data-fade-delay="180">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.1em] mb-3 text-gray-400">Custom</div>
+            <div class="text-[13px] font-semibold uppercase tracking-[0.1em] mb-3 text-gray-600">Custom</div>
             <div class="text-[24px] md:text-[26px] font-bold leading-tight mb-2 tracking-[-0.5px] text-gray-900">Contact us for pricing</div>
-            <p class="text-[14px] leading-relaxed mb-7 pb-7 border-b border-gray-100 text-gray-500">We'll put together a number based on your volume, lines of business, and team size.</p>
+            <p class="text-[16px] leading-relaxed mb-7 pb-7 border-b border-gray-100 text-gray-700">We'll put together a number based on your volume, lines of business, and team size.</p>
             <ul class="flex flex-col gap-3.5 mb-8 list-none">
               <li
                 v-for="f in ['Unlimited guideline uploads', 'Full hard stop detection', 'Underwriting insights & risk extraction', 'Multi-document parsing', 'Dedicated onboarding', 'Cancel anytime']"
                 :key="f"
-                class="flex items-start gap-2.5 text-[14px] text-gray-600"
+                class="flex items-start gap-2.5 text-[16px] text-gray-800"
               >
                 <svg class="w-4 h-4 text-[#92700A] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M5 13l4 4L19 7"/>
@@ -243,7 +243,7 @@
                 {{ f }}
               </li>
             </ul>
-            <a href="#contact" class="block w-full text-center py-3 rounded-xl text-[14px] font-bold no-underline transition-colors duration-150 bg-accent-500 hover:bg-accent-400 text-[#050A18]">Request a Demo</a>
+            <a href="#contact" class="block w-full text-center py-3 rounded-xl text-[16px] font-bold no-underline transition-colors duration-150 bg-accent-500 hover:bg-accent-400 text-[#050A18]">Request a Demo</a>
           </div>
         </div>
       </div>
@@ -254,9 +254,9 @@
       <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-start">
         <!-- Left -->
         <div>
-          <p class="text-[11px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Contact Sales</p>
+          <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Contact Sales</p>
           <h2 class="text-[clamp(26px,3.5vw,42px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-4" data-fade data-fade-delay="60">Let's find the right fit<br class="hidden md:block"> for your team</h2>
-          <p class="text-[16px] md:text-[17px] text-gray-500 leading-[1.75] mb-10" data-fade data-fade-delay="120">Tell us about your submission volume and current process. We'll walk you through a live demo using your actual guidelines.</p>
+          <p class="text-[16px] md:text-[17px] text-gray-700 leading-[1.75] mb-10" data-fade data-fade-delay="120">Tell us about your submission volume and current process. We'll walk you through a live demo using your actual guidelines.</p>
           <div class="flex flex-col gap-6">
             <div v-for="point in contactPoints" :key="point.title" class="flex gap-4" data-fade>
               <div class="w-10 h-10 bg-gray-100 border border-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -265,8 +265,8 @@
                 </svg>
               </div>
               <div>
-                <div class="text-[14px] font-semibold text-gray-800 mb-1">{{ point.title }}</div>
-                <div class="text-[13px] text-gray-500 leading-relaxed">{{ point.desc }}</div>
+                <div class="text-[16px] font-semibold text-gray-900 mb-1">{{ point.title }}</div>
+                <div class="text-[15px] text-gray-700 leading-relaxed">{{ point.desc }}</div>
               </div>
             </div>
           </div>
@@ -276,7 +276,7 @@
         <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-card" data-fade data-fade-delay="100">
           <div v-if="!formSubmitted" class="p-6 md:p-8">
             <h3 class="text-[18px] font-bold text-gray-900 tracking-[-0.3px] mb-1">Request a demo</h3>
-            <p class="text-[13px] text-gray-500 mb-6">We typically respond within one business day.</p>
+            <p class="text-[15px] text-gray-700 mb-6">We typically respond within one business day.</p>
             <div class="flex flex-col gap-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -320,13 +320,13 @@
                 </select>
               </div>
               <div>
-                <label for="message" class="form-label">Anything else? <span class="normal-case font-normal text-gray-400 tracking-normal">(optional)</span></label>
+                <label for="message" class="form-label">Anything else? <span class="normal-case font-normal text-gray-600 tracking-normal">(optional)</span></label>
                 <textarea id="message" v-model="form.message" rows="3" placeholder="Lines of business, current process, specific challenges…" class="form-input resize-none"/>
               </div>
-              <button class="w-full bg-accent-500 hover:bg-accent-400 text-[#050A18] py-3 rounded-xl text-[14px] font-bold transition-colors duration-150 mt-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50" @click="submitForm">
+              <button class="w-full bg-accent-500 hover:bg-accent-400 text-[#050A18] py-3 rounded-xl text-[16px] font-bold transition-colors duration-150 mt-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50" @click="submitForm">
                 Request Demo →
               </button>
-              <p class="text-[12px] text-gray-400 text-center">No sales pressure. We'll reach out to schedule a call.</p>
+              <p class="text-[14px] text-gray-600 text-center">No sales pressure. We'll reach out to schedule a call.</p>
             </div>
           </div>
 
@@ -337,7 +337,7 @@
               </svg>
             </div>
             <h3 class="text-[18px] font-bold text-gray-900 tracking-[-0.3px] mb-2">We'll be in touch</h3>
-            <p class="text-[14px] text-gray-500 leading-relaxed max-w-[280px]">Thanks for reaching out. We typically respond within one business day to schedule a demo call.</p>
+            <p class="text-[16px] text-gray-700 leading-relaxed max-w-[280px]">Thanks for reaching out. We typically respond within one business day to schedule a demo call.</p>
           </div>
         </div>
       </div>
@@ -352,32 +352,32 @@
               <img src="/PelorusLogo.png" width="28" height="28" alt="Pelorus" />
               <span class="text-[17px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
             </div>
-            <div class="text-[13px] text-gray-400 italic">'Know your bearing on every risk'</div>
+            <div class="text-[15px] text-gray-600 italic">'Know your bearing on every risk'</div>
           </div>
           <div class="flex gap-12 md:gap-16">
             <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-4">Product</div>
+              <div class="text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-600 mb-4">Product</div>
               <ul class="flex flex-col gap-3 list-none">
                 <li v-for="link in ['Features', 'How it works', 'Pricing']" :key="link">
-                  <a :href="`#${link.toLowerCase().replace(' ', '')}`" class="text-[13px] text-gray-500 hover:text-gray-900 no-underline transition-colors duration-150">{{ link }}</a>
+                  <a :href="`#${link.toLowerCase().replace(' ', '')}`" class="text-[15px] text-gray-700 hover:text-gray-900 no-underline transition-colors duration-150">{{ link }}</a>
                 </li>
               </ul>
             </div>
             <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-4">Company</div>
+              <div class="text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-600 mb-4">Company</div>
               <ul class="flex flex-col gap-3 list-none">
                 <li v-for="link in ['Contact Sales', 'Privacy Policy', 'Terms of Service']" :key="link">
-                  <a href="#contact" class="text-[13px] text-gray-500 hover:text-gray-900 no-underline transition-colors duration-150">{{ link }}</a>
+                  <a href="#contact" class="text-[15px] text-gray-700 hover:text-gray-900 no-underline transition-colors duration-150">{{ link }}</a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-8 border-t border-gray-100">
-          <span class="text-[12px] text-gray-400">© 2026 Pelorus LLC. All rights reserved.</span>
+          <span class="text-[14px] text-gray-600">© 2026 Pelorus LLC. All rights reserved.</span>
           <div class="flex gap-6">
-            <a href="#" class="text-[12px] text-gray-400 hover:text-gray-700 no-underline transition-colors duration-150">Privacy</a>
-            <a href="#" class="text-[12px] text-gray-400 hover:text-gray-700 no-underline transition-colors duration-150">Terms</a>
+            <a href="#" class="text-[14px] text-gray-600 hover:text-gray-800 no-underline transition-colors duration-150">Privacy</a>
+            <a href="#" class="text-[14px] text-gray-600 hover:text-gray-800 no-underline transition-colors duration-150">Terms</a>
           </div>
         </div>
       </div>
@@ -502,10 +502,10 @@ onMounted(() => {
 
 <style scoped>
 .form-label {
-  @apply block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.07em] mb-2;
+  @apply block text-[13px] font-semibold text-gray-700 uppercase tracking-[0.07em] mb-2;
 }
 .form-input {
-  @apply w-full bg-gray-50 border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 font-[inherit];
+  @apply w-full bg-gray-50 border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-600 outline-none transition-all duration-150 font-[inherit];
 }
 
 @keyframes float {

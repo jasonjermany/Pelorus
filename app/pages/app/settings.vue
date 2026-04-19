@@ -7,17 +7,17 @@
         <div class="flex items-center gap-4">
           <NuxtLink
             to="/app"
-            class="flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-gray-700 transition-colors duration-150"
+            class="flex items-center gap-1.5 text-[14px] text-gray-600 hover:text-gray-800 transition-colors duration-150"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Dashboard
           </NuxtLink>
-          <span class="text-gray-300">·</span>
+          <span class="text-gray-500">·</span>
           <div class="flex items-center gap-2">
             <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" />
-            <span class="text-[14px] font-semibold text-gray-800 tracking-[-0.3px]">Guidelines &amp; Settings</span>
+            <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px]">Guidelines &amp; Settings</span>
           </div>
         </div>
       </div>
@@ -31,24 +31,24 @@
         <div class="flex items-start justify-between gap-6 mb-5">
           <div>
             <h2 class="text-[18px] font-semibold text-gray-900 tracking-[-0.4px] mb-1.5">Upload Guidelines</h2>
-            <p class="text-[13px] text-gray-500 leading-relaxed max-w-[480px]">
+            <p class="text-[15px] text-gray-700 leading-relaxed max-w-[480px]">
               Upload your carrier's underwriting guidelines as a PDF. Hard stops and risk profile fields are automatically extracted for every evaluation.
             </p>
           </div>
           <div v-if="chunks.length" class="flex gap-6 flex-shrink-0">
             <div class="text-right">
               <span class="block text-[26px] font-bold text-gray-900 tracking-[-1px] leading-none">{{ standardCount }}</span>
-              <span class="block text-[11px] text-gray-400 mt-1 uppercase tracking-[0.06em]">Sections</span>
+              <span class="block text-[13px] text-gray-600 mt-1 uppercase tracking-[0.06em]">Sections</span>
             </div>
             <div class="text-right">
               <span class="block text-[26px] font-bold text-red-600 tracking-[-1px] leading-none">{{ pinnedCount }}</span>
-              <span class="block text-[11px] text-gray-400 mt-1 uppercase tracking-[0.06em]">Hard stops</span>
+              <span class="block text-[13px] text-gray-600 mt-1 uppercase tracking-[0.06em]">Hard stops</span>
             </div>
           </div>
         </div>
 
         <!-- Replace warning -->
-        <div v-if="chunks.length > 0" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-[12px] text-amber-800 mb-5 flex items-center gap-2">
+        <div v-if="chunks.length > 0" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-[14px] text-amber-800 mb-5 flex items-center gap-2">
           <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -70,16 +70,16 @@
               @change="onFileSelected"
             />
             <div class="flex items-center gap-2.5 px-4 py-3 pointer-events-none">
-              <svg class="w-4 h-4 flex-shrink-0" :class="selectedFile ? 'text-accent-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="w-4 h-4 flex-shrink-0" :class="selectedFile ? 'text-accent-500' : 'text-gray-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
               </svg>
-              <span class="text-[13px]" :class="selectedFile ? 'text-accent-600 font-medium' : 'text-gray-500'">
+              <span class="text-[15px]" :class="selectedFile ? 'text-accent-600 font-medium' : 'text-gray-700'">
                 {{ selectedFile ? selectedFile.name : 'PDF, DOCX, or TXT — click to browse' }}
               </span>
             </div>
           </div>
           <button
-            class="bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] font-bold text-[13px] px-5 py-3 rounded-xl transition-colors duration-150 flex-shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] font-bold text-[15px] px-5 py-3 rounded-xl transition-colors duration-150 flex-shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
             :disabled="!selectedFile || isUploading"
             @click="uploadGuidelines"
           >
@@ -88,27 +88,27 @@
         </div>
 
         <!-- Progress -->
-        <div v-if="isUploading" class="flex items-center gap-2.5 mt-4 text-[12px] text-gray-500">
+        <div v-if="isUploading" class="flex items-center gap-2.5 mt-4 text-[14px] text-gray-700">
           <span class="inline-block w-3.5 h-3.5 border-2 border-accent-500/30 border-t-accent-500 rounded-full animate-spin flex-shrink-0"/>
           Parsing document, extracting hard stops — this may take 2–3 minutes.
         </div>
 
-        <p v-if="uploadError" class="mt-3 text-[12px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ uploadError }}</p>
-        <p v-if="uploadSuccess" class="mt-3 text-[12px] text-green-800 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{{ uploadSuccess }}</p>
+        <p v-if="uploadError" class="mt-3 text-[14px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ uploadError }}</p>
+        <p v-if="uploadSuccess" class="mt-3 text-[14px] text-green-800 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{{ uploadSuccess }}</p>
       </div>
 
       <!-- Non-admin placeholder -->
       <div v-else class="glass-card p-8 text-center">
-        <p class="text-[14px] font-semibold text-gray-700 mb-1">Guidelines</p>
-        <p class="text-[13px] text-gray-500">Guidelines are managed by your account administrator.</p>
+        <p class="text-[16px] font-semibold text-gray-800 mb-1">Guidelines</p>
+        <p class="text-[15px] text-gray-700">Guidelines are managed by your account administrator.</p>
       </div>
 
       <!-- Chunks table -->
       <div v-if="chunks.length" class="glass-card overflow-hidden">
         <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
           <div>
-            <h2 class="text-[14px] font-semibold text-gray-800">Guideline Library</h2>
-            <p class="text-[12px] text-gray-500 mt-0.5">
+            <h2 class="text-[16px] font-semibold text-gray-900">Guideline Library</h2>
+            <p class="text-[14px] text-gray-700 mt-0.5">
               {{ chunks.length }} total · {{ standardCount }} sections · {{ pinnedCount }} hard stops
             </p>
           </div>
@@ -120,7 +120,7 @@
           </button>
         </div>
 
-        <p v-if="loadError" class="px-6 py-4 text-[13px] text-red-600">{{ loadError }}</p>
+        <p v-if="loadError" class="px-6 py-4 text-[15px] text-red-600">{{ loadError }}</p>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left">
@@ -139,29 +139,29 @@
                 class="hover:bg-gray-50/80 transition-colors duration-150"
                 :class="chunk.is_pinned ? 'bg-red-50/40' : ''"
               >
-                <td class="td-cell font-medium text-gray-600 align-top">{{ chunk.page ?? '—' }}</td>
+                <td class="td-cell font-medium text-gray-800 align-top">{{ chunk.page ?? '—' }}</td>
                 <td class="td-cell align-top cursor-pointer select-none" @click="expandedId = expandedId === chunk.id ? null : chunk.id">
                   <span class="flex items-start gap-1.5">
                     <svg
-                      class="mt-0.5 flex-shrink-0 text-gray-400 transition-transform duration-150"
+                      class="mt-0.5 flex-shrink-0 text-gray-600 transition-transform duration-150"
                       :class="expandedId === chunk.id ? 'rotate-90' : ''"
                       width="10" height="10" viewBox="0 0 10 10" fill="none"
                     >
                       <path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span v-if="expandedId === chunk.id" class="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">{{ getCleanText(chunk.embed_text) }}</span>
-                    <span v-else class="text-[13px] text-gray-600">{{ chunk.summary || getChunkPreview(chunk.embed_text) }}</span>
+                    <span v-if="expandedId === chunk.id" class="text-[15px] text-gray-800 whitespace-pre-wrap leading-relaxed">{{ getCleanText(chunk.embed_text) }}</span>
+                    <span v-else class="text-[15px] text-gray-800">{{ chunk.summary || getChunkPreview(chunk.embed_text) }}</span>
                   </span>
                 </td>
                 <td class="td-cell align-top">
                   <span
-                    class="text-[10px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
+                    class="text-[12px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
                     :class="chunk.is_pinned
                       ? 'bg-red-50 text-red-700 border border-red-200'
-                      : 'bg-gray-100 text-gray-500'"
+                      : 'bg-gray-100 text-gray-700'"
                   >{{ chunk.is_pinned ? 'hard stop' : 'standard' }}</span>
                 </td>
-                <td class="td-cell text-gray-400 align-top text-[12px]">{{ formatDate(chunk.created_at) }}</td>
+                <td class="td-cell text-gray-600 align-top text-[14px]">{{ formatDate(chunk.created_at) }}</td>
               </tr>
             </tbody>
           </table>
@@ -171,15 +171,15 @@
       <!-- Empty state -->
       <div v-else-if="!loadError" class="glass-card py-20 flex flex-col items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-          <svg class="w-5 h-5 text-gray-400" viewBox="0 0 40 40" fill="none">
+          <svg class="w-5 h-5 text-gray-600" viewBox="0 0 40 40" fill="none">
             <rect x="8" y="6" width="24" height="28" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <line x1="13" y1="14" x2="27" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <line x1="13" y1="20" x2="27" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <line x1="13" y1="26" x2="21" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <p class="text-[14px] font-semibold text-gray-500">No guidelines uploaded yet</p>
-        <p class="text-[13px] text-gray-400">Upload your carrier's underwriting guidelines PDF to get started.</p>
+        <p class="text-[16px] font-semibold text-gray-700">No guidelines uploaded yet</p>
+        <p class="text-[15px] text-gray-600">Upload your carrier's underwriting guidelines PDF to get started.</p>
       </div>
 
     </main>
@@ -274,12 +274,12 @@ onMounted(loadChunks)
   @apply bg-white border border-gray-200 rounded-2xl shadow-card;
 }
 .th-cell {
-  @apply px-5 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-[0.07em];
+  @apply px-5 py-3 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em];
 }
 .td-cell {
-  @apply px-5 py-3.5 text-[13px];
+  @apply px-5 py-3.5 text-[15px];
 }
 .table-btn {
-  @apply text-[11px] font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer;
+  @apply text-[13px] font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer;
 }
 </style>

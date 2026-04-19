@@ -21,7 +21,7 @@
           <!-- Bell -->
           <button
             aria-label="Notifications"
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -30,7 +30,7 @@
 
           <!-- New Submission -->
           <button
-            class="hidden sm:flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 disabled:opacity-50 text-[#050A18] text-[12px] font-bold px-3.5 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="hidden sm:flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 disabled:opacity-50 text-[#050A18] text-[14px] font-bold px-3.5 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
             :disabled="isIngesting"
             @click="showIngest = true"
           >
@@ -54,7 +54,7 @@
           <!-- Avatar + dropdown -->
           <div class="relative" ref="avatarMenuRef">
             <button
-              class="w-8 h-8 rounded-full bg-accent-500/15 border border-accent-500/25 flex items-center justify-center text-[#92700A] text-[11px] font-bold hover:bg-accent-500/25 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+              class="w-8 h-8 rounded-full bg-accent-500/15 border border-accent-500/25 flex items-center justify-center text-[#92700A] text-[13px] font-bold hover:bg-accent-500/25 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
               :title="user?.email"
               @click="showAvatarMenu = !showAvatarMenu"
             >
@@ -75,16 +75,16 @@
               >
                 <!-- Email header -->
                 <div class="px-3.5 py-2.5 border-b border-gray-100">
-                  <p class="text-[11px] text-gray-500 truncate">{{ user?.email }}</p>
+                  <p class="text-[13px] text-gray-700 truncate">{{ user?.email }}</p>
                 </div>
                 <!-- Menu items -->
                 <div class="py-1">
                   <NuxtLink
                     to="/app/settings"
-                    class="flex items-center gap-2.5 w-full px-3.5 py-2 text-[13px] text-gray-700 hover:bg-gray-50 transition-colors duration-100 cursor-pointer"
+                    class="flex items-center gap-2.5 w-full px-3.5 py-2 text-[15px] text-gray-800 hover:bg-gray-50 transition-colors duration-100 cursor-pointer"
                     @click="showAvatarMenu = false"
                   >
-                    <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="w-3.5 h-3.5 text-gray-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
                     </svg>
                     Settings
@@ -93,7 +93,7 @@
                 <!-- Divider + sign out -->
                 <div class="border-t border-gray-100 py-1">
                   <button
-                    class="flex items-center gap-2.5 w-full px-3.5 py-2 text-[13px] text-red-600 hover:bg-red-50 transition-colors duration-100 cursor-pointer"
+                    class="flex items-center gap-2.5 w-full px-3.5 py-2 text-[15px] text-red-600 hover:bg-red-50 transition-colors duration-100 cursor-pointer"
                     @click="logout"
                   >
                     <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -119,9 +119,9 @@
             <h1 class="text-[20px] sm:text-[22px] font-semibold text-gray-900 tracking-[-0.4px]">
               Submission Queue
             </h1>
-            <p class="text-[13px] text-gray-500 mt-0.5">AI-powered underwriting triage</p>
+            <p class="text-[15px] text-gray-700 mt-0.5">AI-powered underwriting triage</p>
           </div>
-          <div v-if="errorMessage" class="text-[12px] text-red-700 bg-red-50 px-3 py-1.5 rounded-lg border border-red-200">
+          <div v-if="errorMessage" class="text-[14px] text-red-700 bg-red-50 px-3 py-1.5 rounded-lg border border-red-200">
             {{ errorMessage }}
           </div>
         </div>
@@ -139,14 +139,14 @@
                   <path :d="metric.iconPath" />
                 </svg>
               </div>
-              <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.07em] hidden sm:block">{{ metric.label }}</span>
+              <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em] hidden sm:block">{{ metric.label }}</span>
             </div>
             <p class="text-[28px] sm:text-[32px] font-bold tracking-[-1.5px] leading-none" :class="metric.valueColor">
               {{ metric.value }}
             </p>
             <div class="flex items-center justify-between mt-2">
-              <p class="text-[11px] text-gray-500 leading-tight">{{ metric.sub }}</p>
-              <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.07em] sm:hidden">{{ metric.label }}</span>
+              <p class="text-[13px] text-gray-700 leading-tight">{{ metric.sub }}</p>
+              <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em] sm:hidden">{{ metric.label }}</span>
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@
                 <!-- Admin back button -->
                 <button
                   v-if="isAdmin && selectedUser"
-                  class="flex items-center gap-1.5 text-[12px] text-gray-500 hover:text-gray-900 transition-colors duration-150 cursor-pointer"
+                  class="flex items-center gap-1.5 text-[14px] text-gray-700 hover:text-gray-900 transition-colors duration-150 cursor-pointer"
                   @click="clearUser"
                 >
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -172,8 +172,8 @@
                   Back
                 </button>
 
-                <span class="text-[13px] text-gray-500">
-                  <span v-if="isAdmin && selectedUser" class="text-gray-800 font-medium">{{ selectedUser.email }}</span>
+                <span class="text-[15px] text-gray-700">
+                  <span v-if="isAdmin && selectedUser" class="text-gray-900 font-medium">{{ selectedUser.email }}</span>
                   <span v-else-if="isAdmin && !selectedUser">Select an underwriter</span>
                   <span v-else>{{ submissions.length }} submission{{ submissions.length !== 1 ? 's' : '' }}</span>
                 </span>
@@ -217,10 +217,10 @@
 
             <!-- Admin underwriter list (before drill-down) -->
             <div v-if="isAdmin && !selectedUser">
-              <div v-if="isLoading && !orgUsers.length" class="px-5 py-12 text-center text-[13px] text-gray-400">
+              <div v-if="isLoading && !orgUsers.length" class="px-5 py-12 text-center text-[15px] text-gray-600">
                 Loading…
               </div>
-              <div v-else-if="!orgUsers.length" class="px-5 py-12 text-center text-[13px] text-gray-400">
+              <div v-else-if="!orgUsers.length" class="px-5 py-12 text-center text-[15px] text-gray-600">
                 No underwriters found.
               </div>
               <div v-else class="divide-y divide-gray-50">
@@ -229,14 +229,14 @@
                   @click="selectUser({ id: '__all__', email: 'All Submissions', role: 'admin' })"
                 >
                   <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full bg-accent-500/15 flex items-center justify-center text-[#92700A] text-[11px] font-bold flex-shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-accent-500/15 flex items-center justify-center text-[#92700A] text-[13px] font-bold flex-shrink-0">
                       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
-                    <p class="text-[13px] font-semibold text-gray-800">All Submissions</p>
+                    <p class="text-[15px] font-semibold text-gray-900">All Submissions</p>
                   </div>
-                  <svg class="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -247,15 +247,15 @@
                   @click="selectUser(u)"
                 >
                   <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-[11px] font-bold flex-shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 text-[13px] font-bold flex-shrink-0">
                       {{ u.email.slice(0, 2).toUpperCase() }}
                     </div>
                     <div class="min-w-0">
-                      <p class="text-[13px] font-medium text-gray-700 truncate">{{ u.email }}</p>
-                      <p class="text-[11px] text-gray-400 capitalize">{{ u.role }}</p>
+                      <p class="text-[15px] font-medium text-gray-800 truncate">{{ u.email }}</p>
+                      <p class="text-[13px] text-gray-600 capitalize">{{ u.role }}</p>
                     </div>
                   </div>
-                  <svg class="w-4 h-4 text-gray-300 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="w-4 h-4 text-gray-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -264,18 +264,18 @@
 
             <!-- Submissions table -->
             <div v-else>
-              <div v-if="isLoading && !submissions.length" class="px-5 py-12 text-center text-[13px] text-gray-400">
+              <div v-if="isLoading && !submissions.length" class="px-5 py-12 text-center text-[15px] text-gray-600">
                 Loading…
               </div>
               <div v-else-if="!submissions.length" class="px-5 py-16 flex flex-col items-center gap-3 text-center">
                 <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <div>
-                  <p class="text-[13px] text-gray-500 font-medium">No submissions yet</p>
-                  <p class="text-[12px] text-gray-400 mt-0.5">Click <strong class="text-[#92700A]">+ New Submission</strong> to get started</p>
+                  <p class="text-[15px] text-gray-700 font-medium">No submissions yet</p>
+                  <p class="text-[14px] text-gray-600 mt-0.5">Click <strong class="text-[#92700A]">+ New Submission</strong> to get started</p>
                 </div>
               </div>
 
@@ -307,36 +307,36 @@
                       <!-- Company -->
                       <td class="td-cell pl-5">
                         <div class="flex items-center gap-2.5">
-                          <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 text-[10px] font-bold flex-shrink-0">
+                          <div class="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-700 text-[12px] font-bold flex-shrink-0">
                             {{ (sub.named_insured || sub.broker_email || '?').slice(0, 2).toUpperCase() }}
                           </div>
                           <div class="min-w-0">
-                            <p class="text-[13px] font-medium text-gray-800 truncate max-w-[180px]">
+                            <p class="text-[15px] font-medium text-gray-900 truncate max-w-[180px]">
                               {{ sub.named_insured || sub.broker_email || 'Unnamed' }}
                             </p>
-                            <p v-if="sub.broker" class="text-[11px] text-gray-400 truncate max-w-[180px]">{{ sub.broker }}</p>
+                            <p v-if="sub.broker" class="text-[13px] text-gray-600 truncate max-w-[180px]">{{ sub.broker }}</p>
                           </div>
                         </div>
                       </td>
 
                       <!-- Coverage type -->
                       <td class="td-cell hidden sm:table-cell">
-                        <span class="inline-flex items-center text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md whitespace-nowrap">
+                        <span class="inline-flex items-center text-[13px] font-medium text-gray-700 bg-gray-100 px-2 py-0.5 rounded-md whitespace-nowrap">
                           {{ coverageLabel(sub.source) }}
                         </span>
                       </td>
 
                       <!-- Carrier -->
                       <td class="td-cell hidden lg:table-cell">
-                        <span class="text-[12px] text-gray-400">{{ sub.prior_carrier || '—' }}</span>
+                        <span class="text-[14px] text-gray-600">{{ sub.prior_carrier || '—' }}</span>
                       </td>
 
                       <!-- Score -->
                       <td class="td-cell">
-                        <span v-if="sub.composite_score != null" class="text-[13px] font-bold" :class="scoreColor(sub.composite_score)">
-                          {{ normalizeScore(sub.composite_score).toFixed(1) }}<span class="text-[10px] font-normal text-gray-400">/10</span>
+                        <span v-if="sub.composite_score != null" class="text-[15px] font-bold" :class="scoreColor(sub.composite_score)">
+                          {{ normalizeScore(sub.composite_score).toFixed(1) }}<span class="text-[12px] font-normal text-gray-600">/10</span>
                         </span>
-                        <span v-else class="text-[13px] text-gray-300">
+                        <span v-else class="text-[15px] text-gray-500">
                           <svg v-if="sub.status === 'processing' || sub.status === 'pending'" class="w-3.5 h-3.5 animate-spin text-accent-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                           </svg>
@@ -355,19 +355,19 @@
                         <span v-else-if="sub.status === 'error'" class="decision-pill bg-red-50 text-red-700 border border-red-200">
                           Error
                         </span>
-                        <span v-else class="text-[12px] text-gray-300">—</span>
+                        <span v-else class="text-[14px] text-gray-500">—</span>
                       </td>
 
                       <!-- Date -->
                       <td class="td-cell hidden md:table-cell">
-                        <span class="text-[12px] text-gray-400">{{ formatDate(sub.created_at) }}</span>
+                        <span class="text-[14px] text-gray-600">{{ formatDate(sub.created_at) }}</span>
                       </td>
 
                       <!-- Arrow -->
                       <td class="td-cell pr-4 w-8">
                         <svg
                           v-if="sub.status !== 'processing' && sub.status !== 'pending'"
-                          class="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-400 transition-colors duration-150"
+                          class="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-600 transition-colors duration-150"
                           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                         >
                           <path d="M9 5l7 7-7 7" />
@@ -386,24 +386,24 @@
             <!-- Stat cards -->
             <div class="grid grid-cols-2 gap-3">
               <div class="glass-card p-4 text-center hover:shadow-md transition-all duration-200 cursor-default">
-                <p class="text-[26px] font-bold tracking-[-1px] text-green-700">{{ approvalRate }}<span class="text-[14px] text-green-600/60">%</span></p>
-                <p class="text-[11px] text-gray-500 mt-1 font-medium">Approval Rate</p>
+                <p class="text-[26px] font-bold tracking-[-1px] text-green-700">{{ approvalRate }}<span class="text-[16px] text-green-600/60">%</span></p>
+                <p class="text-[13px] text-gray-700 mt-1 font-medium">Approval Rate</p>
               </div>
               <div class="glass-card p-4 text-center hover:shadow-md transition-all duration-200 cursor-default">
-                <p class="text-[26px] font-bold tracking-[-1px] text-amber-700">{{ referRate }}<span class="text-[14px] text-amber-600/60">%</span></p>
-                <p class="text-[11px] text-gray-500 mt-1 font-medium">Refer Rate</p>
+                <p class="text-[26px] font-bold tracking-[-1px] text-amber-700">{{ referRate }}<span class="text-[16px] text-amber-600/60">%</span></p>
+                <p class="text-[13px] text-gray-700 mt-1 font-medium">Refer Rate</p>
               </div>
             </div>
 
             <!-- Activity feed -->
             <div class="glass-card flex flex-col min-h-0">
               <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 flex-shrink-0">
-                <p class="text-[13px] font-semibold text-gray-800">Recent Activity</p>
-                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.06em]">Live</span>
+                <p class="text-[15px] font-semibold text-gray-900">Recent Activity</p>
+                <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.06em]">Live</span>
               </div>
 
               <div class="p-3 space-y-0.5 overflow-y-auto max-h-[420px] xl:max-h-[520px]">
-                <div v-if="!activityFeed.length" class="py-8 text-center text-[12px] text-gray-400">
+                <div v-if="!activityFeed.length" class="py-8 text-center text-[14px] text-gray-600">
                   No activity yet
                 </div>
                 <div
@@ -417,11 +417,11 @@
                     </svg>
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[12px] text-gray-700 font-medium leading-tight truncate">
+                    <p class="text-[14px] text-gray-800 font-medium leading-tight truncate">
                       {{ event.name }}
                     </p>
-                    <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">{{ event.description }}</p>
-                    <p class="text-[10px] text-gray-400 mt-1">{{ formatDate(event.created_at) }}</p>
+                    <p class="text-[13px] text-gray-700 mt-0.5 leading-tight">{{ event.description }}</p>
+                    <p class="text-[12px] text-gray-600 mt-1">{{ formatDate(event.created_at) }}</p>
                   </div>
                 </div>
               </div>
@@ -444,7 +444,7 @@
           <h2 class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px]">New Submission</h2>
           <button
             aria-label="Close"
-            class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
+            class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
             @click="closeIngest"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -470,10 +470,10 @@
                 @change="onFileSelected"
               />
               <div class="flex flex-col items-center gap-2 py-7 pointer-events-none">
-                <svg class="w-6 h-6" :class="ingestFiles.length ? 'text-accent-500' : 'text-gray-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="w-6 h-6" :class="ingestFiles.length ? 'text-accent-500' : 'text-gray-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                 </svg>
-                <span class="text-[13px]" :class="ingestFiles.length ? 'text-accent-600 font-medium' : 'text-gray-500'">
+                <span class="text-[15px]" :class="ingestFiles.length ? 'text-accent-600 font-medium' : 'text-gray-700'">
                   {{ ingestFiles.length ? `${ingestFiles.length} file${ingestFiles.length !== 1 ? 's' : ''} selected` : 'PDF, XLSX, DOCX — click to browse' }}
                 </span>
               </div>
@@ -493,7 +493,7 @@
 
           <!-- Broker email -->
           <div>
-            <label class="modal-label">Broker email <span class="normal-case font-normal text-gray-400 tracking-normal">(optional)</span></label>
+            <label class="modal-label">Broker email <span class="normal-case font-normal text-gray-600 tracking-normal">(optional)</span></label>
             <input
               v-model="ingestBrokerEmail"
               type="email"
@@ -502,7 +502,7 @@
             />
           </div>
 
-          <p v-if="ingestError" class="text-[12px] text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+          <p v-if="ingestError" class="text-[14px] text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
             {{ ingestError }}
           </p>
         </div>
@@ -600,7 +600,7 @@ function decisionClass(decision: string): string {
   if (decision === 'PROCEED') return 'bg-green-50 text-green-800 border border-green-200'
   if (decision === 'REFER') return 'bg-amber-50 text-amber-800 border border-amber-200'
   if (decision === 'DECLINE') return 'bg-red-50 text-red-800 border border-red-200'
-  return 'bg-gray-100 text-gray-600 border border-gray-200'
+  return 'bg-gray-100 text-gray-800 border border-gray-200'
 }
 
 const coverageSourceMap: Record<string, string> = {
@@ -684,7 +684,7 @@ const activityFeed = computed(() => {
       let description = 'Submission received'
       let iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
       let dotBg = 'bg-gray-100'
-      let dotColor = 'text-gray-500'
+      let dotColor = 'text-gray-700'
 
       if (s.decision === 'PROCEED') {
         description = 'Approved for underwriting'
@@ -830,7 +830,7 @@ onUnmounted(() => {
 }
 
 .nav-link {
-  @apply text-[13px] font-medium text-gray-500 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 cursor-pointer;
+  @apply text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 cursor-pointer;
 }
 
 .nav-link--active {
@@ -838,7 +838,7 @@ onUnmounted(() => {
 }
 
 .th-cell {
-  @apply px-4 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-[0.07em];
+  @apply px-4 py-3 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-[0.07em];
 }
 
 .td-cell {
@@ -846,26 +846,26 @@ onUnmounted(() => {
 }
 
 .decision-pill {
-  @apply inline-flex items-center text-[10px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full;
+  @apply inline-flex items-center text-[12px] font-bold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full;
 }
 
 .table-btn {
-  @apply text-[11px] font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-default;
+  @apply text-[13px] font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-default;
 }
 
 .modal-label {
-  @apply block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.07em] mb-2;
+  @apply block text-[13px] font-semibold text-gray-700 uppercase tracking-[0.07em] mb-2;
 }
 
 .modal-input {
-  @apply w-full bg-gray-50 border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150;
+  @apply w-full bg-gray-50 border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-600 outline-none transition-all duration-150;
 }
 
 .modal-btn-secondary {
-  @apply text-[13px] font-medium text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-4 py-2 rounded-xl transition-all duration-150 cursor-pointer;
+  @apply text-[15px] font-medium text-gray-800 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-4 py-2 rounded-xl transition-all duration-150 cursor-pointer;
 }
 
 .modal-btn-primary {
-  @apply bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] text-[13px] font-bold px-5 py-2 rounded-xl transition-colors duration-150 cursor-pointer;
+  @apply bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] text-[15px] font-bold px-5 py-2 rounded-xl transition-colors duration-150 cursor-pointer;
 }
 </style>

@@ -15,12 +15,12 @@
       <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div class="px-7 pt-7 pb-1">
           <h1 class="text-[20px] font-semibold text-gray-900 tracking-[-0.4px] mb-1">Sign in</h1>
-          <p class="text-[13px] text-gray-500">Enter your credentials to access your account.</p>
+          <p class="text-[15px] text-gray-700">Enter your credentials to access your account.</p>
         </div>
 
         <div class="px-7 py-6 flex flex-col gap-4">
           <div>
-            <label for="email" class="block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.07em] mb-2">Email</label>
+            <label for="email" class="block text-[13px] font-semibold text-gray-700 uppercase tracking-[0.07em] mb-2">Email</label>
             <input
               id="email"
               v-model="email"
@@ -31,7 +31,7 @@
             />
           </div>
           <div>
-            <label for="password" class="block text-[11px] font-semibold text-gray-500 uppercase tracking-[0.07em] mb-2">Password</label>
+            <label for="password" class="block text-[13px] font-semibold text-gray-700 uppercase tracking-[0.07em] mb-2">Password</label>
             <input
               id="password"
               v-model="password"
@@ -42,12 +42,12 @@
             />
           </div>
 
-          <p v-if="error" class="text-[12px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <p v-if="error" class="text-[14px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
             {{ error }}
           </p>
 
           <button
-            class="w-full bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] py-2.5 rounded-xl text-[14px] font-bold transition-colors duration-150 mt-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:ring-offset-2"
+            class="w-full bg-accent-500 hover:bg-accent-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#050A18] py-2.5 rounded-xl text-[16px] font-bold transition-colors duration-150 mt-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:ring-offset-2"
             :disabled="isLoading"
             @click="login"
           >
@@ -56,7 +56,7 @@
         </div>
 
         <div class="px-7 py-4 border-t border-gray-100 bg-gray-50">
-          <p class="text-[13px] text-gray-500 text-center">
+          <p class="text-[15px] text-gray-700 text-center">
             Need access?
             <a href="mailto:hello@pelorus.ai" class="text-[#92700A] hover:text-accent-600 font-medium transition-colors duration-150">Contact us</a>
           </p>
@@ -98,6 +98,6 @@ async function login() {
 
 <style scoped>
 .login-input {
-  @apply w-full bg-white border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 shadow-sm;
+  @apply w-full bg-white border border-gray-200 hover:border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-xl px-3.5 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-600 outline-none transition-all duration-150 shadow-sm;
 }
 </style>
