@@ -1,27 +1,17 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getSupabase } from '../../utils/supabase'
 import { getSessionUser } from '../../utils/org'
-
-const INJECTION_PATTERNS = [
-  /ignore (previous|all|above) instructions/i,
-  /system prompt/i,
-  /you are now/i,
-  /act as/i,
-  /jailbreak/i,
-  /DAN/i,
-  /pretend you/i,
-  /forget your instructions/i,
-]
+import { sanitizeChatInput, detectInjection } from '../../../app/utils/sanitize'
 
 const OUTPUT_SAFETY_PATTERNS = [
-  ...INJECTION_PATTERNS,
   /as an AI/i,
   /I cannot/i,
   /my instructions/i,
+  /system prompt/i,
 ]
 
-function containsInjection(text: string, patterns: RegExp[]): boolean {
-  return patterns.some((p) => p.test(text))
+function containsOutputIssue(text: string): boolean {
+  return OUTPUT_SAFETY_PATTERNS.some((p) => p.test(text))
 }
 
 export default defineEventHandler(async (event) => {
@@ -57,23 +47,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden.' })
   }
 
-  // 3. Input validation — max length
-  if (message.length > 500) {
-    throw createError({ statusCode: 400, statusMessage: 'Message too long. Maximum 500 characters.' })
+  // 3. Sanitize and validate input
+  const clean = sanitizeChatInput(message, 500)
+  if (!clean) {
+    throw createError({ statusCode: 400, statusMessage: 'Message too long or invalid.' })
   }
-
-  // 3b. Injection pattern check — log and reject
-  if (containsInjection(message, INJECTION_PATTERNS)) {
-    await supabase.from('chat_messages').insert({
-      org_id: user.org_id,
-      user_id: user.id,
-      submission_id: submissionId,
-      role: 'user',
-      content: message,
-      flagged: true,
-    })
-    throw createError({ statusCode: 400, statusMessage: 'Invalid input.' })
-  }
+  const flagged = detectInjection(clean)
 
   // 4. Rate limit: count messages for this user in the last hour
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
@@ -89,13 +68,13 @@ export default defineEventHandler(async (event) => {
   }
 
   // 5. Insert user message
-  await supabase.from('chat_messages').insert({
+  await (supabase as any).from('chat_messages').insert({
     org_id: user.org_id,
     user_id: user.id,
     submission_id: submissionId,
     role: 'user',
-    content: message,
-    flagged: false,
+    content: clean,
+    flagged,
   })
 
   // 6. Get named_insured from evaluation verdict
@@ -173,21 +152,17 @@ Keep responses concise and focused on what an underwriter would find useful.`
   }
 
   // 9. Output sanitization check
-  const isFlagged = containsInjection(reply, OUTPUT_SAFETY_PATTERNS)
+  const isFlagged = containsOutputIssue(reply)
 
   // 10. Insert assistant response
-  const { data: assistantMsg } = await supabase
-    .from('chat_messages')
-    .insert({
-      org_id: user.org_id,
-      user_id: user.id,
-      submission_id: submissionId,
-      role: 'assistant',
-      content: reply,
-      flagged: isFlagged,
-    })
-    .select('id')
-    .single()
+  await (supabase as any).from('chat_messages').insert({
+    org_id: user.org_id,
+    user_id: user.id,
+    submission_id: submissionId,
+    role: 'assistant',
+    content: reply,
+    flagged: isFlagged,
+  })
 
   // 11. Return reply
   return { reply }
