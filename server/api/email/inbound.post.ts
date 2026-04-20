@@ -3,6 +3,7 @@ import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { evaluateSubmission } from '../../utils/claude'
 import { generatePdfBuffer } from '../../utils/pdfBuilder'
 import { sendInboundResultsEmail } from '../../utils/email'
+import { scrubDocumentText } from '../../utils/sanitize'
 
 /** Pull the bare email address out of "Display Name <addr>" or plain "addr". */
 function extractEmail(raw: string): string {
@@ -119,7 +120,9 @@ export default defineEventHandler(async (event) => {
           return { filename, text: chunks.map((c) => c.embed || c.content).join('\n\n') }
         })
       )
-      const rawText = fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n')
+      const rawText = scrubDocumentText(
+        fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n')
+      )
 
       await getSupabase().from('submissions').update({ raw_text: rawText }).eq('id', submission.id)
 
