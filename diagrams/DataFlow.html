@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelorus — Submission Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #080F24; --gold: #C9A84C; --gold-light: #E2CC96; --cream: #F0E4C4;
+    --cream-muted: rgba(240,228,196,0.55); --cream-dim: rgba(240,228,196,0.3);
+    --glass: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,168,76,0.2);
+    --purple: #7F77DD; --teal: #1D9E75; --amber: #BA7517;
+    --blue: #378ADD; --coral: #D85A30; --green: #639922;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--navy); color: var(--cream); font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
+  .page { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .toc { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 40px; }
+  .toc a { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 100px; border: 0.5px solid var(--border-gold); color: var(--gold); text-decoration: none; transition: background 0.15s; }
+  .toc a:hover { background: rgba(201,168,76,0.08); }
+
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); }
+  .logo { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+  .header-title { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; color: var(--cream); margin-top: 8px; line-height: 1.2; }
+  .header-sub { font-size: 13px; color: var(--cream-muted); margin-top: 6px; }
+  .header-meta { text-align: right; font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; line-height: 1.8; }
+
+  .section { margin-bottom: 40px; }
+  .section-heading { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section-heading::after { content: ''; flex: 1; height: 0.5px; background: var(--border-gold); }
+
+  .card { background: var(--glass); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+  .card-header { padding: 8px 16px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cream-dim); border-bottom: 0.5px solid var(--border); font-family: 'DM Mono', monospace; }
+
+  .step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--border); transition: background 0.15s; }
+  .step:last-child { border-bottom: none; }
+  .step:hover { background: rgba(255,255,255,0.02); }
+  .num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; margin-top: 1px; font-family: 'DM Mono', monospace; }
+  .num.purple { background: rgba(127,119,221,0.2); color: #AFA9EC; border: 0.5px solid rgba(127,119,221,0.3); }
+  .num.teal   { background: rgba(29,158,117,0.2);  color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.3); }
+  .num.amber  { background: rgba(186,117,23,0.2);  color: #E2CC96; border: 0.5px solid rgba(186,117,23,0.3); }
+  .num.blue   { background: rgba(55,138,221,0.2);  color: #85B7EB; border: 0.5px solid rgba(55,138,221,0.3); }
+  .num.coral  { background: rgba(216,90,48,0.2);   color: #F0997B; border: 0.5px solid rgba(216,90,48,0.3); }
+  .body { flex: 1; }
+  .label { font-size: 13px; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
+  .desc  { font-size: 12px; color: var(--cream-muted); line-height: 1.6; }
+
+  .badge { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-top: 5px; font-family: 'DM Mono', monospace; }
+  .badge.sonnet { background: rgba(186,117,23,0.2); color: #E2CC96; border: 0.5px solid rgba(186,117,23,0.3); }
+  .badge.haiku  { background: rgba(127,119,221,0.2); color: #AFA9EC; border: 0.5px solid rgba(127,119,221,0.3); }
+
+  .tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 100px; margin: 2px 2px 0 0; }
+  .tag.upload { background: rgba(55,138,221,0.15); color: #85B7EB; border: 0.5px solid rgba(55,138,221,0.3); }
+  .tag.email  { background: rgba(29,158,117,0.15); color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.3); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 16px 14px; }
+  .pcall { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .pcall-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 4px; }
+  .pcall-desc  { font-size: 11px; color: var(--cream-muted); line-height: 1.5; }
+
+  .enforce { margin: 8px 16px 12px; background: rgba(226,75,74,0.08); border: 0.5px solid rgba(226,75,74,0.25); border-radius: 8px; padding: 12px 14px; }
+  .enforce-title { font-size: 12px; font-weight: 500; color: #F09595; margin-bottom: 4px; }
+  .enforce-desc { font-size: 11px; color: var(--cream-muted); line-height: 1.7; }
+
+  .verdict-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 6px 16px 14px; }
+  .verdict-item { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+  .verdict-item strong { display: block; font-size: 11px; font-weight: 500; color: var(--cream); margin-bottom: 2px; font-family: 'DM Mono', monospace; }
+  .verdict-item span { font-size: 10px; color: var(--cream-muted); }
+
+  .outcome-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 16px 14px; }
+  .outcome { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .outcome-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 4px; }
+  .outcome-desc  { font-size: 11px; color: var(--cream-muted); line-height: 1.4; }
+
+  .divider { height: 0.5px; background: var(--border); margin: 32px 0; }
+
+  .footer { margin-top: 60px; padding-top: 20px; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="logo">Pelorus</div>
+      <h1 class="header-title">Submission Flow</h1>
+      <p class="header-sub">End-to-end — from inbound submission to delivered verdict</p>
+    </div>
+    <div class="header-meta">
+      v5 data model<br>
+      Nuxt 4 · Vue 3 · Supabase<br>
+      Claude Sonnet 4.6 + Haiku 4.5<br>
+      Apr 2026
+    </div>
+  </div>
+
+  <div class="toc">
+    <a href="#entry">Entry points</a>
+    <a href="#parsing">Document parsing</a>
+    <a href="#claude">Claude calls</a>
+    <a href="#enforcement">Enforcement</a>
+    <a href="#persist">Persist + notify</a>
+    <a href="#delivery">Result delivery</a>
+  </div>
+
+  <!-- ENTRY POINTS -->
+  <div class="section" id="entry">
+    <div class="section-heading">Entry points</div>
+    <div class="card">
+      <div class="step">
+        <div class="num purple">A</div>
+        <div class="body">
+          <div class="label">Two ways a submission enters</div>
+          <div class="desc" style="margin-top:5px">
+            <span class="tag upload">File upload</span> Underwriter uploads files or pastes text via modal → POST /api/submissions/ingest · validate session · read multipart<br><br>
+            <span class="tag email">Email inbound</span> Broker emails handle@mail.pelorusai.io → POST /api/email/inbound · extract handle → lookup org · verify sender non-empty · grab attachments or wrap body as .txt
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num purple">B</div>
+        <div class="body">
+          <div class="label">INSERT submissions row</div>
+          <div class="desc">status: processing · raw_text: empty · user_id: session.id (upload) or null (email)</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num purple">C</div>
+        <div class="body">
+          <div class="label">Return 200 immediately → setImmediate</div>
+          <div class="desc">Client and SendGrid get a fast response. Background job begins via setImmediate — all heavy work is async from here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT PARSING -->
+  <div class="section" id="parsing">
+    <div class="section-heading">Document parsing</div>
+    <div class="card">
+      <div class="step">
+        <div class="num teal">1</div>
+        <div class="body">
+          <div class="label">Send all files to Reducto AI in parallel</div>
+          <div class="desc">Each file parsed independently and concurrently. Returns typed chunks per file.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num teal">2</div>
+        <div class="body">
+          <div class="label">filterChunks()</div>
+          <div class="desc">
+            Drop: length &lt; 50 chars · header/footer-only blocks<br>
+            Keep: Text · Table · List Item · Key Value · bullet chars regardless of block type
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num teal">3</div>
+        <div class="body">
+          <div class="label">Label + concatenate → raw_text</div>
+          <div class="desc">Each file labeled with === DOCUMENT: filename.pdf === then all concatenated. UPDATE submission.raw_text in Supabase.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num teal">4</div>
+        <div class="body">
+          <div class="label">getGuidelineChunks(orgId)</div>
+          <div class="desc">
+            Fetch ALL chunks ORDER BY chunk_index · fetch risk_profile_fields from organizations<br>
+            Split: pinned (is_pinned=true → hard stops) and standard guidelines<br>
+            Build: hardStopsText · guidelinesText (with page refs) · hardStopCheckList (one entry per pinned chunk)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLAUDE CALLS -->
+  <div class="section" id="claude">
+    <div class="section-heading">Parallel Claude calls</div>
+    <div class="card">
+      <div class="card-header">3 calls fire simultaneously — Flags fires early off the Checks stream</div>
+      <div class="grid2">
+        <div class="pcall">
+          <div class="pcall-title">Insights</div>
+          <div class="pcall-desc">Pattern recognition · market context · consistency check · coverage gap analysis</div>
+          <span class="badge sonnet">Sonnet 4.6 · 2k tokens</span>
+        </div>
+        <div class="pcall">
+          <div class="pcall-title">Risk profile</div>
+          <div class="pcall-desc">Extract risk_profile_fields — each with value + source citation (v5 data model)</div>
+          <span class="badge haiku">Haiku 4.5 · 5k tokens</span>
+        </div>
+        <div class="pcall" style="grid-column:1/-1">
+          <div class="pcall-title">Checks stream (streaming ON)</div>
+          <div class="pcall-desc">Forced tool_use: submit_evaluation. Watches partial JSON for decision token (PROCEED|REFER|DECLINE). As soon as decision visible → fires Flags early. stream.finalMessage() → checksResult = decision + guideline_checks[]</div>
+          <span class="badge sonnet">Sonnet 4.6 · 6k tokens</span>
+        </div>
+        <div class="pcall" style="grid-column:1/-1">
+          <div class="pcall-title">Flags — early fire then re-run</div>
+          <div class="pcall-desc">Fires ahead with decision + empty checks to save latency. Re-runs after server enforces decision with full checksResult. Returns: flags · recommendation · favorable_factors · dimension_scores · composite_score</div>
+          <span class="badge haiku">Haiku 4.5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENFORCEMENT -->
+  <div class="section" id="enforcement">
+    <div class="section-heading">Server enforcement + assembly</div>
+    <div class="card">
+      <div class="enforce">
+        <div class="enforce-title">Hard enforcement rules — deterministic, overrides Claude</div>
+        <div class="enforce-desc">
+          Any guideline_check FAIL → DECLINE&nbsp;&nbsp;·&nbsp;&nbsp;Any guideline_check REVIEW → REFER&nbsp;&nbsp;·&nbsp;&nbsp;Otherwise → PROCEED<br>
+          Logs warning if Claude's decision differed from enforced result
+        </div>
+      </div>
+      <div class="step">
+        <div class="num amber">→</div>
+        <div class="body">
+          <div class="label">Promise.all — await all remaining calls</div>
+          <div class="desc">Insights, Risk profile, and re-run Flags all resolve. Assembled into final verdict JSON:</div>
+        </div>
+      </div>
+      <div class="verdict-grid">
+        <div class="verdict-item"><strong>decision</strong><span>PROCEED · REFER · DECLINE</span></div>
+        <div class="verdict-item"><strong>composite_score</strong><span>0–10 holistic judgment</span></div>
+        <div class="verdict-item"><strong>guideline_checks</strong><span>per-rule pass/review/fail</span></div>
+        <div class="verdict-item"><strong>recommendation</strong><span>narrative next action</span></div>
+        <div class="verdict-item"><strong>flags</strong><span>risk signal list</span></div>
+        <div class="verdict-item"><strong>favorable_factors</strong><span>positive signals</span></div>
+        <div class="verdict-item"><strong>dimension_scores</strong><span>per-axis 0–10</span></div>
+        <div class="verdict-item"><strong>insights</strong><span>pattern + market analysis</span></div>
+        <div class="verdict-item"><strong>missing_info</strong><span>2–5 priority gaps</span></div>
+        <div class="verdict-item"><strong>risk_profile</strong><span>extracted fields + citations</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSIST -->
+  <div class="section" id="persist">
+    <div class="section-heading">Persist + notify</div>
+    <div class="card">
+      <div class="step">
+        <div class="num blue">1</div>
+        <div class="body">
+          <div class="label">INSERT evaluations</div>
+          <div class="desc">Full verdict stored as JSONB · decision + composite_score also as top-level columns for fast querying and dashboard stats</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num blue">2</div>
+        <div class="body">
+          <div class="label">UPDATE submissions → status: complete</div>
+          <div class="desc">Triggers Supabase Realtime → browser inbox reloads live. No refresh needed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELIVERY -->
+  <div class="section" id="delivery">
+    <div class="section-heading">Result delivery</div>
+    <div class="card">
+      <div class="card-header">Depends on how the submission came in</div>
+      <div class="outcome-grid">
+        <div class="outcome">
+          <div class="outcome-title">Upload path</div>
+          <div class="outcome-desc">sendResultsEmail() — link to verdict page in the app</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-title">Email path</div>
+          <div class="outcome-desc">generatePdfBuffer() via pdfmake + sendInboundResultsEmail() with PDF attached</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-title">No broker email</div>
+          <div class="outcome-desc">Pipeline completes silently — results visible in app only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Pelorus · Submission flow doc</span>
+    <span>Generated Apr 2026</span>
+  </div>
+
+</div>
+</body>
+</html>

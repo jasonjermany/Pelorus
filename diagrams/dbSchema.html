@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelorus — Database Schema</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #080F24; --gold: #C9A84C; --cream: #F0E4C4;
+    --cream-muted: rgba(240,228,196,0.55); --cream-dim: rgba(240,228,196,0.3);
+    --glass: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,168,76,0.2);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--navy); color: var(--cream); font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
+  .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); }
+  .logo { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+  .header-title { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; color: var(--cream); margin-top: 8px; line-height: 1.2; }
+  .header-sub { font-size: 13px; color: var(--cream-muted); margin-top: 6px; }
+  .header-meta { text-align: right; font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; line-height: 1.8; }
+
+  .section-heading { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-heading::after { content: ''; flex: 1; height: 0.5px; background: var(--border-gold); }
+
+  .erd-wrap { background: var(--glass); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 32px; }
+  #erd svg { width: 100% !important; }
+  #erd svg.erDiagram .divider path { stroke-opacity: 0.4; }
+  #erd svg.erDiagram .row-rect-odd path,
+  #erd svg.erDiagram .row-rect-odd rect,
+  #erd svg.erDiagram .row-rect-even path,
+  #erd svg.erDiagram .row-rect-even rect { stroke: none !important; }
+
+  .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+  .table-card { background: var(--glass); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .table-name { padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--cream); font-family: 'DM Mono', monospace; border-bottom: 0.5px solid var(--border); background: rgba(255,255,255,0.02); }
+  .table-fields { padding: 8px 0; }
+  .field-row { display: flex; align-items: baseline; gap: 8px; padding: 4px 14px; font-size: 11px; }
+  .field-row:hover { background: rgba(255,255,255,0.03); }
+  .field-name { font-family: 'DM Mono', monospace; color: var(--cream); min-width: 140px; }
+  .field-type { color: var(--cream-dim); font-family: 'DM Mono', monospace; min-width: 80px; }
+  .field-note { color: var(--cream-muted); font-size: 10px; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 500; padding: 1px 5px; border-radius: 3px; margin-left: 4px; font-family: 'DM Mono', monospace; vertical-align: middle; }
+  .badge.pk { background: rgba(201,168,76,0.2); color: #E2CC96; border: 0.5px solid rgba(201,168,76,0.3); }
+  .badge.fk { background: rgba(55,138,221,0.15); color: #85B7EB; border: 0.5px solid rgba(55,138,221,0.3); }
+
+  .relations { background: var(--glass); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 32px; }
+  .rel-row { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-bottom: 0.5px solid var(--border); font-size: 11px; }
+  .rel-row:last-child { border-bottom: none; }
+  .rel-row:hover { background: rgba(255,255,255,0.02); }
+  .rel-from { font-family: 'DM Mono', monospace; color: var(--cream); font-weight: 500; min-width: 160px; }
+  .rel-arrow { color: var(--cream-dim); flex-shrink: 0; }
+  .rel-to { font-family: 'DM Mono', monospace; color: var(--cream); font-weight: 500; min-width: 160px; }
+  .rel-desc { color: var(--cream-muted); }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+  .footer { margin-top: 60px; padding-top: 20px; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="logo">Pelorus</div>
+      <h1 class="header-title">Database Schema</h1>
+      <p class="header-sub">Supabase PostgreSQL — 6 tables, multi-tenant by org_id</p>
+    </div>
+    <div class="header-meta">
+      Supabase PostgreSQL<br>
+      Row-level security by org_id<br>
+      Apr 2026
+    </div>
+  </div>
+
+  <div class="section-heading">Entity relationship diagram</div>
+  <div class="erd-wrap">
+    <div id="erd"></div>
+  </div>
+
+  <div class="section-heading">Table reference</div>
+  <div class="tables-grid">
+
+    <div class="table-card">
+      <div class="table-name">organizations</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">name</span><span class="field-type">text</span></div>
+        <div class="field-row"><span class="field-name">inbound_email_handle</span><span class="field-type">text</span><span class="field-note">maps email to org</span></div>
+        <div class="field-row"><span class="field-name">risk_profile_fields</span><span class="field-type">jsonb</span><span class="field-note">extracted from guidelines</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name">users</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">org_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">email</span><span class="field-type">text</span></div>
+        <div class="field-row"><span class="field-name">role</span><span class="field-type">text</span><span class="field-note">admin or underwriter</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name">submissions</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">org_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">user_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span><span class="field-note">null for email inbound</span></div>
+        <div class="field-row"><span class="field-name">raw_text</span><span class="field-type">text</span><span class="field-note">full labeled doc text</span></div>
+        <div class="field-row"><span class="field-name">broker_email</span><span class="field-type">text</span><span class="field-note">nullable</span></div>
+        <div class="field-row"><span class="field-name">source</span><span class="field-type">text</span><span class="field-note">upload or email</span></div>
+        <div class="field-row"><span class="field-name">status</span><span class="field-type">text</span><span class="field-note">processing → complete|error</span></div>
+        <div class="field-row"><span class="field-name">extracted_fields</span><span class="field-type">jsonb</span><span class="field-note">reserved</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name">evaluations</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">org_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">submission_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">decision</span><span class="field-type">text</span><span class="field-note">PROCEED / REFER / DECLINE</span></div>
+        <div class="field-row"><span class="field-name">composite_score</span><span class="field-type">float</span><span class="field-note">0.0–10.0</span></div>
+        <div class="field-row"><span class="field-name">verdict</span><span class="field-type">jsonb</span><span class="field-note">full structured result</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name">guideline_chunks</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">org_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">chunk_index</span><span class="field-type">int</span><span class="field-note">ordering within upload</span></div>
+        <div class="field-row"><span class="field-name">content</span><span class="field-type">text</span><span class="field-note">raw Reducto chunk text</span></div>
+        <div class="field-row"><span class="field-name">embed_text</span><span class="field-type">text</span><span class="field-note">cleaned for prompts</span></div>
+        <div class="field-row"><span class="field-name">page</span><span class="field-type">int</span><span class="field-note">source page number</span></div>
+        <div class="field-row"><span class="field-name">block_types</span><span class="field-type">text[]</span><span class="field-note">Reducto block labels</span></div>
+        <div class="field-row"><span class="field-name">is_pinned</span><span class="field-type">bool</span><span class="field-note">true = hard stop, always sent</span></div>
+        <div class="field-row"><span class="field-name">summary</span><span class="field-type">text</span><span class="field-note">Claude 120-char summary</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-name">chat_messages</div>
+      <div class="table-fields">
+        <div class="field-row"><span class="field-name">id<span class="badge pk">PK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">org_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">user_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">submission_id<span class="badge fk">FK</span></span><span class="field-type">uuid</span></div>
+        <div class="field-row"><span class="field-name">role</span><span class="field-type">text</span><span class="field-note">user or assistant</span></div>
+        <div class="field-row"><span class="field-name">content</span><span class="field-type">text</span></div>
+        <div class="field-row"><span class="field-name">flagged</span><span class="field-type">bool</span><span class="field-note">injection pattern detected</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">timestamptz</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-heading">Relationships</div>
+  <div class="relations">
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#C9A84C"></span>organizations</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">users</span><span class="rel-desc">all users belong to one org</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#C9A84C"></span>organizations</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">submissions</span><span class="rel-desc">all submissions scoped to org</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#C9A84C"></span>organizations</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">evaluations</span><span class="rel-desc">org-level evaluation history</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#C9A84C"></span>organizations</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">guideline_chunks</span><span class="rel-desc">full replace on upload</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#C9A84C"></span>organizations</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">chat_messages</span><span class="rel-desc">all chat scoped to org</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#7F77DD"></span>users</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">submissions</span><span class="rel-desc">nullable — null for email inbound</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#7F77DD"></span>users</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">chat_messages</span><span class="rel-desc">user sends messages</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#1D9E75"></span>submissions</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">evaluations</span><span class="rel-desc">frontend uses latest only</span></div>
+    <div class="rel-row"><span class="rel-from"><span class="dot" style="background:#1D9E75"></span>submissions</span><span class="rel-arrow">1 → ∞</span><span class="rel-to">chat_messages</span><span class="rel-desc">chat scoped to submission</span></div>
+  </div>
+
+  <div class="footer">
+    <span>Pelorus · Database schema doc</span>
+    <span>Generated Apr 2026</span>
+  </div>
+
+</div>
+
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: 'DM Mono, monospace',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '12px',
+    fontFamily: 'DM Mono, monospace',
+    primaryColor: dark ? '#0d1830' : '#f0f4ff',
+    primaryBorderColor: dark ? '#1a2c50' : '#c5d0e8',
+    primaryTextColor: dark ? '#c2c0b6' : '#1e293b',
+    lineColor: dark ? '#2d3f5e' : '#94a3b8',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    attributeBackgroundColorEven: dark ? '#0a1120' : '#f8faff',
+    attributeBackgroundColorOdd: dark ? '#080f24' : '#eef2fb',
+  },
+});
+const diagram = `erDiagram
+  organizations {
+    uuid id PK
+    text name
+    text inbound_email_handle
+    jsonb risk_profile_fields
+  }
+  users {
+    uuid id PK
+    uuid org_id FK
+    text email
+    text role
+    timestamptz created_at
+  }
+  submissions {
+    uuid id PK
+    uuid org_id FK
+    uuid user_id FK
+    text raw_text
+    text broker_email
+    text source
+    text status
+    jsonb extracted_fields
+    timestamptz created_at
+  }
+  evaluations {
+    uuid id PK
+    uuid org_id FK
+    uuid submission_id FK
+    text decision
+    float composite_score
+    jsonb verdict
+    timestamptz created_at
+  }
+  guideline_chunks {
+    uuid id PK
+    uuid org_id FK
+    int chunk_index
+    text content
+    text embed_text
+    int page
+    text[] block_types
+    bool is_pinned
+    text summary
+    timestamptz created_at
+  }
+  chat_messages {
+    uuid id PK
+    uuid org_id FK
+    uuid user_id FK
+    uuid submission_id FK
+    text role
+    text content
+    bool flagged
+    timestamptz created_at
+  }
+  organizations ||--o{ users : "has"
+  organizations ||--o{ submissions : "has"
+  organizations ||--o{ evaluations : "has"
+  organizations ||--o{ guideline_chunks : "has"
+  organizations ||--o{ chat_messages : "has"
+  users ||--o{ submissions : "creates"
+  users ||--o{ chat_messages : "sends"
+  submissions ||--o{ evaluations : "produces"
+  submissions ||--o{ chat_messages : "has"`;
+
+const { svg } = await mermaid.render('erd-svg', diagram);
+document.getElementById('erd').innerHTML = svg;
+
+document.querySelectorAll('#erd svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd .row-rect-odd path, #erd .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>
+</body>
+</html>

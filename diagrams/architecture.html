@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelorus — System Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #080F24; --navy-2: #0D1830; --navy-3: #132040;
+    --gold: #C9A84C; --gold-light: #E2CC96; --cream: #F0E4C4;
+    --cream-muted: rgba(240,228,196,0.55); --cream-dim: rgba(240,228,196,0.3);
+    --glass: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,168,76,0.2);
+    --purple: #7F77DD; --teal: #1D9E75; --amber: #BA7517;
+    --blue: #378ADD; --coral: #D85A30; --green: #639922; --red: #E24B4A;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--navy); color: var(--cream); font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
+  .page { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* nav */
+  .toc { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 40px; }
+  .toc a { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 100px; border: 0.5px solid var(--border-gold); color: var(--gold); text-decoration: none; transition: background 0.15s; }
+  .toc a:hover { background: rgba(201,168,76,0.08); }
+
+  /* header */
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); }
+  .logo { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+  .header-title { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; color: var(--cream); margin-top: 8px; line-height: 1.2; }
+  .header-sub { font-size: 13px; color: var(--cream-muted); margin-top: 6px; }
+  .header-meta { text-align: right; font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; line-height: 1.8; }
+
+  /* section */
+  .section { margin-bottom: 48px; }
+  .section-heading { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-heading::after { content: ''; flex: 1; height: 0.5px; background: var(--border-gold); }
+  .section-desc { font-size: 13px; color: var(--cream-muted); margin-bottom: 16px; line-height: 1.7; }
+
+  /* layer */
+  .layer { background: var(--glass); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+  .layer-header { padding: 8px 16px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream-dim); border-bottom: 0.5px solid var(--border); background: rgba(255,255,255,0.02); font-family: 'DM Mono', monospace; }
+  .layer-body { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; }
+
+  /* node */
+  .node { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 150px; border-left-width: 2px; transition: background 0.15s; }
+  .node:hover { background: rgba(255,255,255,0.06); }
+  .node-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 3px; font-family: 'DM Mono', monospace; }
+  .node-sub { font-size: 11px; color: var(--cream-muted); line-height: 1.4; }
+  .node.purple { border-left-color: var(--purple); }
+  .node.teal   { border-left-color: var(--teal); }
+  .node.amber  { border-left-color: var(--amber); }
+  .node.blue   { border-left-color: var(--blue); }
+  .node.coral  { border-left-color: var(--coral); }
+  .node.green  { border-left-color: var(--green); }
+  .node.gray   { border-left-color: rgba(255,255,255,0.2); }
+  .node.purple-sub { border-left-color: var(--purple); }
+  .node.teal-sub   { border-left-color: var(--teal); }
+
+  /* badge */
+  .badge { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; margin-top: 5px; font-family: 'DM Mono', monospace; }
+  .badge.sonnet { background: rgba(186,117,23,0.2); color: #E2CC96; border: 0.5px solid rgba(186,117,23,0.3); }
+  .badge.haiku  { background: rgba(127,119,221,0.2); color: #AFA9EC; border: 0.5px solid rgba(127,119,221,0.3); }
+
+  /* flow cards */
+  .flow-card { background: var(--glass); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+  .flow-card-header { padding: 8px 16px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cream-dim); border-bottom: 0.5px solid var(--border); font-family: 'DM Mono', monospace; }
+  .flow-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--border); transition: background 0.15s; }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-step:hover { background: rgba(255,255,255,0.02); }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; margin-top: 1px; font-family: 'DM Mono', monospace; }
+  .step-num.purple { background: rgba(127,119,221,0.2); color: #AFA9EC; border: 0.5px solid rgba(127,119,221,0.3); }
+  .step-num.teal   { background: rgba(29,158,117,0.2);  color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.3); }
+  .step-num.amber  { background: rgba(186,117,23,0.2);  color: #E2CC96; border: 0.5px solid rgba(186,117,23,0.3); }
+  .step-num.coral  { background: rgba(216,90,48,0.2);   color: #F0997B; border: 0.5px solid rgba(216,90,48,0.3); }
+  .step-num.blue   { background: rgba(55,138,221,0.2);  color: #85B7EB; border: 0.5px solid rgba(55,138,221,0.3); }
+  .step-body { flex: 1; }
+  .step-label { font-size: 13px; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
+  .step-desc  { font-size: 12px; color: var(--cream-muted); line-height: 1.6; }
+
+  /* parallel grid */
+  .parallel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 16px 14px; }
+  .pcall { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .pcall-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 4px; }
+  .pcall-desc  { font-size: 11px; color: var(--cream-muted); line-height: 1.5; }
+
+  /* enforce */
+  .enforce-box { margin: 8px 16px 12px; background: rgba(226,75,74,0.08); border: 0.5px solid rgba(226,75,74,0.25); border-radius: 8px; padding: 12px 14px; }
+  .enforce-title { font-size: 12px; font-weight: 500; color: #F09595; margin-bottom: 4px; }
+  .enforce-desc { font-size: 11px; color: var(--cream-muted); line-height: 1.7; }
+
+  /* outcome grid */
+  .outcome-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 16px 14px; }
+  .outcome { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .outcome-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 4px; }
+  .outcome-desc  { font-size: 11px; color: var(--cream-muted); line-height: 1.4; }
+
+  /* connections table */
+  .conn-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .conn-table td { padding: 8px 12px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
+  .conn-table tr:last-child td { border-bottom: none; }
+  .conn-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .conn-from { font-weight: 500; color: var(--cream); white-space: nowrap; font-family: 'DM Mono', monospace; font-size: 10px; }
+  .conn-arrow { color: var(--cream-dim); text-align: center; white-space: nowrap; padding: 8px 6px; }
+  .conn-to { color: var(--cream); font-weight: 500; white-space: nowrap; font-family: 'DM Mono', monospace; font-size: 10px; }
+  .conn-desc { color: var(--cream-muted); }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--cream-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* entry tags */
+  .tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 100px; margin: 2px 2px 0 0; }
+  .tag.upload { background: rgba(55,138,221,0.15); color: #85B7EB; border: 0.5px solid rgba(55,138,221,0.3); }
+  .tag.email  { background: rgba(29,158,117,0.15); color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.3); }
+
+  /* decisions table */
+  .arch-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .arch-note { background: var(--glass); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .arch-note-title { font-size: 12px; font-weight: 500; color: var(--cream); margin-bottom: 5px; }
+  .arch-note-desc { font-size: 11px; color: var(--cream-muted); line-height: 1.6; }
+
+  .divider { height: 0.5px; background: var(--border); margin: 40px 0; }
+
+  .footer { margin-top: 60px; padding-top: 20px; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--cream-dim); font-family: 'DM Mono', monospace; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="logo">Pelorus</div>
+      <h1 class="header-title">System Architecture</h1>
+      <p class="header-sub">AI-powered underwriting triage — full stack overview</p>
+    </div>
+    <div class="header-meta">
+      v5 data model<br>
+      Nuxt 4 · Vue 3 · Supabase<br>
+      Claude Sonnet 4.6 + Haiku 4.5<br>
+      Apr 2026
+    </div>
+  </div>
+
+  <div class="toc">
+    <a href="#layers">System layers</a>
+    <a href="#submission-flow">Submission flow</a>
+    <a href="#guidelines-flow">Guidelines upload</a>
+    <a href="#connections">All connections</a>
+    <a href="#decisions">Key decisions</a>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Frontend (Vue/Nuxt)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>API (Nitro)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Background workers</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Supabase</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div>AI services</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Email (SendGrid)</div>
+  </div>
+
+  <!-- SYSTEM LAYERS -->
+  <div class="section" id="layers">
+    <div class="section-heading">System layers</div>
+
+    <div class="layer">
+      <div class="layer-header">Browser — Vue 3 / Nuxt 4</div>
+      <div class="layer-body">
+        <div class="node purple"><div class="node-title">/app — Inbox</div><div class="node-sub">Submission list + realtime updates</div></div>
+        <div class="node purple"><div class="node-title">/app/submissions/:id</div><div class="node-sub">Verdict detail + chat</div></div>
+        <div class="node purple"><div class="node-title">/app/settings</div><div class="node-sub">Guidelines upload</div></div>
+        <div class="node purple"><div class="node-title">/login</div><div class="node-sub">Auth page</div></div>
+        <div class="node purple"><div class="node-title">Realtime listener</div><div class="node-sub">postgres_changes on submissions → inbox refresh</div></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-header">Nitro server</div>
+      <div class="layer-body">
+        <div class="node teal"><div class="node-title">/api/auth/*</div><div class="node-sub">login · logout · me · encrypted cookie</div></div>
+        <div class="node teal"><div class="node-title">/api/submissions/*</div><div class="node-sub">ingest · list · get · evaluate · pdf</div></div>
+        <div class="node teal"><div class="node-title">/api/email/inbound</div><div class="node-sub">SendGrid webhook</div></div>
+        <div class="node teal"><div class="node-title">/api/guidelines/*</div><div class="node-sub">list · upload · DELETE old + INSERT chunks</div></div>
+        <div class="node teal"><div class="node-title">/api/chat/*</div><div class="node-sub">message · history · web_search tool</div></div>
+        <div class="node teal"><div class="node-title">/api/users</div><div class="node-sub">User management</div></div>
+        <div class="node gray"><div class="node-title">Middleware</div><div class="node-sub">IP whitelist · request logger</div></div>
+        <div class="node gray"><div class="node-title">Startup plugin</div><div class="node-sub">Resets stuck processing → error on boot</div></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-header">Background — setImmediate</div>
+      <div class="layer-body">
+        <div class="node amber" style="flex-basis:100%;min-width:100%"><div class="node-title">evaluateSubmission()</div><div class="node-sub">Parse files via Reducto · fetch all guideline_chunks · build prompt context · fire parallel Claude calls · enforce decision · INSERT evaluations · UPDATE status · send email</div></div>
+        <div class="node amber purple-sub"><div class="node-title">Checks</div><div class="node-sub">Streaming · forced tool use · decision + guideline_checks[]</div><span class="badge sonnet">Sonnet 4.6</span></div>
+        <div class="node amber purple-sub"><div class="node-title">Insights</div><div class="node-sub">Pattern · market · consistency · coverage gap</div><span class="badge sonnet">Sonnet 4.6</span></div>
+        <div class="node amber teal-sub"><div class="node-title">Risk profile</div><div class="node-sub">Extract fields with source citations (v5 model)</div><span class="badge haiku">Haiku 4.5</span></div>
+        <div class="node amber teal-sub"><div class="node-title">Flags</div><div class="node-sub">Early fire on decision token · re-runs with full checks · scores · recommendation</div><span class="badge haiku">Haiku 4.5</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-header">External services</div>
+      <div class="layer-body">
+        <div class="node blue"><div class="node-title">Supabase PostgreSQL</div><div class="node-sub">submissions · evaluations · guideline_chunks · users · chat_messages</div></div>
+        <div class="node blue"><div class="node-title">Supabase Realtime</div><div class="node-sub">row change notify → browser</div></div>
+        <div class="node coral"><div class="node-title">Anthropic API</div><div class="node-sub">claude-sonnet-4-6 + claude-haiku-4-5 · extended cache TTL</div></div>
+        <div class="node coral"><div class="node-title">Reducto AI</div><div class="node-sub">Document parsing for submissions + guidelines</div></div>
+        <div class="node green"><div class="node-title">SendGrid inbound</div><div class="node-sub">Inbound parse webhook</div></div>
+        <div class="node green"><div class="node-title">SendGrid outbound</div><div class="node-sub">Results email + PDF (optional)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SUBMISSION FLOW -->
+  <div class="section" id="submission-flow">
+    <div class="section-heading">Submission flow</div>
+    <p class="section-desc">What happens from the moment a submission arrives to when the underwriter sees a verdict.</p>
+
+    <div class="flow-card">
+      <div class="flow-card-header">Entry points</div>
+      <div class="flow-step">
+        <div class="step-num purple">A</div>
+        <div class="step-body">
+          <div class="step-label">Two ways a submission enters</div>
+          <div class="step-desc" style="margin-top:4px">
+            <span class="tag upload">File upload</span> Underwriter uploads files via browser modal → POST /api/submissions/ingest (validates session, reads multipart form)<br><br>
+            <span class="tag email">Email inbound</span> Broker emails handle@mail.pelorusai.io → SendGrid webhook → POST /api/email/inbound (extracts handle, looks up org, verifies sender non-empty)
+          </div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num purple">B</div>
+        <div class="step-body">
+          <div class="step-label">INSERT submissions row</div>
+          <div class="step-desc">status: processing · raw_text: empty · user_id: session.id (upload) or null (email)</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num purple">C</div>
+        <div class="step-body">
+          <div class="step-label">Return 200 immediately</div>
+          <div class="step-desc">Client and SendGrid get a fast response. All heavy work happens async via setImmediate.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-card-header">Document parsing</div>
+      <div class="flow-step">
+        <div class="step-num teal">1</div>
+        <div class="step-body">
+          <div class="step-label">Parse all files via Reducto AI</div>
+          <div class="step-desc">All files parsed in parallel. Returns typed chunks: Text, Table, List Item, Key Value.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num teal">2</div>
+        <div class="step-body">
+          <div class="step-label">filterChunks()</div>
+          <div class="step-desc">Drop: length &lt; 50, header/footer-only blocks. Keep: Text, Table, List Item, Key Value. Keep bullet chars even if mislabeled by Reducto.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num teal">3</div>
+        <div class="step-body">
+          <div class="step-label">Label + concatenate → raw_text</div>
+          <div class="step-desc">Each file labeled: === DOCUMENT: filename.pdf === then all concatenated. UPDATE submission.raw_text.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num teal">4</div>
+        <div class="step-body">
+          <div class="step-label">Fetch guidelines + build prompt context</div>
+          <div class="step-desc">getGuidelineChunks(orgId) fetches ALL chunks ordered by chunk_index. Splits into pinned (is_pinned=true → hard stops) and standard. Fetches organizations.risk_profile_fields. Assembles hardStopsText, guidelinesText, hardStopCheckList.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-card-header">4 Claude calls — parallel + streaming</div>
+      <div class="parallel-grid">
+        <div class="pcall">
+          <div class="pcall-title">Insights</div>
+          <div class="pcall-desc">Pattern recognition, market context, consistency check, coverage gap analysis</div>
+          <span class="badge sonnet">Sonnet 4.6 · 2k tokens</span>
+        </div>
+        <div class="pcall">
+          <div class="pcall-title">Risk profile</div>
+          <div class="pcall-desc">Extracts risk_profile_fields — each with value + source citation (v5 data model)</div>
+          <span class="badge haiku">Haiku 4.5 · 5k tokens</span>
+        </div>
+        <div class="pcall" style="grid-column:1/-1">
+          <div class="pcall-title">Checks stream (streaming ON)</div>
+          <div class="pcall-desc">Forced tool use via tool_choice: submit_evaluation. Watches partial JSON for 'decision': PROCEED|REFER|DECLINE. As soon as decision visible → fires Flags call early. stream.finalMessage() returns full checksResult: decision + guideline_checks[].</div>
+          <span class="badge sonnet">Sonnet 4.6 · 6k tokens</span>
+        </div>
+        <div class="pcall" style="grid-column:1/-1">
+          <div class="pcall-title">Flags (early fire then re-run)</div>
+          <div class="pcall-desc">Fires ahead with decision + empty checks to save time. Re-runs after server enforces decision with full checksResult. Returns: flags, recommendation, favorable_factors, dimension_scores, composite_score.</div>
+          <span class="badge haiku">Haiku 4.5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-card-header">Server decision enforcement</div>
+      <div class="enforce-box">
+        <div class="enforce-title">Hard enforcement rules</div>
+        <div class="enforce-desc">
+          Any guideline_check with status FAIL → override to DECLINE<br>
+          Any guideline_check with status REVIEW → override to REFER<br>
+          Otherwise → PROCEED<br>
+          Logs a warning if Claude's decision is overridden.
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num amber">→</div>
+        <div class="step-body">
+          <div class="step-label">Promise.all — await all remaining</div>
+          <div class="step-desc">Insights, Risk profile, and re-run Flags all resolve. Assembled into final verdict JSON: decision · composite_score · guideline_checks · recommendation · flags · favorable_factors · dimension_scores · insights · missing_info · risk_profile</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-card-header">Persist + notify</div>
+      <div class="flow-step">
+        <div class="step-num blue">1</div>
+        <div class="step-body">
+          <div class="step-label">INSERT evaluations</div>
+          <div class="step-desc">Full verdict stored as JSONB. decision + composite_score also as top-level columns for fast querying and dashboard stats.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num blue">2</div>
+        <div class="step-body">
+          <div class="step-label">UPDATE submissions → status: complete</div>
+          <div class="step-desc">Triggers Supabase Realtime → browser inbox reloads live. No refresh needed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <div class="flow-card-header">Result delivery — depends on entry path</div>
+      <div class="outcome-grid">
+        <div class="outcome">
+          <div class="outcome-title">Upload path</div>
+          <div class="outcome-desc">sendResultsEmail() — link to verdict page in the app</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-title">Email path</div>
+          <div class="outcome-desc">generatePdfBuffer() via pdfmake + sendInboundResultsEmail() with PDF attached</div>
+        </div>
+        <div class="outcome">
+          <div class="outcome-title">No broker email</div>
+          <div class="outcome-desc">Pipeline completes silently — results visible in app only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- GUIDELINES FLOW -->
+  <div class="section" id="guidelines-flow">
+    <div class="section-heading">Guidelines upload flow</div>
+    <p class="section-desc">Guidelines are preprocessed once at upload time. Every subsequent submission just fetches the pre-processed chunks — no re-parsing on each run.</p>
+
+    <div class="flow-card">
+      <div class="flow-step">
+        <div class="step-num blue">1</div>
+        <div class="step-body">
+          <div class="step-label">PDF uploaded via /app/settings</div>
+          <div class="step-desc">/api/guidelines/upload receives the carrier's guideline document.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num blue">2</div>
+        <div class="step-body">
+          <div class="step-label">Reducto parses the PDF</div>
+          <div class="step-desc">Returns structured text chunks from the guideline document.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num blue">3</div>
+        <div class="step-body">
+          <div class="step-label">Two Claude calls process chunks</div>
+          <div class="step-desc">extractHardStops() identifies hard stop rules → marked is_pinned=true. classifyChunks() filters cover pages, generates summaries for each chunk.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num blue">4</div>
+        <div class="step-body">
+          <div class="step-label">DELETE old + bulk INSERT new chunks</div>
+          <div class="step-desc">Re-uploading a guideline fully replaces it — no appending. Chunks stored in guideline_chunks scoped to the carrier's org. Extended cache TTL applied on Anthropic API calls.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ALL CONNECTIONS -->
+  <div class="section" id="connections">
+    <div class="section-heading">All connections</div>
+    <div class="layer">
+      <table class="conn-table">
+        <tr><td class="conn-from"><span class="dot" style="background:var(--purple)"></span>Browser</td><td class="conn-arrow">→</td><td class="conn-to">Nitro</td><td class="conn-desc">All HTTP — auth, submissions, guidelines, chat, users</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--purple)"></span>Realtime listener</td><td class="conn-arrow">↔</td><td class="conn-to">Supabase Realtime</td><td class="conn-desc">anon key · postgres_changes on submissions → inbox refresh</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--green)"></span>SendGrid inbound</td><td class="conn-arrow">→</td><td class="conn-to">/api/email/inbound</td><td class="conn-desc">POST webhook on new broker email</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--teal)"></span>Ingest + Email webhook</td><td class="conn-arrow">→</td><td class="conn-to">Supabase</td><td class="conn-desc">INSERT submission (status: processing) → setImmediate → pipeline</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>Pipeline</td><td class="conn-arrow">→</td><td class="conn-to">Reducto</td><td class="conn-desc">Parse all submission files in parallel</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>Pipeline</td><td class="conn-arrow">→</td><td class="conn-to">Supabase</td><td class="conn-desc">Fetch all guideline_chunks for org (ordered by chunk_index)</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>Checks stream</td><td class="conn-arrow">→</td><td class="conn-to">Flags (early)</td><td class="conn-desc">Decision token visible in stream → fires Flags ahead of full completion</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>All 4 calls</td><td class="conn-arrow">→</td><td class="conn-to">Anthropic API</td><td class="conn-desc">Extended cache TTL on guideline chunks</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>Pipeline</td><td class="conn-arrow">→</td><td class="conn-to">Supabase</td><td class="conn-desc">INSERT evaluations · UPDATE status: complete → Realtime fires</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--amber)"></span>Pipeline</td><td class="conn-arrow">→</td><td class="conn-to">SendGrid outbound</td><td class="conn-desc">Optional — results link (upload) or PDF attached (email path)</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--teal)"></span>Guidelines API</td><td class="conn-arrow">→</td><td class="conn-to">Reducto + Anthropic</td><td class="conn-desc">Parse PDF · extractHardStops · classifyChunks · DELETE old + INSERT chunks</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--teal)"></span>Chat API</td><td class="conn-arrow">→</td><td class="conn-to">Anthropic API</td><td class="conn-desc">web_search tool enabled · INSERT chat_messages to Supabase</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--teal)"></span>Auth</td><td class="conn-arrow">→</td><td class="conn-to">Supabase + Client</td><td class="conn-desc">signInWithPassword · SELECT users · set encrypted cookie</td></tr>
+        <tr><td class="conn-from"><span class="dot" style="background:var(--blue)"></span>Startup plugin</td><td class="conn-arrow">→</td><td class="conn-to">Supabase</td><td class="conn-desc">On boot: UPDATE stuck processing submissions → error status</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- KEY DECISIONS -->
+  <div class="section" id="decisions">
+    <div class="section-heading">Key architectural decisions</div>
+    <div class="arch-notes">
+      <div class="arch-note">
+        <div class="arch-note-title">setImmediate for background work</div>
+        <div class="arch-note-desc">API responds immediately, evaluation happens async. Keeps response times fast regardless of how long Claude takes to process.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Sonnet for reasoning, Haiku for extraction</div>
+        <div class="arch-note-desc">Expensive guideline comparison and insights use Sonnet. Fast structured extraction (risk profile, flags) uses Haiku. Optimizes cost without sacrificing quality on the calls that matter.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Guidelines preprocessed at upload</div>
+        <div class="arch-note-desc">guideline_chunks created once at upload. Every submission just fetches pre-processed chunks. No re-parsing on each run. Extended cache TTL further reduces cost.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Dynamic prompt assembly per submission</div>
+        <div class="arch-note-desc">System prompt = Persona (static) + Universal variables (always) + line-specific sections (only for lines requested). Keeps token count down for single-line submissions.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Composite score is holistic, not an average</div>
+        <div class="arch-note-desc">Claude renders a qualitative verdict (hard stops → 0–2, clean risk → 8–10) independent of dimension scores. One hard stop tanks the composite regardless of all other dimensions.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Server enforces decision — Claude doesn't have final say</div>
+        <div class="arch-note-desc">Any FAIL guideline check overrides to DECLINE. Any REVIEW overrides to REFER. Claude's verdict is a suggestion; the enforcement logic is deterministic and auditable.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">DELETE old + INSERT on guideline re-upload</div>
+        <div class="arch-note-desc">Re-uploading a carrier guideline fully replaces chunks. No stale data, no append conflicts. Clean slate on every update.</div>
+      </div>
+      <div class="arch-note">
+        <div class="arch-note-title">Flags fires early off the Checks stream</div>
+        <div class="arch-note-desc">As soon as the decision token is visible mid-stream, Flags fires with what it has. Re-runs with full data after enforcement. Saves latency on the most visible output.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Pelorus · Internal architecture doc</span>
+    <span>Generated Apr 2026</span>
+  </div>
+
+</div>
+</body>
+</html>

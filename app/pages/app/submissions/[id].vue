@@ -185,21 +185,6 @@
               </ul>
             </div>
 
-            <!-- Portfolio Risk Summary -->
-            <div v-if="verdict.portfolio" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Risk Summary</p>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-px bg-gray-100">
-                <div v-for="(raw, key) in portfolioSummaryFields" :key="key" class="bg-white px-4 py-2.5">
-                  <p class="text-[10px] font-black uppercase tracking-[0.13em] text-gray-600 mb-0.5">{{ formatKey(key) }}</p>
-                  <span v-if="!rpIsBlank(raw)" class="text-[15px] font-semibold text-gray-900">{{ rpValue(raw) }}</span>
-                  <span v-else class="text-[15px] text-gray-500">—</span>
-                  <p v-if="rpSource(raw)" class="text-[12px] text-gray-600 mt-0.5 truncate">{{ rpSource(raw) }}</p>
-                </div>
-              </div>
-            </div>
-
           </div>
 
           <!-- ── Guidelines tab ───────────────────────────────── -->
@@ -290,65 +275,16 @@
 
           <!-- ── Risk Profile tab ─────────────────────────────── -->
           <div v-else-if="activeTab === 'Risk Profile'">
-
-            <!-- v5: lines → locations → sections → fields -->
-            <template v-if="v5RiskLocations.length">
-              <div class="flex flex-col gap-2.5 overflow-y-auto" style="max-height:min(60vh,580px)">
-                <div
-                  v-for="loc in v5RiskLocations"
-                  :key="loc.id"
-                  :ref="(el) => { if (el) locationCardEls[loc.id] = el as HTMLElement }"
-                  class="glass-card overflow-hidden"
-                >
-                  <!-- Card header -->
-                  <button
-                    class="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
-                    @click="toggleLocation(loc.id)"
-                  >
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="text-[12px] font-bold text-gray-800 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded flex-shrink-0 tracking-[0.04em]">{{ loc.id }}</span>
-                      <span v-if="loc.address" class="text-[15px] text-gray-900 font-medium truncate">{{ loc.address }}</span>
-                    </div>
-                    <svg
-                      class="w-3.5 h-3.5 text-gray-600 transition-transform duration-200 flex-shrink-0"
-                      :class="expandedLocations.has(loc.id) ? 'rotate-180' : ''"
-                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                    ><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-
-                  <!-- Expanded: sections → fields -->
-                  <div v-if="expandedLocations.has(loc.id)" class="border-t border-gray-100 divide-y divide-gray-100">
-                    <div v-for="section in loc.sections" :key="section.name" class="px-4 py-3">
-                      <div class="flex items-center gap-2 mb-2">
-                        <span class="text-[10px] font-black uppercase tracking-[0.15em] text-gray-900">{{ section.name }}</span>
-                        <div class="flex-1 h-px bg-gray-200"></div>
-                      </div>
-                      <div class="grid grid-cols-2 gap-px bg-gray-100">
-                        <div
-                          v-for="field in section.fields"
-                          :key="field.label"
-                          class="bg-white px-2.5 py-2"
-                          :class="severityRowClass(field.severity)"
-                        >
-                          <p class="text-[10px] font-black uppercase tracking-[0.13em] text-gray-600 mb-0.5">{{ field.label }}</p>
-                          <div class="flex items-center gap-1.5">
-                            <span class="text-[14px] font-semibold text-gray-900 leading-snug">{{ field.value }}</span>
-                            <span
-                              v-if="field.severity"
-                              class="text-[11px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded-full flex-shrink-0"
-                              :class="severityBadgeClass(field.severity)"
-                            >{{ field.severity }}</span>
-                          </div>
-                          <p v-if="field.description" class="text-[12px] text-gray-600 leading-relaxed mt-0.5">{{ field.description }}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <div v-if="verdict.risk_profile && Object.keys(verdict.risk_profile).length" class="glass-card overflow-hidden">
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-gray-100">
+                <div v-for="(raw, key) in verdict.risk_profile" :key="key" class="bg-white px-4 py-3">
+                  <p class="text-[10px] font-black uppercase tracking-[0.13em] text-gray-600 mb-0.5">{{ formatKey(key) }}</p>
+                  <span v-if="!rpIsBlank(raw)" class="text-[15px] font-semibold text-gray-900">{{ rpValue(raw) }}</span>
+                  <span v-else class="text-[15px] text-gray-500">—</span>
+                  <p v-if="rpSource(raw)" class="text-[12px] text-gray-600 mt-0.5 truncate" :title="rpSource(raw)!">{{ rpSource(raw) }}</p>
                 </div>
               </div>
-            </template>
-
-
+            </div>
             <div v-else class="py-12 text-center text-[15px] text-gray-600">No risk profile data available.</div>
           </div>
         </div>
@@ -508,28 +444,7 @@ function renderMarkdown(content: string): string {
   return DOMPurify.sanitize(marked.parse(content, { breaks: true }) as string)
 }
 
-type RpField = string | { value: string; source?: string; context?: string }
-
-type Portfolio = {
-  named_insured: RpField
-  broker: RpField
-  prior_carrier: RpField
-  total_tiv: RpField
-  location_count: RpField
-  total_sf: RpField
-  losses_5yr: RpField
-}
-
-// ── v5 data model ────────────────────────────────────────────
-type V5Field = {
-  label: string
-  value: string
-  severity?: 'high' | 'medium' | 'low' | null
-  description?: string
-}
-type V5Section = { name: string; fields: V5Field[] }
-type V5Location = { id: string; address?: string; city_state_zip?: string; sections: V5Section[] }
-type V5Line = { name?: string; locations: V5Location[] }
+type RpField = string | { value: string; source?: string }
 
 type Verdict = {
   decision: 'PROCEED' | 'REFER' | 'DECLINE'
@@ -541,11 +456,8 @@ type Verdict = {
   guideline_checks: Array<{ rule: string; required: string; submitted: string; submission_source?: string; status: string; cited_section: string }>
   insights: Record<string, string>
   missing_info: Array<{ label: string; description: string; priority?: string }>
-  portfolio?: Portfolio
   risk_profile?: Record<string, { value: string; source?: string } | string>
   analyzed_in_seconds?: string
-  // v5
-  lines?: V5Line[]
 }
 
 type SubmissionResponse = {
@@ -565,34 +477,16 @@ const submission = ref<SubmissionResponse | null>(null)
 const verdict = computed(() => submission.value?.verdict ?? null)
 
 const namedInsured = computed(() => {
-  const p = verdict.value?.portfolio?.named_insured
-  const pv = rpValue(p as RpField)
-  if (pv && pv !== 'Not disclosed') return pv
   const raw = verdict.value?.risk_profile?.named_insured
   if (raw === undefined) return null
   return rpValue(raw) || null
 })
 
 const portfolioTiv = computed(() => {
-  const t = rpValue(verdict.value?.portfolio?.total_tiv as RpField)
-  if (t && t !== 'Not disclosed' && !t.startsWith('NOT CONFIRMED')) return t
   const raw = verdict.value?.risk_profile?.tiv
   if (!raw) return null
   const v = rpValue(raw)
   return v && v !== 'Not disclosed' ? v : null
-})
-
-const portfolioSummaryFields = computed(() => {
-  const p = verdict.value?.portfolio
-  if (!p) return {} as Record<string, RpField>
-  return {
-    named_insured: p.named_insured,
-    broker: p.broker,
-    total_tiv: p.total_tiv,
-    location_count: p.location_count,
-    total_sf: p.total_sf,
-    losses_5yr: p.losses_5yr,
-  }
 })
 
 const isLoading = ref(false)
@@ -660,7 +554,7 @@ function normalizeScore(score: number): number {
   return score > 10 ? Math.round(score) / 10 : score
 }
 
-// ── v5 Panel 1: dimension score groups ───────────────────────
+// ── Dimension score groups ────────────────────────────────────
 type DimGroup = {
   locationId: string
   address?: string
@@ -669,32 +563,6 @@ type DimGroup = {
 }
 
 const dimGroups = computed<DimGroup[]>(() => {
-  // v5 path: pull numeric 0–10 fields per location
-  if (verdict.value?.lines?.length) {
-    const groups: DimGroup[] = []
-    for (const line of verdict.value.lines) {
-      for (const loc of line.locations ?? []) {
-        const numericFields: DimGroup['numericFields'] = []
-        const textFields: DimGroup['textFields'] = []
-        for (const section of loc.sections ?? []) {
-          for (const field of section.fields ?? []) {
-            const trimmed = (field.value ?? '').trim()
-            const n = parseFloat(trimmed)
-            if (!isNaN(n) && n >= 0 && n <= 10 && /^\d+(\.\d+)?$/.test(trimmed)) {
-              numericFields.push({ label: field.label, score: n })
-            } else if (trimmed && trimmed !== 'Not disclosed') {
-              textFields.push({ label: field.label, value: trimmed })
-            }
-          }
-        }
-        if (numericFields.length || textFields.length) {
-          groups.push({ locationId: loc.id, address: loc.address, numericFields, textFields })
-        }
-      }
-    }
-    return groups
-  }
-  // Legacy path: flat dimension_scores object
   if (verdict.value?.dimension_scores) {
     return [{
       locationId: '',
@@ -708,54 +576,6 @@ const dimGroups = computed<DimGroup[]>(() => {
   }
   return []
 })
-
-// ── v5 Panel 2: risk profile locations ───────────────────────
-type V5RenderLocation = { id: string; address?: string; sections: Array<{ name: string; fields: V5Field[] }> }
-
-const v5RiskLocations = computed<V5RenderLocation[]>(() => {
-  if (!verdict.value?.lines?.length) return []
-  const locs: V5RenderLocation[] = []
-  for (const line of verdict.value.lines) {
-    for (const loc of line.locations ?? []) {
-      const sections = (loc.sections ?? [])
-        .map(sec => ({ name: sec.name, fields: (sec.fields ?? []).filter(f => f.label && f.value != null) }))
-        .filter(sec => sec.fields.length > 0)
-      if (sections.length) locs.push({ id: loc.id, address: loc.address, sections })
-    }
-  }
-  return locs
-})
-
-function severityBadgeClass(severity?: string | null): string {
-  if (severity === 'high') return 'bg-red-50 text-red-700 border border-red-200'
-  if (severity === 'medium') return 'bg-amber-50 text-amber-800 border border-amber-200'
-  if (severity === 'low') return 'bg-green-50 text-green-700 border border-green-200'
-  return 'bg-gray-100 text-gray-700'
-}
-function severityRowClass(severity?: string | null): string {
-  if (severity === 'high') return 'bg-red-50/30'
-  if (severity === 'medium') return 'bg-amber-50/20'
-  return ''
-}
-
-const expandedLocations = ref<Set<string>>(new Set())
-const locationCardEls: Record<string, HTMLElement> = {}
-
-watch(
-  v5RiskLocations,
-  (locs) => {
-    if (!locs.length) return
-    expandedLocations.value = locs.length <= 2 ? new Set(locs.map((l) => l.id)) : new Set()
-  },
-  { immediate: true },
-)
-
-function toggleLocation(locId: string) {
-  const s = new Set(expandedLocations.value)
-  if (s.has(locId)) s.delete(locId)
-  else s.add(locId)
-  expandedLocations.value = s
-}
 
 // ── Data loading ──────────────────────────────────────────────
 async function load() {

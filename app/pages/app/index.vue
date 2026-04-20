@@ -18,16 +18,6 @@
 
         <!-- Right: bell + new sub + avatar -->
         <div class="flex items-center gap-2">
-          <!-- Bell -->
-          <button
-            aria-label="Notifications"
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-          </button>
-
           <!-- New Submission -->
           <button
             class="hidden sm:flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 disabled:opacity-50 text-[#050A18] text-[14px] font-bold px-3.5 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
@@ -534,8 +524,6 @@ type Submission = {
   named_insured: string | null
   broker: string | null
   prior_carrier: string | null
-  coverage_type?: string | null
-  premium?: number | null
 }
 
 type OrgUser = { id: string; email: string; role: string }
