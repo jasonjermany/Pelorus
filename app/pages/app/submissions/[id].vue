@@ -124,6 +124,16 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start gap-2 mb-1.5">
                       <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ flag.title }}</p>
+                      <button
+                        v-if="flag.source_doc || flag.raw_text"
+                        class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded flex-shrink-0"
+                        title="View source"
+                        @click="openSourceModal('flag:' + i, { value: flag.title, source_doc: flag.source_doc, source_location: flag.source_location, raw_text: flag.raw_text, context: flag.context }, flag.title, false)"
+                      >
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                        </svg>
+                      </button>
                       <span
                         class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
                         :class="flag.type === 'CONDITION' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-800 border border-amber-200'"
@@ -177,10 +187,20 @@
               <div class="flex flex-col divide-y divide-gray-100">
                 <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-5 sm:px-6 py-4">
                   <div class="flex items-center gap-2 mb-1.5">
-                    <p class="text-[15px] font-semibold text-gray-900">{{ item.label }}</p>
+                    <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ item.label }}</p>
+                    <button
+                      v-if="item.source_doc || item.raw_text"
+                      class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded flex-shrink-0"
+                      title="View source"
+                      @click="openSourceModal('missing:' + i, { value: item.label, source_doc: item.source_doc, source_location: item.source_location, raw_text: item.raw_text, context: item.context }, item.label, false)"
+                    >
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                      </svg>
+                    </button>
                     <span
                       v-if="item.priority"
-                      class="text-[11px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full"
+                      class="text-[11px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
                       :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-800'"
                     >{{ item.priority }}</span>
                   </div>
@@ -238,8 +258,10 @@
 
     <!-- ── Source Modal ───────────────────────────────────────── -->
     <SubmissionSourceModal
-      v-if="sourceModal"
-      :field-key="sourceModal.key"
+      :is-open="!!sourceModal"
+      :field-key="sourceModal?.key ?? ''"
+      :display-title="sourceModalTitle"
+      :amendable="sourceModalAmendable"
       :source-doc="sourceModalDoc"
       :source-location="sourceModalLocation"
       :raw-text="sourceModalRawText"
@@ -265,10 +287,13 @@ provide(AMENDMENTS_KEY, amendmentsApi)
 const {
   amendments,
   sourceModal,
+  sourceModalTitle,
+  sourceModalAmendable,
   sourceModalDoc,
   sourceModalLocation,
   sourceModalRawText,
   sourceModalContext,
+  openSourceModal,
   closeSourceModal,
   amendFromModal,
 } = amendmentsApi

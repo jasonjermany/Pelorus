@@ -9,7 +9,7 @@
     </div>
     <div class="overflow-x-auto overflow-y-auto" style="max-height:min(62vh,600px)">
       <table class="w-full text-left text-[15px]">
-        <thead class="sticky top-0 z-10">
+        <thead class="sticky top-0">
           <tr class="border-b border-gray-100 bg-gray-50">
             <th class="th-cell">Rule</th>
             <th class="th-cell">Required</th>
@@ -59,25 +59,33 @@
                       v-if="amendments['check:' + i]"
                       class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap"
                     >Amended</span>
-                    <p class="text-gray-800 leading-relaxed">{{ amendments['check:' + i]?.amendedValue ?? check.submitted }}</p>
-                    <p v-if="amendments['check:' + i]" class="text-[11px] text-gray-500 mt-0.5">Original: {{ check.submitted }}</p>
-                    <p
-                      v-if="check.submission_source && check.submission_source !== 'Not disclosed'"
-                      class="text-[13px] text-gray-600 mt-1"
-                    ><span class="font-semibold text-gray-700">Source:</span> {{ check.submission_source }}</p>
+                    <p class="text-gray-800 leading-relaxed line-clamp-3">{{ amendments['check:' + i]?.amendedValue ?? check.submitted }}</p>
+                    <p v-if="amendments['check:' + i]" class="text-[11px] text-gray-500 mt-0.5 line-clamp-2">Original: {{ check.submitted }}</p>
                   </template>
                 </div>
-                <!-- Pencil -->
-                <button
-                  v-if="editingKey !== 'check:' + i"
-                  class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded flex-shrink-0 mt-0.5"
-                  title="Edit submitted value"
-                  @click="startEdit('check:' + i, amendments['check:' + i]?.amendedValue ?? check.submitted)"
-                >
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
-                  </svg>
-                </button>
+                <!-- Action buttons (hidden while editing) -->
+                <div v-if="editingKey !== 'check:' + i" class="flex items-center gap-0.5 flex-shrink-0 mt-0.5">
+                  <!-- Pencil: edit submitted value -->
+                  <button
+                    class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
+                    title="Edit submitted value"
+                    @click="startEdit('check:' + i, amendments['check:' + i]?.amendedValue ?? check.submitted)"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
+                    </svg>
+                  </button>
+                  <!-- Source ↗: always available since submitted finding is always present -->
+                  <button
+                    class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
+                    title="View source"
+                    @click="openSourceModal('check:' + i, { value: amendments['check:' + i]?.amendedValue ?? check.submitted, source_doc: check.submission_source?.trim() && check.submission_source.trim() !== 'Not disclosed' ? check.submission_source.trim() : undefined, raw_text: check.submitted, context: 'Guideline requires: ' + check.required }, check.rule)"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
             </td>
             <td class="td-cell align-top">
@@ -112,6 +120,7 @@ const {
   startEdit,
   saveEdit,
   cancelEdit,
+  openSourceModal,
 } = inject(AMENDMENTS_KEY)!
 
 const sortedChecks = computed(() =>

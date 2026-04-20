@@ -20,40 +20,48 @@ REQUIRED OPENERS — every field must start exactly as follows:
 - insights coverage_gap: "Coverage gap: [observation]"
 - missing_info description: "Required: [what is needed and why]"`
 
-export const HARD_STOP_RULES = `HARD STOP STATUS RULES — apply these to every check, no exceptions:
+export const HARD_STOP_RULES = `HARD STOP STATUS RULES — apply in strict decision-tree order, stop at first match:
 
-Assign "fail" when:
-- The condition is explicitly confirmed present in any submitted document
-- Any document mentions the condition existed, even if claimed remediated,
-  unless this submission contains written professional certification of
-  complete removal meeting program standards
-- The submission discloses materials or systems from an era when the
-  prohibited condition was common, without confirming the specific
-  safe type currently present
+STEP 1 — Does the submission explicitly confirm the condition is ABSENT?
+  If YES and ALL of the following are true → assign "pass":
+  - Every building in the submission is covered
+  - Confirmation comes from a named professional report, inspection
+    certificate, or explicit documented statement in this submission
+  - No document in the submission mentions or implies the condition
+    may have existed or currently exists
+  Otherwise continue to Step 2.
 
-Assign "review" when:
-- The condition cannot be confirmed absent from all portions of all buildings
-- Any system, material, or condition is described with vague language such
-  as "original", "predating modern standards", "unconfirmed", or similar
-- The submission does not explicitly address this condition at all
-- Claimed remediation exists but written professional documentation
-  confirming complete resolution is not included in this submission
-- The building age or location creates reasonable risk that the condition
-  may be present, even if not disclosed
+STEP 2 — Does the submission mention, describe, or imply this condition in any way?
+  Assign "fail" if ANY of the following is true:
+  - Any submitted document explicitly confirms the condition is present
+  - Any document mentions the condition existed, even if claimed fixed,
+    unless written professional certification of complete removal meeting
+    program standards is included in this submission
+  - Materials, systems, or construction dates from an era when this
+    prohibited condition was standard, without the submission confirming
+    the specific compliant type currently installed
+  - Any vague, hedged, or ambiguous language describes this condition
+    ("original wiring", "predating modern standards", "some renovation",
+    "older systems", "unrenovated section", or similar)
+  - Claimed remediation is stated but supporting professional documentation
+    is not present in this submission
+  Otherwise continue to Step 3.
 
-Assign "pass" only when all of the following are true:
-- The condition is explicitly confirmed absent from all portions of
-  all buildings in the submission
-- Confirmation comes from a named professional report, inspection
-  certificate, or explicit documented statement
-- No document in the submission mentions or implies the condition
-  may have existed or currently exists
+STEP 3 — The submission contains NO mention of this condition whatsoever.
+  Assign "review" ONLY when this condition is completely absent from
+  all submitted documents — no mention, no implication, no related
+  disclosure of any kind. The information simply does not exist in
+  this submission.
 
-GENERAL RULES:
-- "It was fixed" without supporting documentation = "review", not "pass"
-- Any mention of a condition in any document = at minimum "review"
-- Silence on a condition for an older building = "review", not "pass"
-- Partial remediation of a building does not satisfy whole-building requirements
-- Program approvals not yet obtained = "review", not "pass"
-- Geographic or age-based risk factors warrant "review" even without
-  explicit disclosure`
+THE BRIGHT LINE:
+  "fail" = the submission mentions or implies the condition (even vaguely)
+           but does not satisfy the requirement with documentation
+  "review" = the submission says nothing about this condition at all
+  These are mutually exclusive. A submission cannot produce both for the same condition.
+
+TIEBREAKERS — when in doubt:
+  - Any mention of a condition in any document → "fail", never "review"
+  - "It was fixed" without supporting documentation → "fail", not "review"
+  - Building age alone, no mention of the condition → "review"
+  - Partial remediation documented → "fail" (whole-building requirement not met)
+  - Program approvals claimed but not included → "fail"`

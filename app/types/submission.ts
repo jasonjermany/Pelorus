@@ -22,16 +22,37 @@ export type GuidelineCheck = {
   cited_section: string
 }
 
+export type SourceCitation = {
+  source_doc?: string
+  source_location?: string
+  raw_text?: string
+  context?: string
+}
+
+export type Flag = {
+  title: string
+  type: string
+  explanation: string
+  action_required: string
+  cited_section: string
+} & SourceCitation
+
+export type MissingInfoItem = {
+  label: string
+  description: string
+  priority?: string
+} & SourceCitation
+
 export type Verdict = {
   decision: 'PROCEED' | 'REFER' | 'DECLINE'
   composite_score: number
   dimension_scores: Record<string, number>
   recommendation: { summary: string; action_items: string[] }
-  flags: Array<{ title: string; type: string; explanation: string; action_required: string; cited_section: string }>
+  flags: Flag[]
   favorable_factors: string[]
   guideline_checks: GuidelineCheck[]
   insights: Record<string, string>
-  missing_info: Array<{ label: string; description: string; priority?: string }>
+  missing_info: MissingInfoItem[]
   risk_profile?: Record<string, RpField>
   analyzed_in_seconds?: string
   field_amendments?: Record<string, RpAmendment>

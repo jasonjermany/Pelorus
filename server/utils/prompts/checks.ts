@@ -63,10 +63,12 @@ Do not add checks. Do not remove checks. Do not rename checks. Evaluate every si
 MANDATORY CHECKS — evaluate all ${pinnedCount} of these:
 ${hardStopCheckList}
 
-For each check:
-- status "pass" = clearly not present in submission
-- status "review" = unclear or cannot confirm from submission
-- status "fail" = confirmed present → triggers DECLINE or referral
+For each check, apply HARD STOP STATUS RULES above exactly. In brief:
+- status "fail"   = condition IS present in submission (explicitly, vaguely, or by implication)
+                    but does not satisfy the requirement with documentation → CONDITION flag
+- status "review" = condition is entirely absent from the submission, no mention of any kind → VERIFY flag
+- status "pass"   = condition explicitly confirmed absent with named professional documentation
+These are mutually exclusive. Any mention of a condition, however vague, is "fail" not "review".
 
 Only include checks with status "review" or "fail" in guideline_checks.
 Do NOT include passing checks — omit them entirely.
