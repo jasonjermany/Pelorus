@@ -1,12 +1,25 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { writeFile } from 'fs/promises'
 import { getGuidelineChunks } from './rag'
-import { CHECKS_TOOL, buildChecksMessages } from './prompts/checks'
+import { CHECKS_TOOL, buildChecksMessages, buildEnrichmentMessages } from './prompts/checks'
 import { buildFlagsPrompt } from './prompts/flags'
 import { buildInsightsPrompt } from './prompts/insights'
-import { buildRiskProfilePrompt } from './prompts/riskProfile'
+import { RISK_PROFILE_TOOL, buildRiskProfileMessages } from './prompts/riskProfile'
 import { CLASSIFY_INSTRUCTIONS } from './prompts/classify'
 import { buildHardStopsPrompt } from './prompts/hardStops'
 import { buildRiskFieldsPrompt } from './prompts/riskFields'
+
+function logUsage(label: string, ms: number, usage: any, extra = '') {
+  const inp   = (usage?.input_tokens ?? 0)
+  const out   = usage?.output_tokens ?? 0
+  const hit   = usage?.cache_read_input_tokens ?? 0
+  const write = usage?.cache_creation_input_tokens ?? 0
+  const parts = [`${ms}ms`, `in=${inp}`, `out=${out}`]
+  if (hit > 0)   parts.push(`cache_hit=${hit}`)
+  if (write > 0) parts.push(`cache_write=${write}`)
+  if (extra)     parts.push(extra)
+  console.log(`[eval] ${label.padEnd(16)} ${parts.join('  ')}`)
+}
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -16,6 +29,7 @@ const anthropic = new Anthropic({
 })
 
 async function runInsightsCall(submissionText: string): Promise<any> {
+  const t = Date.now()
   const prompt = buildInsightsPrompt(submissionText)
   const response = await anthropic.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
@@ -23,13 +37,12 @@ async function runInsightsCall(submissionText: string): Promise<any> {
     temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
-
+  logUsage('insights', Date.now() - t, response.usage)
   const text = (response.content[0] as any).text as string
-  console.log(`[eval] call 2 output  ${text.length} chars (~${Math.round(text.length / 4)} tokens)`)
   try {
     return JSON.parse(text.replace(/```json|```/g, '').trim())
   } catch {
-    console.warn('[eval] insights call parse failed')
+    console.warn('[eval] insights parse failed')
     return { insights: {}, missing_info: [] }
   }
 }
@@ -38,41 +51,71 @@ async function runFlagsCall(
   submissionText: string,
   checksResult: { decision: string; guideline_checks: any[] },
 ): Promise<any> {
+  const t = Date.now()
   const prompt = buildFlagsPrompt(submissionText, checksResult)
-
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 3000,
     temperature: 0,
     messages: [{ role: 'user', content: prompt }],
   })
-
+  logUsage('flags', Date.now() - t, response.usage)
   const text = (response.content[0] as any).text as string
-  console.log(`[eval] call 3 output  ${text.length} chars (~${Math.round(text.length / 4)} tokens)`)
   try {
     return JSON.parse(text.replace(/```json|```/g, '').trim())
   } catch {
-    console.error('[eval] flags call parse failed, last 300:', text.slice(-300))
+    console.error('[eval] flags parse failed, last 300:', text.slice(-300))
     throw new Error('flags call JSON parse failed')
   }
 }
 
-async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<Record<string, { value: string; source: string }>> {
-  const prompt = buildRiskProfilePrompt(submissionText, fields)
-
+async function runEnrichmentCall(
+  submissionText: string,
+  checks: Array<{ rule: string; submitted: string }>,
+): Promise<Array<{ raw_text: string | null; context: string | null }>> {
+  if (!checks.length) return []
+  const t = Date.now()
   const response = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 5000,
+    max_tokens: 4000,
     temperature: 0,
-    messages: [{ role: 'user', content: prompt }],
+    messages: buildEnrichmentMessages(submissionText, checks) as any,
   })
-
+  logUsage('enrichment', Date.now() - t, response.usage)
   const text = (response.content[0] as any).text as string
   try {
     return JSON.parse(text.replace(/```json|```/g, '').trim())
   } catch {
-    console.warn('[eval] risk profile parse failed')
-    return {}
+    console.warn('[eval] enrichment parse failed')
+    return checks.map(() => ({ raw_text: null, context: null }))
+  }
+}
+
+async function runRiskProfileCall(submissionText: string, fields: string[]): Promise<any> {
+  const t = Date.now()
+  try {
+    const response = await anthropic.messages.create({
+      model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
+      max_tokens: 20000,
+      temperature: 0,
+      tools: [RISK_PROFILE_TOOL],
+      tool_choice: { type: 'tool', name: 'submit_risk_profile' },
+      messages: buildRiskProfileMessages(submissionText, fields),
+    } as any)
+
+    const toolUseBlock = response.content.find((b: any) => b.type === 'tool_use')
+    if (!toolUseBlock) {
+      logUsage('risk_profile', Date.now() - t, response.usage, `stop=${(response as any).stop_reason} NO_TOOL_USE`)
+      return { lines: [] }
+    }
+    const result = (toolUseBlock as any).input
+    logUsage('risk_profile', Date.now() - t, response.usage, `stop=${(response as any).stop_reason}  lines=${result?.lines?.length ?? 'MISSING'}`)
+    await writeFile('risk-profile.txt', JSON.stringify(result, null, 2), 'utf8')
+    if (!result.lines) result.lines = []
+    return result
+  } catch (err: any) {
+    console.error(`[eval] risk_profile     FAILED  ${Date.now() - t}ms  ${err?.status}  ${err?.message ?? err}`)
+    return { lines: [] }
   }
 }
 
@@ -96,44 +139,18 @@ export async function evaluateSubmission(
   const insightsPromise = runInsightsCall(submissionText)
   const riskProfilePromise = runRiskProfileCall(submissionText, riskProfileFields)
 
-  // Stream Call 1 (checks) — fire flags as soon as decision is visible in the stream
-  let flagsPromise: Promise<any> | null = null
-  let partialToolInput = ''
-  let flagsFired = false
-
   const t_call1 = Date.now()
   const stream = anthropic.messages.stream({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
-    max_tokens: 6000,
+    max_tokens: 10000,
     temperature: 0,
     tools: [CHECKS_TOOL],
     tool_choice: { type: 'tool', name: 'submit_evaluation' },
     messages: buildChecksMessages(submissionText, hardStopsText, guidelinesText, hardStopCheckList, pinned.length),
   } as any)
 
-  stream.on('streamEvent', (event: any) => {
-    if (event.type === 'content_block_delta' && event.delta?.type === 'input_json_delta') {
-      partialToolInput += event.delta.partial_json ?? ''
-      if (!flagsFired) {
-        const m = partialToolInput.match(/"decision"\s*:\s*"(PROCEED|REFER|DECLINE)"/)
-        if (m) {
-          flagsFired = true
-          console.log(`[eval] flags fired  → ${m[1]}`)
-          flagsPromise = runFlagsCall(submissionText, { decision: m[1]!, guideline_checks: [] })
-        }
-      }
-    }
-  })
-
   const finalMsg = await stream.finalMessage()
-  console.log(`[eval] call 1       ${Date.now() - t_call1}ms`)
-
-  const usage = finalMsg.usage as any
-  if (usage.cache_read_input_tokens > 0) {
-    console.log(`[eval] cache HIT    ${usage.cache_read_input_tokens} tokens`)
-  } else if (usage.cache_creation_input_tokens > 0) {
-    console.log(`[eval] cache MISS   ${usage.cache_creation_input_tokens} tokens written`)
-  }
+  logUsage('checks', Date.now() - t_call1, finalMsg.usage)
 
   if (finalMsg.stop_reason === 'max_tokens') {
     throw new Error('[eval] checks call truncated — hit max_tokens')
@@ -144,6 +161,17 @@ export async function evaluateSubmission(
     throw new Error(`[eval] checks call returned no tool_use block (stop_reason: ${finalMsg.stop_reason})`)
   }
   const checksResult = (toolUseBlock as any).input as { decision: string; guideline_checks: any[] }
+
+  // Re-attach required from pinned data (stripped from output schema for brevity)
+  const pinnedByRule = new Map(
+    pinned.map((c: any) => [
+      c.embed_text.split(':')[0].trim(),
+      c.embed_text.split(':').slice(1).join(':').trim() || c.content,
+    ])
+  )
+  checksResult.guideline_checks?.forEach((check: any) => {
+    check.required = pinnedByRule.get(check.rule) ?? ''
+  })
 
   // Enforce decision priority server-side — Claude should follow the rules but this is the source of truth
   const hasFail = checksResult.guideline_checks?.some((c: any) => c.status === 'fail')
@@ -156,17 +184,44 @@ export async function evaluateSubmission(
 
   console.log(`[eval] call 1 output  ${JSON.stringify(checksResult).length} chars  (${checksResult.guideline_checks?.length ?? 0} checks)`)
 
-  // Always re-run flags with the full, enforced checksResult (early-fired version had empty checks)
-  flagsPromise = runFlagsCall(submissionText, checksResult)
+  // Fire flags + enrichment in parallel with already-running insights + riskProfile
+  const flagsPromise = runFlagsCall(submissionText, checksResult)
+  const enrichmentPromise = runEnrichmentCall(submissionText, checksResult.guideline_checks)
 
-  // Await all parallel calls (flags already running since early in stream)
-  const t_p2 = Date.now()
-  const [flagsResult, insightsResult, riskProfile] = await Promise.all([
-    flagsPromise,
-    insightsPromise,
-    riskProfilePromise,
+  const t_parallel = Date.now()
+  async function track<T>(label: string, p: Promise<T>): Promise<{ value: T; ms: number; label: string }> {
+    const t = Date.now()
+    const value = await p
+    return { value, ms: Date.now() - t, label }
+  }
+
+  const [flags, insights, riskProfileTracked, enrichmentsTracked] = await Promise.all([
+    track('flags', flagsPromise),
+    track('insights', insightsPromise),
+    track('risk_profile', riskProfilePromise),
+    track('enrichment', enrichmentPromise),
   ])
-  console.log(`[eval] parallel     ${Date.now() - t_p2}ms remaining wait`)
+
+  const flagsResult    = flags.value
+  const insightsResult = insights.value
+  const riskProfile    = riskProfileTracked.value
+  const enrichments    = enrichmentsTracked.value as any[]
+
+  const tracked = [flags, insights, riskProfileTracked, enrichmentsTracked]
+  const slowest = tracked.reduce((a, b) => a.ms > b.ms ? a : b)
+  const parallelMs = Date.now() - t_parallel
+  console.log(
+    `[eval] parallel wait ${parallelMs}ms  ` +
+    tracked.map(x => `${x.label}=${x.ms}ms`).join('  ') +
+    `  ← slowest: ${slowest.label}`
+  )
+
+  enrichments.forEach((e: any, i: any) => {
+    if (checksResult.guideline_checks[i]) {
+      checksResult.guideline_checks[i].raw_text = e.raw_text ?? undefined
+      checksResult.guideline_checks[i].context = e.context ?? undefined
+    }
+  })
   console.log(`[eval] score        ${flagsResult.composite_score}  → ${checksResult.decision}`)
   console.log(`[eval] total        ${Date.now() - t0}ms`)
 

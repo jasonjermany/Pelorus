@@ -272,7 +272,6 @@
                     <tr class="border-b border-gray-100">
                       <th class="th-cell pl-5">Company</th>
                       <th class="th-cell hidden sm:table-cell">Coverage</th>
-                      <th class="th-cell hidden lg:table-cell">Carrier</th>
                       <th class="th-cell">Score</th>
                       <th class="th-cell">Decision</th>
                       <th class="th-cell hidden md:table-cell">Date</th>
@@ -311,11 +310,6 @@
                         <span class="inline-flex items-center text-[13px] font-medium text-gray-700 bg-gray-100 px-2 py-0.5 rounded-md whitespace-nowrap">
                           {{ coverageLabel(sub.source) }}
                         </span>
-                      </td>
-
-                      <!-- Carrier -->
-                      <td class="td-cell hidden lg:table-cell">
-                        <span class="text-[14px] text-gray-600">{{ sub.prior_carrier || '—' }}</span>
                       </td>
 
                       <!-- Score -->
@@ -568,10 +562,6 @@ const formatDate = (iso: string) =>
 
 function go(id: string) {
   router.push(`/app/submissions/${id}`)
-}
-
-function normalizeScore(score: number): number {
-  return score > 10 ? Math.round(score) / 10 : score
 }
 
 function scoreColor(score: number): string {

@@ -59,7 +59,7 @@
                       v-if="amendments['check:' + i]"
                       class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap"
                     >Amended</span>
-                    <p class="text-gray-800 leading-relaxed line-clamp-3">{{ amendments['check:' + i]?.amendedValue ?? check.submitted }}</p>
+                    <p class="text-gray-800 leading-relaxed">{{ amendments['check:' + i]?.amendedValue ?? check.submitted }}</p>
                     <p v-if="amendments['check:' + i]" class="text-[11px] text-gray-500 mt-0.5 line-clamp-2">Original: {{ check.submitted }}</p>
                   </template>
                 </div>
@@ -79,7 +79,7 @@
                   <button
                     class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
                     title="View source"
-                    @click="openSourceModal('check:' + i, { value: amendments['check:' + i]?.amendedValue ?? check.submitted, source_doc: check.submission_source?.trim() && check.submission_source.trim() !== 'Not disclosed' ? check.submission_source.trim() : undefined, raw_text: check.submitted, context: 'Guideline requires: ' + check.required }, check.rule)"
+                    @click="openSourceModal('check:' + i, { value: amendments['check:' + i]?.amendedValue ?? check.submitted, source_doc: check.submission_source?.trim() && check.submission_source.trim() !== 'Not disclosed' ? check.submission_source.trim() : undefined, raw_text: check.raw_text ?? check.submitted, context: check.context ?? ('Guideline requires: ' + check.required) }, check.rule)"
                   >
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>

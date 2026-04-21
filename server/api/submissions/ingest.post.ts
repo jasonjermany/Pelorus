@@ -3,6 +3,7 @@ import { parseFileToChunks, PIPELINE_SUBMISSIONS } from '../../utils/reducto'
 import { getSessionUser } from '../../utils/org'
 import { evaluateSubmission } from '../../utils/claude'
 import { sendResultsEmail } from '../../utils/email'
+import { scrubDocumentText } from '../../utils/sanitize'
 
 export default defineEventHandler(async (event) => {
   const contentType = getRequestHeader(event, 'content-type') || ''
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
     if (!body?.text?.trim()) throw createError({ statusCode: 400, statusMessage: 'Missing submission text' })
     inlineText = body.text
     brokerEmail = body.brokerEmail
-    source = 'email'
+    source = 'text' as any
   }
 
   // Insert immediately so the submission appears in the inbox right away
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
     try {
       let rawText: string
       if (inlineText) {
-        rawText = inlineText
+        rawText = scrubDocumentText(inlineText)
       } else {
         const t_reducto = Date.now()
         const fileResults = await Promise.all(
@@ -71,7 +72,7 @@ export default defineEventHandler(async (event) => {
             return { filename, text: chunks.map((c) => c.embed || c.content).join('\n\n') }
           })
         )
-        rawText = fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n')
+        rawText = scrubDocumentText(fileResults.map(({ filename, text }) => `=== DOCUMENT: ${filename} ===\n${text}`).join('\n\n---\n\n'))
         console.log(`[ingest] reducto     ${Date.now() - t_reducto}ms  (${fileParts.length} file${fileParts.length !== 1 ? 's' : ''})`)
       }
 
@@ -98,8 +99,7 @@ export default defineEventHandler(async (event) => {
       console.log(`[ingest] total       ${Date.now() - t_total}ms`)
 
       if (submission.broker_email) {
-        const rawNamed = storedVerdict.risk_profile?.named_insured
-        const namedInsured = (typeof rawNamed === 'object' ? rawNamed?.value : rawNamed) || null
+        const namedInsured = storedVerdict.risk_profile?.risk_summary?.named_insured ?? null
         await sendResultsEmail(
           submission.broker_email,
           submission.id,

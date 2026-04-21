@@ -1,0 +1,1614 @@
+{
+  "risk_summary": {
+    "named_insured": "Harborview Industrial Partners LLC",
+    "broker": "Meridian Specialty Brokers, Inc.",
+    "prior_carrier": "Granite State Mutual Insurance Company"
+  },
+  "lines": [
+    {
+      "line_type": "property",
+      "label": "Commercial Property",
+      "locations": [
+        {
+          "id": "LOC 001",
+          "address": "1847 Elmwood Avenue, Providence, RI 02907",
+          "tiv": "$6,370,000",
+          "sections": [
+            {
+              "title": "CONSTRUCTION / COPE",
+              "fields": [
+                {
+                  "label": "Construction Class",
+                  "value": "Joisted Masonry (ISO 2)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Joisted Masonry (ISO 2)",
+                    "context": "Construction class for Location 1 at 1847 Elmwood Avenue."
+                  }
+                },
+                {
+                  "label": "Year Built",
+                  "value": "1988",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 1",
+                    "raw_text": "1988",
+                    "context": "Year built for Location 1."
+                  }
+                },
+                {
+                  "label": "Square Footage",
+                  "value": "58,000 sq ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 1",
+                    "raw_text": "58,000",
+                    "context": "Square footage for Location 1."
+                  }
+                },
+                {
+                  "label": "Occupancy Type",
+                  "value": "Light Industrial / Flex — Multi-Tenant",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 1",
+                    "raw_text": "Light Industrial / Flex — Multi-Tenant",
+                    "context": "Occupancy type for Location 1."
+                  }
+                },
+                {
+                  "label": "Occupancy Rate",
+                  "value": "94%",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, Notes & Flags section",
+                    "raw_text": "Current occupancy: Loc 1 = 94%",
+                    "context": "Current occupancy rates for all locations."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ELECTRICAL",
+              "fields": [
+                {
+                  "label": "Electrical Panel Type",
+                  "value": "Square D — Updated 2014",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Square D — Updated 2014",
+                    "context": "Electrical panel type for Location 1."
+                  }
+                },
+                {
+                  "label": "Wiring Type",
+                  "value": "Copper — 2014",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Copper — 2014",
+                    "context": "Wiring type for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "PLUMBING",
+              "fields": [
+                {
+                  "label": "Plumbing Material",
+                  "value": "Copper — 2014",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Copper — 2014",
+                    "context": "Plumbing material for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "HVAC",
+              "fields": [
+                {
+                  "label": "HVAC System",
+                  "value": "Package rooftop units — 2016 (9 years old)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Package rooftop units — 2016",
+                    "context": "HVAC system for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ROOF",
+              "fields": [
+                {
+                  "label": "Roof Type",
+                  "value": "Flat — TPO Membrane",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Flat — TPO Membrane",
+                    "context": "Roof type for Location 1."
+                  }
+                },
+                {
+                  "label": "Roof Year Replaced",
+                  "value": "2014 (11 years old)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "2014 (11 yrs)",
+                    "context": "Roof replacement year for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "FIRE PROTECTION",
+              "fields": [
+                {
+                  "label": "Protection Class",
+                  "value": "PC 4",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 1",
+                    "raw_text": "PC 4",
+                    "context": "ISO Protection Class for Location 1."
+                  }
+                },
+                {
+                  "label": "Sprinkler System",
+                  "value": "Wet pipe — Full coverage, NFPA 25 inspected 10/2024",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Wet pipe — Full coverage NFPA 25 inspected 10/2024",
+                    "context": "Sprinkler system for Location 1."
+                  }
+                },
+                {
+                  "label": "Fire Alarm Type",
+                  "value": "Central station UL — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Central station UL — Sonitrol",
+                    "context": "Fire alarm type for Location 1."
+                  }
+                },
+                {
+                  "label": "Distance to Fire Station",
+                  "value": "0.8 miles",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 1",
+                    "raw_text": "0.8 miles",
+                    "context": "Distance to fire station for Location 1."
+                  }
+                },
+                {
+                  "label": "Nearest Hydrant",
+                  "value": "On-site / 150 ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 1",
+                    "raw_text": "On-site / 150 ft",
+                    "context": "Nearest hydrant for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "SECURITY",
+              "fields": [
+                {
+                  "label": "Burglar Alarm",
+                  "value": "Central station — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 1",
+                    "raw_text": "Central station — Sonitrol",
+                    "context": "Burglar alarm for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "INSURED VALUES",
+              "fields": [
+                {
+                  "label": "Building Replacement Cost",
+                  "value": "$4,640,000",
+                  "status": "warn",
+                  "note": "ITV $80/sqft — flagged as POSSIBLE UNDER vs $150-$250/sqft benchmark.",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 1",
+                    "raw_text": "$4,640,000",
+                    "context": "Building replacement cost for Location 1."
+                  }
+                },
+                {
+                  "label": "Contents / BPP",
+                  "value": "$580,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 1",
+                    "raw_text": "$580,000",
+                    "context": "Contents/BPP for Location 1."
+                  }
+                },
+                {
+                  "label": "Business Income Limit",
+                  "value": "$930,000 — 18-month indemnity",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 1",
+                    "raw_text": "$930,000",
+                    "context": "Business income limit for Location 1."
+                  }
+                },
+                {
+                  "label": "Tenant Improvements & Betterments",
+                  "value": "$220,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 1",
+                    "raw_text": "$220,000",
+                    "context": "Tenant improvements for Location 1."
+                  }
+                },
+                {
+                  "label": "Total Insured Value",
+                  "value": "$6,370,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 1",
+                    "raw_text": "$6,370,000",
+                    "context": "Total insured value for Location 1."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "LOSS HISTORY",
+              "fields": [
+                {
+                  "label": "2020 Wind Loss",
+                  "value": "$18,200 paid — wind/roof damage, closed",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "4_Loss_Runs_Certified.pdf",
+                    "source_location": "Page 1, Claim Detail table, GSM-2020-031847",
+                    "raw_text": "NFPA-reported wind event, portions of TPO membrane lifted at parapet — approx 800 sq ft. Temporary tarp, permanent repair completed May 2020.",
+                    "context": "Wind loss at Location 1 in March 2020."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "LOC 002",
+          "address": "233 Mineral Spring Ave, Pawtucket, RI 02860",
+          "tiv": "$5,625,000",
+          "sections": [
+            {
+              "title": "CONSTRUCTION / COPE",
+              "fields": [
+                {
+                  "label": "Construction Class",
+                  "value": "Masonry Non-Combustible (ISO 4)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Masonry NC (ISO 4)",
+                    "context": "Construction class for Location 2."
+                  }
+                },
+                {
+                  "label": "Year Built",
+                  "value": "1995",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 2",
+                    "raw_text": "1995",
+                    "context": "Year built for Location 2."
+                  }
+                },
+                {
+                  "label": "Square Footage",
+                  "value": "45,000 sq ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 2",
+                    "raw_text": "45,000",
+                    "context": "Square footage for Location 2."
+                  }
+                },
+                {
+                  "label": "Occupancy Type",
+                  "value": "Flex / Office — Multi-Tenant",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 2",
+                    "raw_text": "Flex / Office — Multi-Tenant",
+                    "context": "Occupancy type for Location 2."
+                  }
+                },
+                {
+                  "label": "Occupancy Rate",
+                  "value": "100%",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, Notes & Flags section",
+                    "raw_text": "Loc 2 = 100%",
+                    "context": "Current occupancy rates for all locations."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ELECTRICAL",
+              "fields": [
+                {
+                  "label": "Electrical Panel Type",
+                  "value": "Siemens — Updated 2018",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Siemens — Updated 2018",
+                    "context": "Electrical panel type for Location 2."
+                  }
+                },
+                {
+                  "label": "Wiring Type",
+                  "value": "Copper — 2018",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Copper — 2018",
+                    "context": "Wiring type for Location 2."
+                  }
+                },
+                {
+                  "label": "Prior Federal Pacific Panel (Tenant)",
+                  "value": "Tenant FP Stab-Lok panel caused 2021 fire; replaced",
+                  "status": "warn",
+                  "note": "2021 fire caused by tenant-owned Federal Pacific Stab-Lok panel. All tenant-accessible panels replaced post-loss. Panel inspections now at lease inception.",
+                  "source": {
+                    "source_doc": "4_Loss_Runs_Certified.pdf",
+                    "source_location": "Page 2, Underwriter Notes, GSM-2021-088412",
+                    "raw_text": "Cause of fire was a Federal Pacific Stab-Lok panel located in a tenant suite — not in the common areas or base building electrical.",
+                    "context": "Underwriter notes on the 2021 fire loss at Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "PLUMBING",
+              "fields": [
+                {
+                  "label": "Plumbing Material",
+                  "value": "CPVC — 1995",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "CPVC — 1995",
+                    "context": "Plumbing material for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "HVAC",
+              "fields": [
+                {
+                  "label": "HVAC System",
+                  "value": "Package rooftop units — 2019 (6 years old)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Package rooftop units — 2019",
+                    "context": "HVAC system for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ROOF",
+              "fields": [
+                {
+                  "label": "Roof Type",
+                  "value": "Flat — Modified Bitumen",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Flat — Modified Bitumen",
+                    "context": "Roof type for Location 2."
+                  }
+                },
+                {
+                  "label": "Roof Year Replaced",
+                  "value": "2018 (7 years old)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "2018 (7 yrs)",
+                    "context": "Roof replacement year for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "FIRE PROTECTION",
+              "fields": [
+                {
+                  "label": "Protection Class",
+                  "value": "PC 4",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 2",
+                    "raw_text": "PC 4",
+                    "context": "ISO Protection Class for Location 2."
+                  }
+                },
+                {
+                  "label": "Sprinkler System",
+                  "value": "Wet pipe — Full coverage, NFPA 25 inspected 10/2024",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Wet pipe — Full coverage NFPA 25 inspected 10/2024",
+                    "context": "Sprinkler system for Location 2."
+                  }
+                },
+                {
+                  "label": "Fire Alarm Type",
+                  "value": "Central station UL — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Central station UL — Sonitrol",
+                    "context": "Fire alarm type for Location 2."
+                  }
+                },
+                {
+                  "label": "Distance to Fire Station",
+                  "value": "1.1 miles",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 2",
+                    "raw_text": "1.1 miles",
+                    "context": "Distance to fire station for Location 2."
+                  }
+                },
+                {
+                  "label": "Nearest Hydrant",
+                  "value": "Street / 220 ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 2",
+                    "raw_text": "Street / 220 ft",
+                    "context": "Nearest hydrant for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "SECURITY",
+              "fields": [
+                {
+                  "label": "Burglar Alarm",
+                  "value": "Central station — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 2",
+                    "raw_text": "Central station — Sonitrol",
+                    "context": "Burglar alarm for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "INSURED VALUES",
+              "fields": [
+                {
+                  "label": "Building Replacement Cost",
+                  "value": "$4,275,000",
+                  "status": "warn",
+                  "note": "ITV $95/sqft — flagged as POSSIBLE UNDER vs $150-$250/sqft benchmark.",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 2",
+                    "raw_text": "$4,275,000",
+                    "context": "Building replacement cost for Location 2."
+                  }
+                },
+                {
+                  "label": "Contents / BPP",
+                  "value": "$450,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 2",
+                    "raw_text": "$450,000",
+                    "context": "Contents/BPP for Location 2."
+                  }
+                },
+                {
+                  "label": "Business Income Limit",
+                  "value": "$720,000 — 18-month indemnity",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 2",
+                    "raw_text": "$720,000",
+                    "context": "Business income limit for Location 2."
+                  }
+                },
+                {
+                  "label": "Tenant Improvements & Betterments",
+                  "value": "$180,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 2",
+                    "raw_text": "$180,000",
+                    "context": "Tenant improvements for Location 2."
+                  }
+                },
+                {
+                  "label": "Total Insured Value",
+                  "value": "$5,625,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 2",
+                    "raw_text": "$5,625,000",
+                    "context": "Total insured value for Location 2."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "LOSS HISTORY",
+              "fields": [
+                {
+                  "label": "2021 Fire Loss",
+                  "value": "$247,500 paid — electrical fire (tenant FP panel), closed",
+                  "status": "warn",
+                  "note": "Material fire loss from tenant Federal Pacific Stab-Lok panel. Sprinkler contained fire. Tenant vacated; panels replaced; space re-tenanted with lower-hazard occupancy.",
+                  "source": {
+                    "source_doc": "4_Loss_Runs_Certified.pdf",
+                    "source_location": "Page 1, Claim Detail table, GSM-2021-088412",
+                    "raw_text": "Tenant electrical fault (Federal Pacific panel in tenant suite) ignited during off-hours. Fire suppressed by sprinkler system. Tenant space (4,200 sq ft) total loss — building structure intact.",
+                    "context": "Fire loss at Location 2 in July 2021."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "LOC 003",
+          "address": "90 Allens Avenue, Providence, RI 02905",
+          "tiv": "$4,967,000",
+          "sections": [
+            {
+              "title": "CONSTRUCTION / COPE",
+              "fields": [
+                {
+                  "label": "Construction Class",
+                  "value": "Masonry Non-Combustible (ISO 4)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Masonry NC (ISO 4)",
+                    "context": "Construction class for Location 3."
+                  }
+                },
+                {
+                  "label": "Year Built",
+                  "value": "1978",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 3",
+                    "raw_text": "1978",
+                    "context": "Year built for Location 3."
+                  }
+                },
+                {
+                  "label": "Square Footage",
+                  "value": "42,000 sq ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 3",
+                    "raw_text": "42,000",
+                    "context": "Square footage for Location 3."
+                  }
+                },
+                {
+                  "label": "Occupancy Type",
+                  "value": "Warehouse / Cold Storage — Single Tenant",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 3",
+                    "raw_text": "Warehouse / Cold Storage — Single Tenant",
+                    "context": "Occupancy type for Location 3."
+                  }
+                },
+                {
+                  "label": "Occupancy Rate",
+                  "value": "100% — single tenant (Narragansett Cold Chain LLC)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, Notes & Flags section",
+                    "raw_text": "Loc 3 = 100%",
+                    "context": "Current occupancy rates for all locations."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ELECTRICAL",
+              "fields": [
+                {
+                  "label": "Electrical Panel Type",
+                  "value": "Square D — Updated 2007",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Square D — Updated 2007",
+                    "context": "Electrical panel type for Location 3."
+                  }
+                },
+                {
+                  "label": "Wiring Type",
+                  "value": "Copper — 2007",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Copper — 2007",
+                    "context": "Wiring type for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "PLUMBING",
+              "fields": [
+                {
+                  "label": "Plumbing Material",
+                  "value": "Cast Iron / Copper",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Cast Iron / Copper",
+                    "context": "Plumbing material for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "HVAC",
+              "fields": [
+                {
+                  "label": "HVAC System",
+                  "value": "Refrigeration system — 2018 (7 years old)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Refrigeration system — 2018",
+                    "context": "HVAC system for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ROOF",
+              "fields": [
+                {
+                  "label": "Roof Type",
+                  "value": "Flat — EPDM Membrane, fully adhered",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Flat — EPDM Membrane",
+                    "context": "Roof type for Location 3."
+                  }
+                },
+                {
+                  "label": "Roof Year Replaced",
+                  "value": "2006 (19 years old) — approaching 20-year threshold",
+                  "status": "warn",
+                  "note": "Roof is 19 years old, approaching common 20-year carrier threshold. Inspection report (Feb 2025) rates condition as good. Inspector estimates replacement appropriate ~2027-2028. HVAC curbs need re-sealing within 12 months.",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 1, Report A — Roof Inspection, Inspector Conclusion",
+                    "raw_text": "This roof, while approaching the end of its expected 20–25 year service life, is in good condition for its age. With proactive HVAC curb re-sealing and continued annual maintenance, this roof can reasonably be expected to perform adequately for an additional 3–5 years without replacement.",
+                    "context": "Roof inspection conclusion for Location 3."
+                  }
+                },
+                {
+                  "label": "Roof Condition",
+                  "value": "Good — no punctures, blisters, splits, or ponding",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 1, Report A, Findings — Membrane Condition",
+                    "raw_text": "The EPDM membrane is intact with no observed punctures, blisters, or active splits. Seams were probed at 12 locations and found adhered with no lifting or separation detected.",
+                    "context": "Membrane condition findings from roof inspection."
+                  }
+                },
+                {
+                  "label": "HVAC Curb Sealant",
+                  "value": "Minor cracking on 3 of 5 curbs — re-seal within 12 months",
+                  "status": "warn",
+                  "note": "Not currently a leak source but proactive maintenance advised.",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 1, Report A, Findings — HVAC Curbs",
+                    "raw_text": "Three of the five HVAC curbs show minor sealant cracking at the curb-to-membrane interface. Recommend re-sealing with approved EPDM lap sealant within 12 months.",
+                    "context": "HVAC curb condition from roof inspection."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "FIRE PROTECTION",
+              "fields": [
+                {
+                  "label": "Protection Class",
+                  "value": "PC 3",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 3",
+                    "raw_text": "PC 3",
+                    "context": "ISO Protection Class for Location 3."
+                  }
+                },
+                {
+                  "label": "Sprinkler System",
+                  "value": "Wet pipe — Full coverage, NFPA 25 inspected 11/2024",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Wet pipe — Full coverage NFPA 25 inspected 11/2024",
+                    "context": "Sprinkler system for Location 3."
+                  }
+                },
+                {
+                  "label": "Fire Alarm Type",
+                  "value": "Central station UL — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Central station UL — Sonitrol",
+                    "context": "Fire alarm type for Location 3."
+                  }
+                },
+                {
+                  "label": "Distance to Fire Station",
+                  "value": "0.6 miles",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 3",
+                    "raw_text": "0.6 miles",
+                    "context": "Distance to fire station for Location 3."
+                  }
+                },
+                {
+                  "label": "Nearest Hydrant",
+                  "value": "On-site / 80 ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 3",
+                    "raw_text": "On-site / 80 ft",
+                    "context": "Nearest hydrant for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "SECURITY",
+              "fields": [
+                {
+                  "label": "Burglar Alarm",
+                  "value": "Central station — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 3",
+                    "raw_text": "Central station — Sonitrol",
+                    "context": "Burglar alarm for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "INSURED VALUES",
+              "fields": [
+                {
+                  "label": "Building Replacement Cost",
+                  "value": "$3,360,000",
+                  "status": "warn",
+                  "note": "ITV $80/sqft — flagged as POSSIBLE UNDER vs $150-$250/sqft benchmark.",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 3",
+                    "raw_text": "$3,360,000",
+                    "context": "Building replacement cost for Location 3."
+                  }
+                },
+                {
+                  "label": "Contents / BPP",
+                  "value": "$840,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 3",
+                    "raw_text": "$840,000",
+                    "context": "Contents/BPP for Location 3."
+                  }
+                },
+                {
+                  "label": "Business Income Limit",
+                  "value": "$672,000 — 12-month indemnity",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 3",
+                    "raw_text": "$672,000",
+                    "context": "Business income limit for Location 3."
+                  }
+                },
+                {
+                  "label": "Tenant Improvements & Betterments",
+                  "value": "$95,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 3",
+                    "raw_text": "$95,000",
+                    "context": "Tenant improvements for Location 3."
+                  }
+                },
+                {
+                  "label": "Total Insured Value",
+                  "value": "$4,967,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 3",
+                    "raw_text": "$4,967,000",
+                    "context": "Total insured value for Location 3."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "LOSS HISTORY",
+              "fields": [
+                {
+                  "label": "2024 Water Loss",
+                  "value": "$9,800 paid — frozen pipe/water damage, closed",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "4_Loss_Runs_Certified.pdf",
+                    "source_location": "Page 1, Claim Detail table, GSM-2024-019203",
+                    "raw_text": "Small supply pipe freeze during extreme cold event (Jan record low). Break in 3/4\" copper supply line — refrigeration room. Approx 400 sq ft water damage, contents not affected.",
+                    "context": "Water loss at Location 3 in February 2024."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "LOC 004",
+          "address": "1100 Bristol Street, New Bedford, MA 02745",
+          "tiv": "$4,013,000",
+          "sections": [
+            {
+              "title": "CONSTRUCTION / COPE",
+              "fields": [
+                {
+                  "label": "Construction Class",
+                  "value": "Joisted Masonry (ISO 2)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Joisted Masonry (ISO 2)",
+                    "context": "Construction class for Location 4."
+                  }
+                },
+                {
+                  "label": "Year Built",
+                  "value": "1962 (renovated 1994; 800 sqft shop unrenovated)",
+                  "status": "warn",
+                  "note": "Original 1962 construction — 63 years old. Main 41,200 sqft renovated 1994. 800 sqft maintenance shop retains original construction and wiring.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1-2, Locations table footnote",
+                    "raw_text": "Location 4 — original 1962 construction; approximately 800 sq ft maintenance shop area predates modern wiring standards; electrician inspection completed February 2025. Remaining 41,200 sq ft renovated 1994.",
+                    "context": "Year built and renovation details for Location 4."
+                  }
+                },
+                {
+                  "label": "Square Footage",
+                  "value": "42,000 sq ft",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 4",
+                    "raw_text": "42,000",
+                    "context": "Square footage for Location 4."
+                  }
+                },
+                {
+                  "label": "Occupancy Type",
+                  "value": "General Warehouse — Multi-Tenant",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 1, Locations table, Loc 4",
+                    "raw_text": "General Warehouse — Multi-Tenant",
+                    "context": "Occupancy type for Location 4."
+                  }
+                },
+                {
+                  "label": "Occupancy Rate",
+                  "value": "88% (1 unit available)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, Notes & Flags section",
+                    "raw_text": "Loc 4 = 88% (1 unit available)",
+                    "context": "Current occupancy rates for all locations."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ELECTRICAL",
+              "fields": [
+                {
+                  "label": "Electrical Panel — Main Building",
+                  "value": "Square D — 400A service (1994 renovation)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 3, Report B, Background",
+                    "raw_text": "full electrical replacement with copper Romex wiring and a new Square D main panel (400A service)",
+                    "context": "Main building electrical from 1994 renovation."
+                  }
+                },
+                {
+                  "label": "Electrical Panel — Maintenance Shop",
+                  "value": "60-amp fused sub-panel (original 1962)",
+                  "status": "warn",
+                  "note": "Dated fused sub-panel, not breaker panel. Serviceable but should be replaced with rewire project.",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 3, Report B, Findings — Sub-Panel",
+                    "raw_text": "The maintenance shop is fed by a 60-amp fused sub-panel (not a breaker panel). The fuses are properly rated for the circuits. The panel itself is serviceable but dated.",
+                    "context": "Maintenance shop sub-panel findings."
+                  }
+                },
+                {
+                  "label": "Wiring — Main Building",
+                  "value": "Copper Romex — 1994",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 3, Report B, Background",
+                    "raw_text": "full electrical replacement with copper Romex wiring",
+                    "context": "Main building wiring from 1994 renovation."
+                  }
+                },
+                {
+                  "label": "Wiring — Maintenance Shop",
+                  "value": "Original 1962 cloth-insulated copper, brittle insulation",
+                  "status": "warn",
+                  "note": "Cloth-and-rubber insulation brittle in several locations. Two circuits show cracked insulation near junction boxes — inspector recommends de-energizing those circuits and full rewire within 12 months ($8K-$12K). No GFCI/AFCI protection.",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 3, Report B, Findings — Insulation Condition & Wiring Type",
+                    "raw_text": "The maintenance shop contains what appears to be original cloth-insulated wiring on 12 circuits. Wiring is 12-gauge copper with cloth-and-rubber insulation typical of 1955–1965 construction.",
+                    "context": "Maintenance shop wiring findings from electrical inspection."
+                  }
+                },
+                {
+                  "label": "GFCI / AFCI Protection — Maint. Shop",
+                  "value": "Absent — pre-NEC 2000 construction",
+                  "status": "warn",
+                  "note": "No ground fault or arc fault protection on aged circuits in maintenance shop.",
+                  "source": {
+                    "source_doc": "6_Inspection_Reports.pdf",
+                    "source_location": "Page 3, Report B, Findings — Ground Fault / Arc Fault Protection",
+                    "raw_text": "No GFCI or AFCI protection on the aged circuits, consistent with pre-NEC 2000 construction.",
+                    "context": "GFCI/AFCI protection findings for maintenance shop."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "PLUMBING",
+              "fields": [
+                {
+                  "label": "Plumbing Material",
+                  "value": "Cast Iron / Copper — 1994 renovation",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Cast Iron / Copper — 1994 reno",
+                    "context": "Plumbing material for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "HVAC",
+              "fields": [
+                {
+                  "label": "HVAC System",
+                  "value": "Space heaters / forced air — 2010 (15 years old)",
+                  "status": "warn",
+                  "note": "HVAC units are 15 years old; approaching end of typical useful life for commercial units.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Space heaters / forced air — 2010",
+                    "context": "HVAC system for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ROOF",
+              "fields": [
+                {
+                  "label": "Roof Type",
+                  "value": "Flat — Built-Up (BUR)",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Flat — Built-Up (BUR)",
+                    "context": "Roof type for Location 4."
+                  }
+                },
+                {
+                  "label": "Roof Year Replaced",
+                  "value": "2003 (22 years old) — exceeds 20-year threshold",
+                  "status": "fail",
+                  "note": "Roof is 22 years old, exceeding the common 20-year carrier threshold. No roof inspection report provided for this location.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "2003 (22 yrs)",
+                    "context": "Roof replacement year for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "FIRE PROTECTION",
+              "fields": [
+                {
+                  "label": "Protection Class",
+                  "value": "PC 6",
+                  "status": "warn",
+                  "note": "PC 6 is higher than other locations; hydrant is 950 ft away and fire station is 2.4 miles.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 4",
+                    "raw_text": "PC 6",
+                    "context": "ISO Protection Class for Location 4."
+                  }
+                },
+                {
+                  "label": "Sprinkler System",
+                  "value": "Wet pipe — Full coverage, NFPA 25 inspected 11/2024",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Wet pipe — Full coverage NFPA 25 inspected 11/2024",
+                    "context": "Sprinkler system for Location 4."
+                  }
+                },
+                {
+                  "label": "Fire Alarm Type",
+                  "value": "Central station UL — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Central station UL — Sonitrol",
+                    "context": "Fire alarm type for Location 4."
+                  }
+                },
+                {
+                  "label": "Distance to Fire Station",
+                  "value": "2.4 miles",
+                  "status": "warn",
+                  "note": "Greater distance than other locations in portfolio.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 4",
+                    "raw_text": "2.4 miles",
+                    "context": "Distance to fire station for Location 4."
+                  }
+                },
+                {
+                  "label": "Nearest Hydrant",
+                  "value": "Street / 950 ft",
+                  "status": "warn",
+                  "note": "Hydrant distance of 950 ft is significantly greater than other locations and may exceed some carrier thresholds.",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Fire Protection table, Location 4",
+                    "raw_text": "Street / 950 ft",
+                    "context": "Nearest hydrant for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "SECURITY",
+              "fields": [
+                {
+                  "label": "Burglar Alarm",
+                  "value": "Central station — Sonitrol",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "2_ACORD_125_Application.pdf",
+                    "source_location": "Page 2, Property — Construction & Systems table, Location 4",
+                    "raw_text": "Central station — Sonitrol",
+                    "context": "Burglar alarm for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "INSURED VALUES",
+              "fields": [
+                {
+                  "label": "Building Replacement Cost",
+                  "value": "$2,940,000",
+                  "status": "warn",
+                  "note": "ITV $70/sqft — flagged as POSSIBLE UNDER vs $150-$250/sqft benchmark. Lowest in portfolio.",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 4",
+                    "raw_text": "$2,940,000",
+                    "context": "Building replacement cost for Location 4."
+                  }
+                },
+                {
+                  "label": "Contents / BPP",
+                  "value": "$420,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 4",
+                    "raw_text": "$420,000",
+                    "context": "Contents/BPP for Location 4."
+                  }
+                },
+                {
+                  "label": "Business Income Limit",
+                  "value": "$588,000 — 12-month indemnity",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 4",
+                    "raw_text": "$588,000",
+                    "context": "Business income limit for Location 4."
+                  }
+                },
+                {
+                  "label": "Tenant Improvements & Betterments",
+                  "value": "$65,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 4",
+                    "raw_text": "$65,000",
+                    "context": "Tenant improvements for Location 4."
+                  }
+                },
+                {
+                  "label": "Total Insured Value",
+                  "value": "$4,013,000",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "3_Schedule_of_Values_SOV.xlsx",
+                    "source_location": "Page 1, SOV table, Loc 4",
+                    "raw_text": "$4,013,000",
+                    "context": "Total insured value for Location 4."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "LOSS HISTORY",
+              "fields": [
+                {
+                  "label": "5-Year Loss History",
+                  "value": "No losses at this location in 5 years",
+                  "status": "ok",
+                  "source": {
+                    "source_doc": "4_Loss_Runs_Certified.pdf",
+                    "source_location": "Page 1, Claim Detail table",
+                    "raw_text": "No claims listed for Location 4",
+                    "context": "No claims filed for Location 4 in the 5-year loss run period."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "line_type": "gl",
+      "label": "General Liability",
+      "sections": [
+        {
+          "title": "OPERATIONS",
+          "fields": [
+            {
+              "label": "Nature of Operations",
+              "value": "Real estate owner/operator — industrial landlord, no manufacturing",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 2, General Liability — Operations section",
+                "raw_text": "Real estate owner/operator — light industrial, flex, and warehouse landlord. No manufacturing, processing, or hazardous operations by named insured.",
+                "context": "Nature of operations for GL."
+              }
+            },
+            {
+              "label": "Annual Gross Revenue",
+              "value": "$2,840,000 (rental income, all locations)",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 2, General Liability — Operations section",
+                "raw_text": "$2,840,000 (rental income, all locations)",
+                "context": "Annual gross revenue for GL rating."
+              }
+            },
+            {
+              "label": "Prior Year Revenue",
+              "value": "$2,710,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 2, General Liability — Operations section",
+                "raw_text": "$2,710,000",
+                "context": "Prior year annual gross revenue."
+              }
+            },
+            {
+              "label": "Employees",
+              "value": "8 full-time (4 property mgmt, 2 maintenance, 2 admin)",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 2, General Liability — Operations section",
+                "raw_text": "8 full-time (4 property management, 2 maintenance, 2 administrative)",
+                "context": "Employee count for GL."
+              }
+            },
+            {
+              "label": "Subcontractors",
+              "value": "Yes — landscaping, snow, HVAC, roofing; all carry $1M GL w/ AI",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 2, General Liability — Operations section",
+                "raw_text": "Yes — landscaping, snow removal, HVAC service, roofing maintenance. All subs required to carry $1M GL with Harborview as additional insured; COIs on file.",
+                "context": "Subcontractor usage and insurance requirements."
+              }
+            },
+            {
+              "label": "Public Access",
+              "value": "Limited — tenant access and scheduled appointments only",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 3, GL section continued",
+                "raw_text": "Limited — tenant access and scheduled appointments only; no retail foot traffic",
+                "context": "Public access description."
+              }
+            },
+            {
+              "label": "Liquor Operations",
+              "value": "None",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 3, GL section continued",
+                "raw_text": "None",
+                "context": "Liquor operations disclosure."
+              }
+            },
+            {
+              "label": "Cannabis Operations",
+              "value": "None",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 3, GL section continued",
+                "raw_text": "None",
+                "context": "Cannabis operations disclosure."
+              }
+            }
+          ]
+        },
+        {
+          "title": "LIMITS",
+          "fields": [
+            {
+              "label": "Per Occurrence Limit",
+              "value": "$1,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$1,000,000",
+                "context": "Requested per occurrence limit for GL."
+              }
+            },
+            {
+              "label": "General Aggregate",
+              "value": "$2,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$2,000,000",
+                "context": "Requested general aggregate for GL."
+              }
+            },
+            {
+              "label": "Products / Completed Ops Aggregate",
+              "value": "$2,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$2,000,000",
+                "context": "Requested products/completed ops aggregate."
+              }
+            },
+            {
+              "label": "Personal & Advertising Injury",
+              "value": "$1,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$1,000,000",
+                "context": "Requested personal & advertising injury limit."
+              }
+            },
+            {
+              "label": "Fire Legal Liability",
+              "value": "$300,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$300,000",
+                "context": "Requested fire legal liability limit."
+              }
+            },
+            {
+              "label": "Medical Payments",
+              "value": "$10,000 per person",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 1, Line 2 — Commercial General Liability table",
+                "raw_text": "$10,000 per person",
+                "context": "Requested medical payments limit."
+              }
+            },
+            {
+              "label": "Hired / Non-Owned Auto",
+              "value": "$1,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 2 continued",
+                "raw_text": "Yes — included or separate · $1,000,000",
+                "context": "Requested hired/non-owned auto limit."
+              }
+            },
+            {
+              "label": "Deductible",
+              "value": "None",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 2 continued",
+                "raw_text": "None",
+                "context": "Requested GL deductible."
+              }
+            }
+          ]
+        },
+        {
+          "title": "LOSSES",
+          "fields": [
+            {
+              "label": "GL Loss History (5 Years)",
+              "value": "Zero GL claims in 5 years",
+              "status": "ok",
+              "source": {
+                "source_doc": "2_ACORD_125_Application.pdf",
+                "source_location": "Page 3, Prior GL Losses",
+                "raw_text": "Zero GL claims in 5 years.",
+                "context": "GL loss history summary."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "line_type": "umbrella",
+      "label": "Commercial Umbrella",
+      "sections": [
+        {
+          "title": "LIMITS",
+          "fields": [
+            {
+              "label": "Occurrence Limit",
+              "value": "$5,000,000 per occurrence",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "$5,000,000 per occurrence",
+                "context": "Requested umbrella occurrence limit."
+              }
+            },
+            {
+              "label": "Annual Aggregate",
+              "value": "$5,000,000",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "$5,000,000 annual aggregate",
+                "context": "Requested umbrella aggregate limit."
+              }
+            },
+            {
+              "label": "Attachment Point",
+              "value": "$1,000,000 — matching underlying per-occurrence",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "$1,000,000 — must match underlying per-occ",
+                "context": "Requested umbrella attachment point."
+              }
+            },
+            {
+              "label": "Retained Limit (SIR)",
+              "value": "None — drop-down over fully-insured underlying",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "None — drop-down over fully-insured underlying",
+                "context": "Requested SIR for umbrella."
+              }
+            },
+            {
+              "label": "Form",
+              "value": "Following form preferred",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "Manuscript / Carrier Form — Following Form preferred",
+                "context": "Requested umbrella form type."
+              }
+            },
+            {
+              "label": "Underlying Policies",
+              "value": "GL $1M/$2M; HNOA $1M — same carrier preferred",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "GL $1M/$2M · HNOA $1M (all with same carrier preferred)",
+                "context": "Underlying policies for umbrella."
+              }
+            },
+            {
+              "label": "Defense",
+              "value": "Outside limits preferred",
+              "status": "ok",
+              "source": {
+                "source_doc": "5_Broker_Terms_Request.pdf",
+                "source_location": "Page 2, Line 3 — Commercial Umbrella table",
+                "raw_text": "Outside limits preferred",
+                "context": "Defense cost treatment for umbrella."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

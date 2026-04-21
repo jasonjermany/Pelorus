@@ -1,5 +1,14 @@
 import { type InjectionKey, ref, computed, nextTick } from 'vue'
-import type { RpField, RpAmendment } from '~/types/submission'
+import type { RpAmendment } from '~/types/submission'
+
+type SourceRaw = {
+  value?: string
+  source?: string
+  source_doc?: string
+  source_location?: string
+  raw_text?: string
+  context?: string
+}
 
 export type AmendmentsApi = ReturnType<typeof useAmendments>
 export const AMENDMENTS_KEY: InjectionKey<AmendmentsApi> = Symbol.for('amendments')
@@ -47,7 +56,7 @@ export function useAmendments(submissionId: string) {
 
   type SourceModalState = {
     key: string
-    raw: RpField
+    raw: SourceRaw
     title?: string
     amendable: boolean
   }
@@ -58,25 +67,16 @@ export function useAmendments(submissionId: string) {
 
   const sourceModalDoc = computed(() => {
     const r = sourceModal.value?.raw
-    if (!r || typeof r !== 'object') return null
-    return r.source_doc ?? r.source ?? null
+    return r ? (r.source_doc ?? r.source ?? null) : null
   })
   const sourceModalLocation = computed(() => {
     const r = sourceModal.value?.raw
-    if (!r || typeof r !== 'object') return null
-    // source_doc present means source_location is a separate field; otherwise source already covers both
-    return r.source_doc ? (r.source_location ?? null) : null
+    return r?.source_doc ? (r.source_location ?? null) : null
   })
-  const sourceModalRawText = computed(() => {
-    const r = sourceModal.value?.raw
-    return r && typeof r === 'object' ? (r.raw_text ?? null) : null
-  })
-  const sourceModalContext = computed(() => {
-    const r = sourceModal.value?.raw
-    return r && typeof r === 'object' ? (r.context ?? null) : null
-  })
+  const sourceModalRawText = computed(() => sourceModal.value?.raw?.raw_text ?? null)
+  const sourceModalContext = computed(() => sourceModal.value?.raw?.context ?? null)
 
-  function openSourceModal(key: string, raw: RpField, title?: string, amendable = true) {
+  function openSourceModal(key: string, raw: SourceRaw, title?: string, amendable = true) {
     sourceModal.value = { key, raw, title, amendable }
   }
 
@@ -91,7 +91,7 @@ export function useAmendments(submissionId: string) {
       return
     }
     const { key, raw } = sourceModal.value
-    startEdit(key, amendments.value[key]?.amendedValue ?? rpValue(raw))
+    startEdit(key, amendments.value[key]?.amendedValue ?? raw.value ?? '')
     closeSourceModal()
   }
 

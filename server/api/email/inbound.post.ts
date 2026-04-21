@@ -147,8 +147,7 @@ export default defineEventHandler(async (event) => {
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
 
       if (brokerEmail) {
-        const rawNamed = verdict.risk_profile?.named_insured
-        const namedInsured = (typeof rawNamed === 'object' ? rawNamed?.value : rawNamed) || null
+        const namedInsured = verdict.risk_profile?.risk_summary?.named_insured ?? null
         const sub = submission as any
         const pdfBuffer = await generatePdfBuffer(
           { ...verdict, analyzed_in_seconds: analyzedInSeconds } as any,

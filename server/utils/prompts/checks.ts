@@ -17,19 +17,54 @@ export const CHECKS_TOOL = {
         items: {
           type: 'object',
           properties: {
-            rule: { type: 'string', description: 'Exact rule name from the mandatory check list.' },
-            required: { type: 'string', description: 'What the guideline requires.' },
-            submitted: { type: 'string', description: 'What the submission says.' },
-            submission_source: { type: 'string', description: 'Document name and page where the submitted finding was found (from the === DOCUMENT: name === headers). Write "Not disclosed" if not traceable.' },
-            status: { type: 'string', enum: ['review', 'fail'] },
-            cited_section: { type: 'string', description: 'Section or page reference in the carrier guidelines.' },
+            rule:              { type: 'string', description: 'Exact rule name from the mandatory check list — copy verbatim.' },
+            submitted:         { type: 'string', description: 'Maximum 20 words. State the key fact only — no explanation, no rationale.' },
+            submission_source: { type: 'string', description: 'Document name and page only. "Not disclosed" if not traceable.' },
+            status:            { type: 'string', enum: ['review', 'fail'] },
+            cited_section:     { type: 'string', description: 'Section or page reference in the carrier guidelines.' },
           },
-          required: ['rule', 'required', 'submitted', 'submission_source', 'status', 'cited_section'],
+          required: ['rule', 'submitted', 'submission_source', 'status', 'cited_section'],
         },
       },
     },
     required: ['decision', 'guideline_checks'],
   },
+}
+
+export function buildEnrichmentMessages(
+  submissionText: string,
+  checks: Array<{ rule: string; submitted: string }>,
+) {
+  const checkList = checks
+    .map((c, i) => `${i}. Rule: "${c.rule}"\n   Finding: "${c.submitted}"`)
+    .join('\n')
+
+  return [
+    {
+      role: 'user' as const,
+      content: [
+        {
+          type: 'text' as const,
+          text: `## SUBMISSION\n${submissionText}`,
+          cache_control: { type: 'ephemeral', ttl: '1h' } as any,
+        },
+        {
+          type: 'text' as const,
+          text: `For each finding below, locate the relevant passage in the submission above and return:
+- raw_text: the verbatim text excerpt from the document that supports the finding (copy exactly, do not paraphrase)
+- context: 1-2 sentences of surrounding text giving the underwriter context
+
+If a finding has no traceable passage (status "review" — condition not mentioned), set both fields to null.
+
+Return ONLY a JSON array with one object per finding, indexed to match the list below. No markdown, no backticks.
+[{ "raw_text": "...", "context": "..." }, ...]
+
+FINDINGS:
+${checkList}`,
+        },
+      ],
+    },
+  ]
 }
 
 export function buildChecksMessages(
@@ -72,6 +107,8 @@ These are mutually exclusive. Any mention of a condition, however vague, is "fai
 
 Only include checks with status "review" or "fail" in guideline_checks.
 Do NOT include passing checks — omit them entirely.
+
+Keep "submitted" to 20 words or fewer — state the key fact only, no explanation.
 
 DECISION RULES — follow exactly, no judgment, in strict priority order:
 1. If ANY guideline_check has status "fail" → decision MUST be "DECLINE". A single fail overrides all review checks.

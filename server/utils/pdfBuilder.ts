@@ -19,6 +19,12 @@ function getPdfMake() {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+type RpField = { label: string; value: string; status: string; note?: string; source?: { source_doc?: string; source_location?: string } }
+type RpSection = { title: string; fields: RpField[] }
+type RpLocation = { id?: string; address?: string; tiv?: string; sections: RpSection[] }
+type RpLine = { line_type: string; label?: string; locations?: RpLocation[]; sections?: RpSection[] }
+type RiskReport = { risk_summary?: { named_insured?: string; broker?: string; prior_carrier?: string }; lines: RpLine[] }
+
 type Verdict = {
   decision: 'PROCEED' | 'REFER' | 'DECLINE'
   composite_score: number
@@ -30,7 +36,7 @@ type Verdict = {
   guideline_checks?: Array<{ rule: string; required: string; submitted: string; status: string; cited_section: string }>
   insights?: Record<string, string>
   missing_info?: Array<{ label: string; description: string }>
-  risk_profile?: Record<string, { value: string; source: string } | string>
+  risk_profile?: RiskReport
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -114,9 +120,6 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
             { text: 'DECISION', style: 'label' },
             { text: verdict.decision, fontSize: 24, bold: true, color: colors.text, margin: [0, 4, 0, 8] },
             { text: verdict.recommendation?.summary ?? '', style: 'body' },
-            ...(verdict.risk_profile?.tiv && (typeof verdict.risk_profile.tiv === 'object' ? verdict.risk_profile.tiv.value : verdict.risk_profile.tiv) !== 'N/A'
-              ? [{ text: `TIV: ${typeof verdict.risk_profile.tiv === 'object' ? verdict.risk_profile.tiv.value : verdict.risk_profile.tiv}`, style: 'caption', margin: [0, 6, 0, 0] as [number, number, number, number] }]
-              : []),
             ...(verdict.analyzed_in_seconds
               ? [{ text: `Analyzed in ${verdict.analyzed_in_seconds}s`, style: 'caption', margin: [0, 3, 0, 0] as [number, number, number, number] }]
               : []),
@@ -145,31 +148,65 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
   })
 
   // ── Risk Profile ──
-  const riskEntries = Object.entries(verdict.risk_profile ?? {})
-    .map(([k, raw]) => {
-      const value = typeof raw === 'object' ? raw.value : raw
-      const source = typeof raw === 'object' && raw.source && raw.source !== 'Not disclosed' ? raw.source : null
-      return { label: formatKey(k), value, source }
-    })
-    .filter(({ value }) => value && value !== 'null' && value !== 'N/A' && value !== 'Not disclosed')
-
-  if (riskEntries.length) {
+  const rp = verdict.risk_profile
+  if (rp) {
     content.push(sectionTitle('Risk Profile'))
-    content.push({
-      table: {
-        widths: [140, '*'],
-        body: riskEntries.map(({ label, value, source }) => [
-          { text: label, style: 'tableLabel' },
-          {
-            stack: [
-              { text: value || '—', style: 'tableValue' },
-              ...(source ? [{ text: source, fontSize: 8, color: '#94a3b8', margin: [0, 2, 0, 0] as [number, number, number, number] }] : []),
+
+    // Summary row (account-level metadata)
+    const summary = rp.risk_summary
+    if (summary) {
+      const summaryRows: [string, string][] = []
+      if (summary.named_insured) summaryRows.push(['Named Insured', summary.named_insured])
+      if (summary.broker)        summaryRows.push(['Broker', summary.broker])
+      if (summary.prior_carrier) summaryRows.push(['Prior Carrier', summary.prior_carrier])
+      if (summaryRows.length) content.push(kvTable(summaryRows))
+    }
+
+    const statusColor = (s: string) =>
+      s === 'ok' ? '#15803d' : s === 'warn' ? '#a8882e' : s === 'fail' || s === 'unconfirmed' ? '#dc2626' : '#94a3b8'
+
+    for (const line of rp.lines ?? []) {
+      content.push({ text: line.label || line.line_type, style: 'sectionTitle', margin: [0, 14, 0, 6] as [number, number, number, number] })
+
+      const allSections: Array<{ loc?: string; sec: RpSection }> = []
+      if (line.locations?.length) {
+        for (const loc of line.locations) {
+          for (const sec of loc.sections ?? []) allSections.push({ loc: loc.id || loc.address || undefined, sec })
+        }
+      } else {
+        for (const sec of line.sections ?? []) allSections.push({ sec })
+      }
+
+      for (const { loc, sec } of allSections) {
+        const title = loc ? `${sec.title} — ${loc}` : sec.title
+        content.push({ text: title, style: 'label', margin: [0, 8, 0, 4] as [number, number, number, number] })
+        content.push({
+          table: {
+            widths: [140, '*', 52],
+            body: [
+              [
+                { text: 'FIELD', style: 'tableHeader' },
+                { text: 'VALUE', style: 'tableHeader' },
+                { text: 'STATUS', style: 'tableHeader', alignment: 'center' },
+              ],
+              ...(sec.fields ?? []).map(f => [
+                { text: f.label, style: 'tableLabel' },
+                {
+                  stack: [
+                    { text: f.value || '—', style: 'tableValue' },
+                    ...(f.source?.source_doc && f.source.source_doc !== 'Not disclosed'
+                      ? [{ text: `${f.source.source_doc}${f.source.source_location ? ` · ${f.source.source_location}` : ''}`, fontSize: 7, color: '#94a3b8', margin: [0, 2, 0, 0] as [number, number, number, number] }]
+                      : []),
+                  ],
+                },
+                { text: f.status.toUpperCase(), style: 'badge', alignment: 'center', color: statusColor(f.status) },
+              ]),
             ],
           },
-        ]),
-      },
-      layout: hairlineLayout,
-    })
+          layout: headerRowLayout,
+        })
+      }
+    }
   }
 
   // ── Dimension Scores ──

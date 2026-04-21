@@ -38,6 +38,7 @@
             {{ isDownloading ? 'Generating…' : 'Download PDF' }}
           </button>
         </div>
+        <p v-if="downloadError" class="text-[13px] text-red-600 mt-1 text-right">{{ downloadError }}</p>
       </div>
     </AppHeader>
 
@@ -213,7 +214,7 @@
           <!-- Risk Profile -->
           <SubmissionRiskProfileTab
             v-else-if="activeTab === 'Risk Profile'"
-            :risk-profile="verdict.risk_profile ?? {}"
+            :report="verdict.risk_profile"
           />
         </div>
 
@@ -302,17 +303,16 @@ const {
 const submission = ref<SubmissionResponse | null>(null)
 const verdict = computed(() => submission.value?.verdict ?? null)
 
-const namedInsured = computed(() => {
-  const raw = verdict.value?.risk_profile?.named_insured
-  if (raw === undefined) return null
-  return rpValue(raw) || null
-})
+const namedInsured = computed(() =>
+  verdict.value?.risk_profile?.risk_summary?.named_insured ?? null
+)
 
 const isLoading = ref(false)
 const loadError = ref<string | null>(null)
 const isEvaluating = ref(false)
 const evalError = ref<string | null>(null)
 const isDownloading = ref(false)
+const downloadError = ref<string | null>(null)
 
 const tabs = ['Summary', 'Guidelines', 'Insights', 'Risk Profile'] as const
 const activeTab = ref<(typeof tabs)[number]>('Summary')
@@ -388,7 +388,7 @@ async function downloadPdf() {
     a.click()
     URL.revokeObjectURL(url)
   } catch (e: any) {
-    console.error('PDF download failed:', e?.message)
+    downloadError.value = e?.data?.message || e?.message || 'PDF generation failed'
   } finally {
     isDownloading.value = false
   }

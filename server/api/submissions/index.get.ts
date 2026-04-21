@@ -36,9 +36,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch submissions', data: { message: error.message } })
   }
 
-  const rpVal = (v: any): string | null => (typeof v === 'object' ? v?.value : v) || null
-
-  const submissions = (data ?? []).map((sub: any) => {
+const submissions = (data ?? []).map((sub: any) => {
     const evaluation = sub.evaluations?.[0]
     const verdict = evaluation?.verdict
     return {
@@ -49,9 +47,9 @@ export default defineEventHandler(async (event) => {
       created_at: sub.created_at,
       decision: evaluation?.decision ?? null,
       composite_score: evaluation?.composite_score ?? null,
-      named_insured: rpVal(verdict?.risk_profile?.named_insured),
-      broker: rpVal(verdict?.risk_profile?.broker),
-      prior_carrier: rpVal(verdict?.risk_profile?.prior_carrier),
+      named_insured: verdict?.risk_profile?.risk_summary?.named_insured ?? null,
+      broker: verdict?.risk_profile?.risk_summary?.broker ?? null,
+      prior_carrier: verdict?.risk_profile?.risk_summary?.prior_carrier ?? null,
     }
   })
 

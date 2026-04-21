@@ -142,12 +142,7 @@ export default defineEventHandler(async (event) => {
           .single()
         if (!evaluation?.verdict) return
         verdictJson = JSON.stringify(evaluation.verdict, null, 2)
-        const raw = evaluation.verdict?.risk_profile?.named_insured
-        if (!raw) return
-        const resolved =
-          typeof raw === 'object' && raw !== null && 'value' in raw
-            ? (raw as { value: string }).value
-            : String(raw)
+        const resolved = evaluation.verdict?.risk_profile?.risk_summary?.named_insured
         if (resolved && resolved !== 'null' && resolved !== 'N/A' && resolved !== 'Not disclosed') {
           namedInsured = resolved
         }

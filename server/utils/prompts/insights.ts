@@ -19,7 +19,8 @@ Return ONLY valid JSON, no markdown, no backticks:
   "missing_info": [
     {
       "label": "<short label — 5 words max>",
-      "description": "<1 sentence — what is needed and why>"
+      "description": "<1 sentence — what is needed and why>",
+      "priority": "<BINDING|PRE_BIND|INFORMATIONAL>"
     }
   ]
 }`
