@@ -52,7 +52,6 @@
 
         <div v-if="activeLoc?.address || activeLoc?.tiv" class="rp-address-bar">
           <div class="rp-address-left">
-            <span>📍</span>
             <span class="rp-address-text">{{ activeLoc.address || 'Address not provided' }}</span>
           </div>
           <span v-if="activeLoc.tiv" class="rp-tiv">TIV {{ activeLoc.tiv }}</span>
@@ -155,21 +154,6 @@
       </template>
       <p v-else class="rp-empty">No sections extracted for this line of business.</p>
 
-      <!-- Legend -->
-      <div class="rp-legend">
-        <p class="rp-mono-label">Legend</p>
-        <div class="rp-legend-grid">
-          <div v-for="(s, k) in STATUS_META" :key="k" class="rp-legend-item">
-            <span class="rp-legend-swatch" :style="{ background: s.bg, borderColor: s.color }" />
-            <span class="rp-legend-text">{{ s.label }}</span>
-          </div>
-          <div class="rp-legend-item">
-            <span class="rp-legend-btn">↗</span>
-            <span class="rp-legend-text">Inspect source + amend</span>
-          </div>
-        </div>
-      </div>
-
       <p class="rp-footer-label">PELORUS · RISK PROFILE · DYNAMIC — DRIVEN BY CLAUDE JSON</p>
     </div>
   </div>
@@ -196,15 +180,15 @@ const STATUS_META: Record<StatusKey, { color: string; bg: string; label: string 
 }
 
 const LINE_META: Record<string, { icon: string; color: string }> = {
-  property: { icon: '🏢', color: '#A8C0E0' },
-  gl:       { icon: '⚖️', color: '#7FD1C8' },
-  auto:     { icon: '🚛', color: '#90B4E0' },
-  wc:       { icon: '🦺', color: '#C4A0E0' },
-  im:       { icon: '🏗️', color: '#C4A080' },
-  umbrella: { icon: '☂️', color: '#80B0D0' },
+  property: { icon: 'PRP', color: '#A8C0E0' },
+  gl:       { icon: 'GL',  color: '#7FD1C8' },
+  auto:     { icon: 'AUT', color: '#90B4E0' },
+  wc:       { icon: 'WC',  color: '#C4A0E0' },
+  im:       { icon: 'IM',  color: '#C4A080' },
+  umbrella: { icon: 'UMB', color: '#80B0D0' },
 }
 
-const lineMeta = (type: string) => LINE_META[type] ?? { icon: '📋', color: '#A8C0E0' }
+const lineMeta = (type: string) => LINE_META[type] ?? { icon: type.slice(0, 3).toUpperCase(), color: '#A8C0E0' }
 
 const lines = computed<RpLine[]>(() => props.report?.lines ?? [])
 const activeLine = ref(lines.value[0]?.line_type ?? '')
@@ -303,7 +287,7 @@ function toggleExpand(si: number, fi: number) {
 
 <style scoped>
 .rp-root {
-  font-family: 'DM Sans', -apple-system, system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -329,20 +313,23 @@ function toggleExpand(si: number, fi: number) {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: rgba(255,255,255,.8);
   flex-shrink: 0;
 }
 
 .rp-insured-label {
-  font-size: 11px;
-  color: rgba(255,255,255,.4);
-  letter-spacing: .06em;
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  letter-spacing: .04em;
   text-transform: uppercase;
   margin: 0 0 2px;
 }
 
 .rp-line-title {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #fff;
   letter-spacing: -.01em;
@@ -362,9 +349,9 @@ function toggleExpand(si: number, fi: number) {
 
 .rp-tab {
   padding: 11px 14px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  color: rgba(255,255,255,.45);
+  color: rgba(255,255,255,.6);
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -386,7 +373,7 @@ function toggleExpand(si: number, fi: number) {
 .rp-loc-pill {
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 400;
   color: #2C4060;
   background: #fff;
@@ -418,7 +405,7 @@ function toggleExpand(si: number, fi: number) {
   gap: 12px;
 }
 .rp-address-left { display: flex; align-items: center; gap: 8px; }
-.rp-address-text { font-size: 12.5px; color: #0B1829; font-weight: 500; }
+.rp-address-text { font-size: 14px; color: #0B1829; font-weight: 500; }
 .rp-tiv {
   font-size: 11px;
   font-family: monospace;
@@ -452,21 +439,20 @@ function toggleExpand(si: number, fi: number) {
   font-family: inherit;
 }
 .rp-section-title {
-  font-family: monospace;
-  font-size: 9px;
-  letter-spacing: .14em;
+  font-size: 11px;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  color: #5A7290;
+  color: #3D5166;
   font-weight: 700;
   flex: 1;
 }
 .rp-flag-badge {
-  font-size: 10px;
+  font-size: 11px;
   padding: 2px 9px;
   border-radius: 20px;
   font-weight: 600;
 }
-.rp-chevron { font-size: 10px; color: #9AAABB; }
+.rp-chevron { font-size: 10px; color: #5A7290; }
 
 .rp-section-body { padding: 0 14px 10px; }
 
@@ -491,15 +477,15 @@ function toggleExpand(si: number, fi: number) {
 .rp-field-content { flex: 1; min-width: 0; }
 
 .rp-field-label {
-  font-size: 10px;
-  font-family: monospace;
-  letter-spacing: .04em;
+  font-size: 11px;
+  letter-spacing: .05em;
   text-transform: uppercase;
-  color: #9AAABB;
+  color: #4A6070;
+  font-weight: 600;
   margin: 0 0 3px;
 }
 .rp-field-value {
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
   color: #0B1829;
   margin: 0;
@@ -513,20 +499,20 @@ function toggleExpand(si: number, fi: number) {
   overflow: hidden;
 }
 .rp-expand-btn {
-  font-size: 10px;
-  color: #9AAABB;
+  font-size: 12px;
+  color: #5A7290;
   background: none;
   border: none;
   cursor: pointer;
   padding: 2px 0;
   font-family: inherit;
 }
-.rp-field-original { font-size: 11px; color: #9AAABB; margin: 2px 0 0; }
-.rp-field-note { font-size: 10.5px; color: #5A7290; margin: 4px 0 0; line-height: 1.4; }
+.rp-field-original { font-size: 12px; color: #5A7290; margin: 2px 0 0; }
+.rp-field-note { font-size: 12px; color: #3D5166; margin: 4px 0 0; line-height: 1.4; }
 
 .rp-amended-badge {
   display: inline-block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -545,7 +531,7 @@ function toggleExpand(si: number, fi: number) {
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 6px 10px;
-  font-size: 12.5px;
+  font-size: 14px;
   color: #0B1829;
   font-family: inherit;
   outline: none;
@@ -555,7 +541,7 @@ function toggleExpand(si: number, fi: number) {
 .rp-edit-input:focus { border-color: #2E5FA3; background: #fff; }
 .rp-edit-actions { display: flex; gap: 6px; margin-top: 6px; }
 .rp-btn-save {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #050A18;
   background: #C8A84B;
@@ -566,7 +552,7 @@ function toggleExpand(si: number, fi: number) {
   font-family: inherit;
 }
 .rp-btn-cancel {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: #5A7290;
   background: transparent;
@@ -598,61 +584,17 @@ function toggleExpand(si: number, fi: number) {
 }
 .rp-inspect-btn:hover { background: #0B1829; color: #fff; }
 
-/* Legend */
-.rp-legend {
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid rgba(11,24,41,.08);
-  padding: 12px 14px;
-  margin-top: 4px;
-}
-.rp-mono-label {
-  font-size: 10px;
-  font-family: monospace;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: #9AAABB;
-  margin: 0 0 8px;
-}
-.rp-legend-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 24px;
-}
-.rp-legend-item { display: flex; align-items: center; gap: 8px; }
-.rp-legend-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  border: 1px solid;
-  flex-shrink: 0;
-}
-.rp-legend-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: #F6F3EE;
-  border: 1px solid rgba(11,24,41,.08);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #9AAABB;
-  flex-shrink: 0;
-}
-.rp-legend-text { font-size: 11px; color: #5A7290; }
 
 /* Footer */
 .rp-footer-label {
   text-align: center;
-  font-family: monospace;
-  font-size: 9px;
-  color: #9AAABB;
+  font-size: 10px;
+  color: #5A7290;
   letter-spacing: .1em;
   margin: 6px 0 0;
 }
 
 /* Empty states */
-.rp-empty { padding: 24px; text-align: center; color: #9AAABB; font-size: 12px; }
-.rp-empty-state { padding: 48px; text-align: center; font-size: 15px; color: #9AAABB; }
+.rp-empty { padding: 24px; text-align: center; color: #3D5166; font-size: 14px; }
+.rp-empty-state { padding: 48px; text-align: center; font-size: 15px; color: #3D5166; }
 </style>
