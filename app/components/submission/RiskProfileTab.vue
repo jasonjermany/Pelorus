@@ -1,24 +1,24 @@
 <template>
-  <div v-if="lines.length" class="rp-root">
+  <div v-if="lines.length" class="antialiased font-sans">
 
     <!-- Header -->
-    <div class="rp-header">
-      <div class="rp-header-top">
-        <div class="rp-line-icon-wrap">
-          <span class="rp-line-icon">{{ lineMeta(activeLine).icon }}</span>
+    <div class="bg-navy rounded-t-[10px] px-4 pt-4">
+      <div class="flex items-center gap-3 mb-3.5">
+        <div class="w-10 h-10 rounded-[10px] bg-white/10 flex items-center justify-center text-[10px] font-bold tracking-[.06em] text-white/80 flex-shrink-0">
+          {{ lineMeta(activeLine).icon }}
         </div>
         <div>
-          <p class="rp-insured-label">{{ report?.risk_summary?.named_insured || '' }}</p>
-          <p class="rp-line-title">{{ activeLineData.label || activeLine }}</p>
+          <p class="text-[12px] text-white/60 tracking-[.04em] uppercase mb-0.5">{{ report?.risk_summary?.named_insured || '' }}</p>
+          <p class="text-[17px] font-semibold text-white tracking-[-0.01em]">{{ activeLineData.label || activeLine }}</p>
         </div>
       </div>
 
-      <div v-if="lines.length > 1" class="rp-tabs">
+      <div v-if="lines.length > 1" class="flex overflow-x-auto border-t border-white/[0.08] -mx-4 px-4 [&::-webkit-scrollbar]:hidden" style="scrollbar-width:none">
         <button
           v-for="line in lines"
           :key="line.line_type"
-          class="rp-tab"
-          :class="{ 'rp-tab--active': activeLine === line.line_type }"
+          class="px-3.5 py-[11px] text-[13px] text-white/60 bg-transparent border-0 border-b-2 border-b-transparent cursor-pointer whitespace-nowrap flex items-center gap-1.5 transition-colors duration-150"
+          :class="activeLine === line.line_type ? 'font-semibold border-b-2' : 'font-normal'"
           :style="activeLine === line.line_type ? { color: lineMeta(line.line_type).color, borderBottomColor: lineMeta(line.line_type).color } : {}"
           @click="switchLine(line.line_type)"
         >
@@ -29,32 +29,32 @@
     </div>
 
     <!-- Body -->
-    <div class="rp-body">
+    <div class="p-3.5 flex flex-col gap-2">
 
-      <!-- Location pills + address (property / multi-location) -->
+      <!-- Location pills + address -->
       <template v-if="hasLocations">
-        <div class="rp-loc-pills">
+        <div class="flex gap-1.5 flex-wrap">
           <button
             v-for="(loc, i) in activeLineData.locations"
             :key="i"
-            class="rp-loc-pill"
-            :class="{ 'rp-loc-pill--active': locIdx === i }"
+            class="px-3.5 py-1.5 rounded-full text-[13px] flex items-center gap-1.5 cursor-pointer transition-colors duration-150 border"
+            :class="locIdx === i
+              ? 'font-semibold text-white bg-navy border-navy shadow-[0_2px_8px_rgba(11,24,41,.18)]'
+              : 'font-normal text-[#2C4060] bg-white border-navy/[0.08]'"
             @click="locIdx = i"
           >
             <span
               v-if="locIdx !== i"
-              class="rp-loc-dot"
+              class="w-[5px] h-[5px] rounded-full inline-block flex-shrink-0"
               :style="{ background: STATUS_META[worstForLoc(loc)].color }"
             />
             {{ loc.id || `LOC ${String(i + 1).padStart(3, '0')}` }}
           </button>
         </div>
 
-        <div v-if="activeLoc?.address || activeLoc?.tiv" class="rp-address-bar">
-          <div class="rp-address-left">
-            <span class="rp-address-text">{{ activeLoc.address || 'Address not provided' }}</span>
-          </div>
-          <span v-if="activeLoc.tiv" class="rp-tiv">TIV {{ activeLoc.tiv }}</span>
+        <div v-if="activeLoc?.address || activeLoc?.tiv" class="px-3 py-2.5 bg-white rounded-[10px] border border-navy/[0.08] flex items-center justify-between gap-3">
+          <span class="text-[14px] text-navy font-medium">{{ activeLoc.address || 'Address not provided' }}</span>
+          <span v-if="activeLoc.tiv" class="text-[11px] font-mono text-[#5A7290] bg-[#F6F3EE] px-2 py-0.5 rounded-md flex-shrink-0">TIV {{ activeLoc.tiv }}</span>
         </div>
       </template>
 
@@ -63,34 +63,38 @@
         <div
           v-for="(sec, si) in activeSections"
           :key="sectionKey(si)"
-          class="rp-section"
-          :class="`rp-section--${worstForSection(sec)}`"
+          class="rounded-[10px] overflow-hidden border bg-white"
+          :class="{
+            'border-red-800/20': worstForSection(sec) === 'fail',
+            'border-amber-800/[0.12]': worstForSection(sec) === 'warn',
+            'border-navy/[0.08]': !['fail','warn'].includes(worstForSection(sec)),
+          }"
         >
-          <button class="rp-section-header" @click="toggleSection(si)">
-            <span class="rp-section-title">{{ sec.title }}</span>
+          <button class="w-full flex items-center gap-2.5 px-3.5 py-[11px] bg-transparent border-0 cursor-pointer text-left" @click="toggleSection(si)">
+            <span class="text-[11px] tracking-[.1em] uppercase text-navy font-bold flex-1">{{ sec.title }}</span>
             <span
               v-if="flagCount(sec) > 0"
-              class="rp-flag-badge"
+              class="text-[11px] px-[9px] py-0.5 rounded-full font-semibold"
               :style="{ color: STATUS_META[worstForSection(sec)].color, background: STATUS_META[worstForSection(sec)].bg }"
             >
               {{ flagCount(sec) }} {{ worstForSection(sec) === 'fail' ? 'hard stop' : 'flag' }}{{ flagCount(sec) > 1 ? 's' : '' }}
             </span>
-            <span class="rp-chevron">{{ isSectionOpen(si) ? '▲' : '▼' }}</span>
+            <span class="text-[10px] text-[#1E3A50]">{{ isSectionOpen(si) ? '▲' : '▼' }}</span>
           </button>
 
-          <div v-if="isSectionOpen(si)" class="rp-section-body">
+          <div v-if="isSectionOpen(si)" class="px-3.5 pb-2.5">
             <div
               v-for="(field, fi) in sec.fields"
               :key="fi"
-              class="rp-field-row"
+              class="py-2 flex items-start gap-2.5 border-b border-navy/[0.05] [&:last-child]:border-b-0"
             >
               <div
-                class="rp-indicator"
+                class="w-[3px] rounded-sm flex-shrink-0 self-stretch min-h-4 mt-0.5"
                 :style="{ background: isFlagged(field) ? STATUS_META[field.status].color : 'transparent' }"
               />
 
-              <div class="rp-field-content">
-                <p class="rp-field-label">{{ field.label }}</p>
+              <div class="flex-1 min-w-0">
+                <p class="text-[11px] tracking-[.05em] uppercase text-[#1E3A50] font-bold mb-[3px]">{{ field.label }}</p>
 
                 <!-- Editing -->
                 <template v-if="editingKey === amendKey(si, fi)">
@@ -98,24 +102,24 @@
                     ref="editInputRef"
                     v-model="editDraft"
                     type="text"
-                    class="rp-edit-input"
+                    class="w-full bg-[#F6F3EE] border border-[#ccc] focus:border-[#2E5FA3] focus:bg-white rounded-lg px-2.5 py-1.5 text-[14px] text-navy outline-none transition-colors box-border"
                     @keydown.enter="saveEdit(amendKey(si, fi), field.value)"
                     @keydown.escape="cancelEdit"
                   />
-                  <div class="rp-edit-actions">
-                    <button class="rp-btn-save" @click="saveEdit(amendKey(si, fi), field.value)">Save</button>
-                    <button class="rp-btn-cancel" @click="cancelEdit">Cancel</button>
+                  <div class="flex gap-1.5 mt-1.5">
+                    <button class="text-[13px] font-bold text-[#050A18] bg-accent-500 hover:bg-accent-400 px-2.5 py-1 rounded-lg border-0 cursor-pointer transition-colors" @click="saveEdit(amendKey(si, fi), field.value)">Save</button>
+                    <button class="text-[13px] font-medium text-[#5A7290] bg-transparent hover:bg-[#F6F3EE] px-2.5 py-1 rounded-lg border-0 cursor-pointer transition-colors" @click="cancelEdit">Cancel</button>
                   </div>
                 </template>
 
                 <!-- Display -->
                 <template v-else>
-                  <span v-if="amendments[amendKey(si, fi)]" class="rp-amended-badge">Amended</span>
+                  <span v-if="amendments[amendKey(si, fi)]" class="inline-block text-[11px] font-bold tracking-[.06em] uppercase px-1.5 py-[1px] rounded-full bg-[#FFF6E8] text-[#9A5C00] border border-[#F5D09A] mb-[3px]">Amended</span>
                   <p
-                    class="rp-field-value"
+                    class="text-[15px] leading-[1.5] text-[#060E1A]"
                     :class="{
-                      'rp-field-value--flagged': isFlagged(field),
-                      'rp-field-value--clipped': isLong(field) && !isExpanded(si, fi),
+                      'font-medium italic': isFlagged(field),
+                      'line-clamp-2': isLong(field) && !isExpanded(si, fi),
                     }"
                     :style="isFlagged(field) ? { color: STATUS_META[field.status].color } : {}"
                   >
@@ -124,17 +128,17 @@
                   </p>
                   <button
                     v-if="isLong(field) && field.status !== 'unconfirmed'"
-                    class="rp-expand-btn"
+                    class="text-[12px] text-[#1E3A50] bg-transparent border-0 cursor-pointer py-0.5"
                     @click="toggleExpand(si, fi)"
                   >{{ isExpanded(si, fi) ? 'show less ▲' : 'show more ▼' }}</button>
-                  <p v-if="amendments[amendKey(si, fi)]" class="rp-field-original">Original: {{ field.value }}</p>
-                  <p v-if="field.note" class="rp-field-note">{{ field.note }}</p>
+                  <p v-if="amendments[amendKey(si, fi)]" class="text-[12px] text-[#1E3A50] mt-0.5">Original: {{ field.value }}</p>
+                  <p v-if="field.note" class="text-[12px] text-[#1E3A50] mt-1 leading-[1.4]">{{ field.note }}</p>
                 </template>
               </div>
 
               <button
                 v-if="editingKey !== amendKey(si, fi)"
-                class="rp-inspect-btn"
+                class="w-6 h-6 rounded-[6px] flex-shrink-0 border border-navy/[0.15] bg-[#E8EDF2] text-[#1E3A50] hover:bg-navy hover:text-white cursor-pointer flex items-center justify-center text-[12px] transition-colors duration-100"
                 title="Inspect source"
                 @click="openSourceModal(
                   amendKey(si, fi),
@@ -152,10 +156,12 @@
           </div>
         </div>
       </template>
-      <p v-else class="rp-empty">No sections extracted for this line of business.</p>
+      <p v-else class="p-6 text-center text-[#1E3A50] text-[14px]">No sections extracted for this line of business.</p>
+
+      <p class="text-center text-[10px] text-[#5A7290] tracking-[.1em] mt-1.5">PELORUS · RISK PROFILE · DYNAMIC — DRIVEN BY CLAUDE JSON</p>
     </div>
   </div>
-  <div v-else class="rp-empty-state">No risk profile data available.</div>
+  <div v-else class="p-12 text-center text-[15px] text-[#1E3A50]">No risk profile data available.</div>
 </template>
 
 <script setup lang="ts">
@@ -261,7 +267,6 @@ function flagCount(sec: RpSection) {
   return (sec.fields ?? []).filter(isFlagged).length
 }
 
-// Show more / show less
 const expandedFields = ref(new Set<string>())
 
 function expandKey(si: number, fi: number) {
@@ -282,317 +287,3 @@ function toggleExpand(si: number, fi: number) {
   else expandedFields.value.add(k)
 }
 </script>
-
-<style scoped>
-.rp-root {
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Header */
-.rp-header {
-  background: #0B1829;
-  border-radius: 10px 10px 0 0;
-  padding: 16px 16px 0;
-}
-
-.rp-header-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.rp-line-icon-wrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  color: rgba(255,255,255,.8);
-  flex-shrink: 0;
-}
-
-.rp-insured-label {
-  font-size: 12px;
-  color: rgba(255,255,255,.6);
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  margin: 0 0 2px;
-}
-
-.rp-line-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: -.01em;
-  margin: 0;
-}
-
-/* Tabs (inside header) */
-.rp-tabs {
-  display: flex;
-  overflow-x: auto;
-  border-top: 1px solid rgba(255,255,255,.08);
-  margin: 0 -16px;
-  padding: 0 16px;
-  scrollbar-width: none;
-}
-.rp-tabs::-webkit-scrollbar { display: none; }
-
-.rp-tab {
-  padding: 11px 14px;
-  font-size: 13px;
-  font-weight: 400;
-  color: rgba(255,255,255,.6);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: inherit;
-  transition: color .15s, border-color .15s;
-}
-.rp-tab--active { font-weight: 600; }
-
-/* Body */
-.rp-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-
-/* Location pills */
-.rp-loc-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-.rp-loc-pill {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 400;
-  color: #2C4060;
-  background: #fff;
-  border: 1px solid rgba(11,24,41,.08);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-family: inherit;
-  transition: background .15s, color .15s;
-}
-.rp-loc-pill--active {
-  font-weight: 600;
-  color: #fff;
-  background: #0B1829;
-  border-color: #0B1829;
-  box-shadow: 0 2px 8px rgba(11,24,41,.18);
-}
-.rp-loc-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-
-.rp-address-bar {
-  padding: 10px 12px;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid rgba(11,24,41,.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.rp-address-left { display: flex; align-items: center; gap: 8px; }
-.rp-address-text { font-size: 14px; color: #0B1829; font-weight: 500; }
-.rp-tiv {
-  font-size: 11px;
-  font-family: monospace;
-  color: #5A7290;
-  background: #F6F3EE;
-  padding: 3px 8px;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-
-/* Sections */
-.rp-section {
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid rgba(11,24,41,.08);
-  background: #fff;
-}
-.rp-section--fail { border-color: rgba(155,28,28,.2); }
-.rp-section--warn { border-color: rgba(154,92,0,.12); }
-
-.rp-section-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-}
-.rp-section-title {
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #0B1829;
-  font-weight: 700;
-  flex: 1;
-}
-.rp-flag-badge {
-  font-size: 11px;
-  padding: 2px 9px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-.rp-chevron { font-size: 10px; color: #1E3A50; }
-
-.rp-section-body { padding: 0 14px 10px; }
-
-/* Field rows */
-.rp-field-row {
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(11,24,41,.05);
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.rp-field-row:last-child { border-bottom: none; }
-
-.rp-indicator {
-  width: 3px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  align-self: stretch;
-  min-height: 16px;
-  margin-top: 2px;
-}
-.rp-field-content { flex: 1; min-width: 0; }
-
-.rp-field-label {
-  font-size: 11px;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: #1E3A50;
-  font-weight: 700;
-  margin: 0 0 3px;
-}
-.rp-field-value {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #060E1A;
-  margin: 0;
-}
-.rp-field-value--flagged { font-weight: 500; font-style: italic; }
-.rp-field-value--clipped {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.rp-expand-btn {
-  font-size: 12px;
-  color: #1E3A50;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 0;
-  font-family: inherit;
-}
-.rp-field-original { font-size: 12px; color: #1E3A50; margin: 2px 0 0; }
-.rp-field-note { font-size: 12px; color: #1E3A50; margin: 4px 0 0; line-height: 1.4; }
-
-.rp-amended-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: 1px 6px;
-  border-radius: 20px;
-  background: #FFF6E8;
-  color: #9A5C00;
-  border: 1px solid #F5D09A;
-  margin-bottom: 3px;
-}
-
-/* Inline edit */
-.rp-edit-input {
-  width: 100%;
-  background: #F6F3EE;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-  color: #0B1829;
-  font-family: inherit;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color .15s, background .15s;
-}
-.rp-edit-input:focus { border-color: #2E5FA3; background: #fff; }
-.rp-edit-actions { display: flex; gap: 6px; margin-top: 6px; }
-.rp-btn-save {
-  font-size: 13px;
-  font-weight: 700;
-  color: #050A18;
-  background: #C8A84B;
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-.rp-btn-cancel {
-  font-size: 13px;
-  font-weight: 500;
-  color: #5A7290;
-  background: transparent;
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background .1s;
-}
-.rp-btn-cancel:hover { background: #F6F3EE; }
-
-/* Inspect button */
-.rp-inspect-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  border: 1px solid rgba(11,24,41,.15);
-  background: #E8EDF2;
-  color: #1E3A50;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-family: inherit;
-  transition: background .1s, color .1s;
-}
-.rp-inspect-btn:hover { background: #0B1829; color: #fff; }
-
-
-/* Footer */
-.rp-footer-label {
-  text-align: center;
-  font-size: 10px;
-  color: #5A7290;
-  letter-spacing: .1em;
-  margin: 6px 0 0;
-}
-
-/* Empty states */
-.rp-empty { padding: 24px; text-align: center; color: #1E3A50; font-size: 14px; }
-.rp-empty-state { padding: 48px; text-align: center; font-size: 15px; color: #1E3A50; }
-</style>
