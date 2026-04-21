@@ -1,4 +1,9 @@
-const ALLOWED_IPS = (process.env.ALLOWED_IPS ?? '::1').split(',').map(s => s.trim()).filter(Boolean)
+const ALLOWED_IPS = [
+  '72.93.65.252',
+  '96.237.115.113',
+  '10.0.0.62',
+  '::1',
+]
 
 const PUBLIC_PATHS = ['/api/email/inbound', '/api/logs/stream']
 
