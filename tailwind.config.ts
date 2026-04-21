@@ -14,6 +14,7 @@ export default {
         sans: ['Inter', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
+        navy: '#0B1829',
         // Navy — primary brand color (replaces old primary-700 blue)
         primary: {
           600: '#1a3356',

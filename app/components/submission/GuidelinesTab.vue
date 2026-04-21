@@ -1,20 +1,20 @@
 <template>
   <div class="glass-card overflow-hidden">
-    <div class="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Guideline Checks</p>
-      <span class="text-[14px] text-gray-600">
+    <div class="px-5 sm:px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-navy">
+      <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Guideline Checks</p>
+      <span class="text-[14px] text-gray-200">
         <span v-if="sortedChecks.length">{{ sortedChecks.length }} check{{ sortedChecks.length !== 1 ? 's' : '' }} require attention</span>
-        <span v-else class="text-green-700 font-medium">All checks passed</span>
+        <span v-else class="text-green-300 font-medium">All checks passed</span>
       </span>
     </div>
     <div class="overflow-x-auto overflow-y-auto" style="max-height:min(62vh,600px)">
       <table class="w-full text-left text-[15px]">
         <thead class="sticky top-0">
-          <tr class="border-b border-gray-100 bg-gray-50">
-            <th class="th-cell">Rule</th>
-            <th class="th-cell">Required</th>
-            <th class="th-cell">Submitted</th>
-            <th class="th-cell w-20">Status</th>
+          <tr class="border-b border-white/[0.08] bg-navy">
+            <th class="px-5 sm:px-6 py-2.5 text-left text-[11px] font-black text-gray-300 uppercase tracking-[0.1em]">Rule</th>
+            <th class="px-5 sm:px-6 py-2.5 text-left text-[11px] font-black text-gray-300 uppercase tracking-[0.1em]">Required</th>
+            <th class="px-5 sm:px-6 py-2.5 text-left text-[11px] font-black text-gray-300 uppercase tracking-[0.1em]">Submitted</th>
+            <th class="px-5 sm:px-6 py-2.5 text-left text-[11px] font-black text-gray-300 uppercase tracking-[0.1em] w-20">Status</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -65,7 +65,6 @@
                 </div>
                 <!-- Action buttons (hidden while editing) -->
                 <div v-if="editingKey !== 'check:' + i" class="flex items-center gap-0.5 flex-shrink-0 mt-0.5">
-                  <!-- Pencil: edit submitted value -->
                   <button
                     class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
                     title="Edit submitted value"
@@ -75,7 +74,6 @@
                       <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
                     </svg>
                   </button>
-                  <!-- Source ↗: always available since submitted finding is always present -->
                   <button
                     class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
                     title="View source"

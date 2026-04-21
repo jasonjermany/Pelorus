@@ -153,8 +153,6 @@
         </div>
       </template>
       <p v-else class="rp-empty">No sections extracted for this line of business.</p>
-
-      <p class="rp-footer-label">PELORUS · RISK PROFILE · DYNAMIC — DRIVEN BY CLAUDE JSON</p>
     </div>
   </div>
   <div v-else class="rp-empty-state">No risk profile data available.</div>
@@ -442,7 +440,7 @@ function toggleExpand(si: number, fi: number) {
   font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: #3D5166;
+  color: #0B1829;
   font-weight: 700;
   flex: 1;
 }
@@ -452,7 +450,7 @@ function toggleExpand(si: number, fi: number) {
   border-radius: 20px;
   font-weight: 600;
 }
-.rp-chevron { font-size: 10px; color: #5A7290; }
+.rp-chevron { font-size: 10px; color: #1E3A50; }
 
 .rp-section-body { padding: 0 14px 10px; }
 
@@ -480,14 +478,14 @@ function toggleExpand(si: number, fi: number) {
   font-size: 11px;
   letter-spacing: .05em;
   text-transform: uppercase;
-  color: #4A6070;
-  font-weight: 600;
+  color: #1E3A50;
+  font-weight: 700;
   margin: 0 0 3px;
 }
 .rp-field-value {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
-  color: #0B1829;
+  color: #060E1A;
   margin: 0;
 }
 .rp-field-value--flagged { font-weight: 500; font-style: italic; }
@@ -500,15 +498,15 @@ function toggleExpand(si: number, fi: number) {
 }
 .rp-expand-btn {
   font-size: 12px;
-  color: #5A7290;
+  color: #1E3A50;
   background: none;
   border: none;
   cursor: pointer;
   padding: 2px 0;
   font-family: inherit;
 }
-.rp-field-original { font-size: 12px; color: #5A7290; margin: 2px 0 0; }
-.rp-field-note { font-size: 12px; color: #3D5166; margin: 4px 0 0; line-height: 1.4; }
+.rp-field-original { font-size: 12px; color: #1E3A50; margin: 2px 0 0; }
+.rp-field-note { font-size: 12px; color: #1E3A50; margin: 4px 0 0; line-height: 1.4; }
 
 .rp-amended-badge {
   display: inline-block;
@@ -571,9 +569,9 @@ function toggleExpand(si: number, fi: number) {
   height: 24px;
   border-radius: 6px;
   flex-shrink: 0;
-  border: 1px solid rgba(11,24,41,.08);
-  background: #F6F3EE;
-  color: #9AAABB;
+  border: 1px solid rgba(11,24,41,.15);
+  background: #E8EDF2;
+  color: #1E3A50;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -595,6 +593,6 @@ function toggleExpand(si: number, fi: number) {
 }
 
 /* Empty states */
-.rp-empty { padding: 24px; text-align: center; color: #3D5166; font-size: 14px; }
-.rp-empty-state { padding: 48px; text-align: center; font-size: 15px; color: #3D5166; }
+.rp-empty { padding: 24px; text-align: center; color: #1E3A50; font-size: 14px; }
+.rp-empty-state { padding: 48px; text-align: center; font-size: 15px; color: #1E3A50; }
 </style>

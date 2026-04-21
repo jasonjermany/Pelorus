@@ -94,7 +94,7 @@
               v-for="tab in tabs"
               :key="tab"
               class="flex-1 py-2 rounded-lg text-[14px] font-medium transition-all duration-150 cursor-pointer"
-              :class="activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-700 hover:text-gray-800'"
+              :class="activeTab === tab ? 'bg-navy text-white shadow-sm' : 'text-gray-700 hover:text-gray-800'"
               @click="activeTab = tab"
             >{{ tab }}</button>
           </div>
@@ -110,9 +110,9 @@
               </ol>
             </div>
             <div v-if="sortedFlags.length" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100">
-                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Concerns &amp; Flags</p>
-                <span class="text-[14px] text-gray-600">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
+              <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-navy">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Concerns &amp; Flags</p>
+                <span class="text-[14px] text-gray-300">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
               </div>
               <div class="flex flex-col divide-y divide-gray-100 overflow-y-auto" style="max-height:min(50vh,480px)">
                 <div
@@ -148,8 +148,8 @@
               </div>
             </div>
             <div v-if="verdict.favorable_factors?.length" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Favorable Factors</p>
+              <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Favorable Factors</p>
               </div>
               <ul class="flex flex-col divide-y divide-gray-100 list-none">
                 <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 sm:px-6 py-4 text-[15px] text-gray-800 leading-relaxed">
@@ -171,8 +171,8 @@
           <!-- Insights -->
           <div v-else-if="activeTab === 'Insights'" class="flex flex-col gap-4">
             <div v-if="verdict.insights" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Underwriting Insights</p>
+              <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Underwriting Insights</p>
               </div>
               <div class="divide-y divide-gray-100 overflow-y-auto" style="max-height:min(55vh,520px)">
                 <div v-for="(value, key) in verdict.insights" :key="key" class="px-5 sm:px-6 py-5">
@@ -182,8 +182,8 @@
               </div>
             </div>
             <div v-if="verdict.missing_info?.length" class="glass-card overflow-hidden">
-              <div class="px-5 sm:px-6 py-4 border-b border-gray-100">
-                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900">Missing Information</p>
+              <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Missing Information</p>
               </div>
               <div class="flex flex-col divide-y divide-gray-100">
                 <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-5 sm:px-6 py-4">
