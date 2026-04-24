@@ -146,7 +146,7 @@ export async function evaluateSubmission(
     temperature: 0,
     tools: [CHECKS_TOOL],
     tool_choice: { type: 'tool', name: 'submit_evaluation' },
-    messages: buildChecksMessages(submissionText, hardStopsText, guidelinesText, hardStopCheckList, pinned.length),
+    messages: buildChecksMessages(submissionText, hardStopsText, guidelinesText, hardStopCheckList),
   } as any)
 
   const finalMsg = await stream.finalMessage()

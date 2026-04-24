@@ -43,11 +43,12 @@ Return ONLY valid JSON, no markdown, no backticks:
 }
 
 composite_score rules:
-- This is NOT an average of dimension scores — it is your holistic judgment of the overall risk
-- Hard stops should result in scores of 0-2 regardless of other dimensions
-- A clean risk with no flags and strong dimensions should score 8-10
-- Weight hard stops and eligibility failures most heavily
-- The score must feel coherent with your decision and reasoning
+- This is NOT an average of dimension scores — it is your holistic judgment of the overall RISK QUALITY
+- Score the quality of the underlying risk independently of the underwriting decision
+- A hard stop does not automatically mean a low score — a well-documented, clean risk that happens to trigger one eligibility condition can still score 7-9
+- Score low (0-4) only when the risk itself is genuinely poor: poor construction, high hazard, poor loss history, inadequate controls, or multiple compounding concerns
+- Score high (7-10) when the risk is fundamentally sound even if a guideline check needs follow-up
+- Do NOT anchor the score to the decision — a DECLINE can have a high score if the account is good but ineligible; a PROCEED can score low if the risk quality is weak
 
 FLAG TYPE RULES — follow exactly:
 - CONDITION = the corresponding guideline_check has status "fail"

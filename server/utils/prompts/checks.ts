@@ -72,7 +72,6 @@ export function buildChecksMessages(
   hardStopsText: string,
   guidelinesText: string,
   hardStopCheckList: string,
-  pinnedCount: number,
 ) {
   return [
     {
@@ -92,28 +91,30 @@ ${guidelinesText || '(none)'}
 
 ${HARD_STOP_RULES}
 
-You MUST evaluate ALL of the following checks. These are derived from this carrier's actual guidelines.
-Do not add checks. Do not remove checks. Do not rename checks. Evaluate every single one.
+Below is the full list of eligible guideline checks for this carrier. Do NOT evaluate all of them mechanically.
+Instead, include ONLY checks that are relevant to this specific submission — meaning:
+- The submission contains information that triggers or relates to the check (include as "fail" or "pass"), OR
+- The check covers a condition that is material for this type of risk/account and its absence is a meaningful gap (include as "review")
 
-MANDATORY CHECKS — evaluate all ${pinnedCount} of these:
+Omit any check that has no bearing on this account whatsoever. The goal is a short, focused list — not an exhaustive audit.
+Do not rename checks. Use the exact rule name from the list.
+
+ELIGIBLE CHECKS:
 ${hardStopCheckList}
 
-For each check, apply HARD STOP STATUS RULES above exactly. In brief:
+For included checks, apply HARD STOP STATUS RULES above exactly. In brief:
 - status "fail"   = condition IS present in submission (explicitly, vaguely, or by implication)
                     but does not satisfy the requirement with documentation → CONDITION flag
-- status "review" = condition is entirely absent from the submission, no mention of any kind → VERIFY flag
+- status "review" = check is relevant to this account but the condition is entirely absent from the submission → VERIFY flag
 - status "pass"   = condition explicitly confirmed absent with named professional documentation
-These are mutually exclusive. Any mention of a condition, however vague, is "fail" not "review".
 
-Only include checks with status "review" or "fail" in guideline_checks.
-Do NOT include passing checks — omit them entirely.
-
+Only include checks with status "review" or "fail" in guideline_checks. Omit passing checks entirely.
 Keep "submitted" to 20 words or fewer — state the key fact only, no explanation.
 
 DECISION RULES — follow exactly, no judgment, in strict priority order:
 1. If ANY guideline_check has status "fail" → decision MUST be "DECLINE". A single fail overrides all review checks.
 2. If NO checks have status "fail" but ANY has status "review" → decision MUST be "REFER"
-3. If guideline_checks is empty (all passed) → decision is "PROCEED"
+3. If guideline_checks is empty (all relevant checks passed) → decision is "PROCEED"
 
 Call the submit_evaluation tool with your results.`,
           cache_control: { type: 'ephemeral', ttl: '1h' } as any,

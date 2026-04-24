@@ -70,8 +70,8 @@
             'border-navy/[0.08]': !['fail','warn'].includes(worstForSection(sec)),
           }"
         >
-          <button class="w-full flex items-center gap-2.5 px-3.5 py-[11px] bg-transparent border-0 cursor-pointer text-left" @click="toggleSection(si)">
-            <span class="text-[11px] tracking-[.1em] uppercase text-navy font-bold flex-1">{{ sec.title }}</span>
+          <button class="w-full flex items-center gap-2.5 px-3.5 py-[11px] bg-navy border-0 cursor-pointer text-left" @click="toggleSection(si)">
+            <span class="text-[11px] tracking-[.1em] uppercase text-white font-bold flex-1">{{ sec.title }}</span>
             <span
               v-if="flagCount(sec) > 0"
               class="text-[11px] px-[9px] py-0.5 rounded-full font-semibold"
@@ -79,7 +79,7 @@
             >
               {{ flagCount(sec) }} {{ worstForSection(sec) === 'fail' ? 'hard stop' : 'flag' }}{{ flagCount(sec) > 1 ? 's' : '' }}
             </span>
-            <span class="text-[10px] text-[#1E3A50]">{{ isSectionOpen(si) ? '▲' : '▼' }}</span>
+            <span class="text-[10px] text-white/60">{{ isSectionOpen(si) ? '▲' : '▼' }}</span>
           </button>
 
           <div v-if="isSectionOpen(si)" class="px-3.5 pb-2.5">
@@ -128,7 +128,7 @@
                   </p>
                   <button
                     v-if="isLong(field) && field.status !== 'unconfirmed'"
-                    class="text-[12px] text-[#1E3A50] bg-transparent border-0 cursor-pointer py-0.5"
+                    class="text-[11px] font-semibold text-white bg-navy border-0 cursor-pointer px-2.5 py-0.5 rounded-full mt-1"
                     @click="toggleExpand(si, fi)"
                   >{{ isExpanded(si, fi) ? 'show less ▲' : 'show more ▼' }}</button>
                   <p v-if="amendments[amendKey(si, fi)]" class="text-[12px] text-[#1E3A50] mt-0.5">Original: {{ field.value }}</p>
@@ -218,7 +218,7 @@ const openSections = ref(new Set<string>())
 
 watch(activeSections, (secs) => {
   const initial = new Set<string>()
-  secs.slice(0, 2).forEach((_, i) => initial.add(sectionKey(i)))
+  if (secs.length) initial.add(sectionKey(0))
   openSections.value = initial
 }, { immediate: true })
 
@@ -232,8 +232,9 @@ function isSectionOpen(si: number) {
 
 function toggleSection(si: number) {
   const k = sectionKey(si)
-  if (openSections.value.has(k)) openSections.value.delete(k)
-  else openSections.value.add(k)
+  const next = new Set(openSections.value)
+  next.has(k) ? next.delete(k) : next.add(k)
+  openSections.value = next
 }
 
 function switchLine(type: string) {
@@ -283,7 +284,8 @@ function isExpanded(si: number, fi: number) {
 
 function toggleExpand(si: number, fi: number) {
   const k = expandKey(si, fi)
-  if (expandedFields.value.has(k)) expandedFields.value.delete(k)
-  else expandedFields.value.add(k)
+  const next = new Set(expandedFields.value)
+  next.has(k) ? next.delete(k) : next.add(k)
+  expandedFields.value = next
 }
 </script>
