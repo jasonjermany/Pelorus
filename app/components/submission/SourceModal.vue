@@ -31,20 +31,33 @@
 
         <!-- Body -->
         <div class="overflow-y-auto flex-1 px-5 py-4 flex flex-col gap-4">
-          <div v-if="sourceDoc || sourceLocation" class="flex flex-col gap-1">
-            <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Source</p>
-            <p v-if="sourceDoc" class="text-[14px] font-semibold text-gray-800">{{ sourceDoc }}</p>
-            <p v-if="sourceLocation" class="text-[13px] text-gray-600">{{ sourceLocation }}</p>
-          </div>
-          <div v-if="rawText" class="flex flex-col gap-1">
-            <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Extracted text</p>
-            <pre class="text-[13px] leading-[1.6] text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 whitespace-pre-wrap font-mono overflow-x-auto">{{ rawText }}</pre>
-          </div>
-          <div v-if="context" class="flex flex-col gap-1">
-            <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Context</p>
-            <p class="text-[13px] leading-[1.6] text-gray-600 italic">{{ context }}</p>
-          </div>
-          <p v-if="!sourceDoc && !rawText && !context" class="text-[14px] text-gray-500">No source information available.</p>
+          <!-- Loading -->
+          <template v-if="isLoading">
+            <div class="flex flex-col items-center justify-center py-8 gap-3">
+              <svg class="w-5 h-5 animate-spin text-navy/30" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
+              </svg>
+              <p class="text-[13px] text-gray-400">Locating source passage...</p>
+            </div>
+          </template>
+
+          <!-- Content -->
+          <template v-else>
+            <div v-if="sourceDoc || sourceLocation" class="flex flex-col gap-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Source</p>
+              <p v-if="sourceDoc" class="text-[14px] font-semibold text-gray-800">{{ sourceDoc }}</p>
+              <p v-if="sourceLocation" class="text-[13px] text-gray-600">{{ sourceLocation }}</p>
+            </div>
+            <div v-if="rawText" class="flex flex-col gap-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Extracted text</p>
+              <pre class="text-[13px] leading-[1.6] text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 whitespace-pre-wrap font-mono overflow-x-auto">{{ rawText }}</pre>
+            </div>
+            <div v-if="context" class="flex flex-col gap-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Context</p>
+              <p class="text-[13px] leading-[1.6] text-gray-600 italic">{{ context }}</p>
+            </div>
+            <p v-if="!sourceDoc && !rawText && !context" class="text-[14px] text-gray-500">No source information available.</p>
+          </template>
         </div>
 
         <!-- Footer -->
@@ -67,6 +80,7 @@
 <script setup lang="ts">
 defineProps<{
   isOpen: boolean
+  isLoading?: boolean
   fieldKey: string
   displayTitle?: string | null
   sourceDoc: string | null

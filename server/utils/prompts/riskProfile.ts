@@ -1,14 +1,3 @@
-const sourceSchema = {
-  type: 'object' as const,
-  properties: {
-    source_doc:      { type: 'string', description: 'Document filename from the === DOCUMENT: name === header, or "Not disclosed".' },
-    source_location: { type: 'string', description: 'Page, section, row, or cell reference within the document, or "Not disclosed".' },
-    raw_text:        { type: 'string', description: 'Verbatim text excerpt copied exactly from the document, or "Not disclosed".' },
-    context:         { type: 'string', description: '1 short sentence of surrounding text giving the underwriter context, or "Not disclosed".' },
-  },
-  required: ['source_doc', 'source_location', 'raw_text', 'context'],
-}
-
 const fieldSchema = {
   type: 'object' as const,
   properties: {
@@ -16,9 +5,8 @@ const fieldSchema = {
     value:  { type: 'string', description: 'Key fact only — 15 words max. No explanation or rationale.' },
     status: { type: 'string', enum: ['ok', 'warn', 'fail', 'unconfirmed', 'na'], description: 'ok=confirmed no concerns; warn=flagged concern; fail=hard stop present; unconfirmed=referenced but undocumented; na=not applicable.' },
     note:   { type: 'string', description: 'Optional underwriter note. Omit if none.' },
-    source: sourceSchema,
   },
-  required: ['label', 'value', 'status', 'source'],
+  required: ['label', 'value', 'status'],
 }
 
 const sectionSchema = {
@@ -96,14 +84,45 @@ INSTRUCTIONS:
 1. You MUST populate the lines array. Always include at least one line. If the submission doesn't label a line explicitly, infer it from the content — default to "property" for building/location submissions.
 2. PROPERTY: one location per insured location. Sections: CONSTRUCTION / COPE, ELECTRICAL, PLUMBING, HVAC, ROOF, FIRE PROTECTION, SECURITY, OCCUPANCY, INSURED VALUES, LOSS HISTORY — include a section only if the submission has relevant data.
 3. GL / AUTO / WC / IM / UMBRELLA: sections directly on the line (OPERATIONS, CLASSIFICATIONS, LIMITS, DRIVERS, FLEET, LOSSES, etc.) — no locations.
-4. Every field must have a source object with verbatim raw_text. If a fact is not traceable to a specific passage, set all source fields to "Not disclosed".
-5. Assign status honestly — flag age issues, gaps, missing docs, and hard stops. Do not default everything to "ok".
-6. Be thorough but concise — extract all material facts an underwriter needs. Keep field values to 15 words or fewer. Omit notes when status is ok or na.${fieldHints}
+4. Assign status honestly — flag age issues, gaps, missing docs, and hard stops. Do not default everything to "ok".
+5. Be thorough but concise — extract all material facts an underwriter needs. Keep field values to 15 words or fewer. Omit notes when status is ok or na.${fieldHints}
 
 ## SUBMISSION
 ${submissionText}
 
 Call the submit_risk_profile tool with your results.`,
+    },
+  ]
+}
+
+export function buildSourceFetchMessages(submissionText: string, field: { label: string; value: string }) {
+  return [
+    {
+      role: 'user' as const,
+      content: [
+        {
+          type: 'text' as const,
+          text: `## SUBMISSION\n${submissionText}`,
+          cache_control: { type: 'ephemeral', ttl: '1h' } as any,
+        },
+        {
+          type: 'text' as const,
+          text: `Locate the source passage in the submission above for the following extracted field.
+
+Field: ${field.label}
+Value: ${field.value}
+
+Return ONLY a JSON object, no markdown, no backticks:
+{
+  "source_doc": "document filename from the === DOCUMENT: name === header, or null",
+  "source_location": "page, section, row, or cell reference within the document, or null",
+  "raw_text": "verbatim text excerpt copied exactly from the document, or null",
+  "context": "1 short sentence of surrounding context for the underwriter, or null"
+}
+
+If no specific passage can be traced in the submission, set all fields to null.`,
+        },
+      ],
     },
   ]
 }

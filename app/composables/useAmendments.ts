@@ -59,11 +59,13 @@ export function useAmendments(submissionId: string) {
     raw: SourceRaw
     title?: string
     amendable: boolean
+    loading?: boolean
   }
   const sourceModal = ref<SourceModalState | null>(null)
 
   const sourceModalTitle = computed(() => sourceModal.value?.title ?? null)
   const sourceModalAmendable = computed(() => sourceModal.value?.amendable ?? true)
+  const sourceModalLoading = computed(() => sourceModal.value?.loading ?? false)
 
   const sourceModalDoc = computed(() => {
     const r = sourceModal.value?.raw
@@ -78,6 +80,10 @@ export function useAmendments(submissionId: string) {
 
   function openSourceModal(key: string, raw: SourceRaw, title?: string, amendable = true) {
     sourceModal.value = { key, raw, title, amendable }
+  }
+
+  function openSourceModalLoading(key: string, title?: string) {
+    sourceModal.value = { key, raw: {}, title, amendable: true, loading: true }
   }
 
   function closeSourceModal() {
@@ -106,11 +112,13 @@ export function useAmendments(submissionId: string) {
     sourceModal,
     sourceModalTitle,
     sourceModalAmendable,
+    sourceModalLoading,
     sourceModalDoc,
     sourceModalLocation,
     sourceModalRawText,
     sourceModalContext,
     openSourceModal,
+    openSourceModalLoading,
     closeSourceModal,
     amendFromModal,
   }

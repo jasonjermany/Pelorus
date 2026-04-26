@@ -41,12 +41,6 @@ export type RpReportField = {
   value: string
   status: 'ok' | 'warn' | 'fail' | 'na' | 'unconfirmed'
   note?: string
-  source?: {
-    source_doc?: string
-    source_location?: string
-    raw_text?: string
-    context?: string
-  }
 }
 
 export type RpSection = {

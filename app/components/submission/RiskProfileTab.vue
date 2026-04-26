@@ -86,7 +86,9 @@
             <div
               v-for="(field, fi) in sec.fields"
               :key="fi"
-              class="py-2 flex items-start gap-2.5 border-b border-navy/[0.05] [&:last-child]:border-b-0"
+              class="group py-2 flex items-start gap-2.5 border-b border-navy/[0.05] [&:last-child]:border-b-0 rounded-md transition-colors duration-100"
+              :class="editingKey !== amendKey(si, fi) ? 'cursor-pointer hover:bg-navy/[0.04]' : ''"
+              @click="editingKey !== amendKey(si, fi) && fetchAndOpenSource(amendKey(si, fi), field.label, field.value)"
             >
               <div
                 class="w-[3px] rounded-sm flex-shrink-0 self-stretch min-h-4 mt-0.5"
@@ -129,29 +131,21 @@
                   <button
                     v-if="isLong(field) && field.status !== 'unconfirmed'"
                     class="text-[11px] font-semibold text-white bg-navy border-0 cursor-pointer px-2.5 py-0.5 rounded-full mt-1"
-                    @click="toggleExpand(si, fi)"
+                    @click.stop="toggleExpand(si, fi)"
                   >{{ isExpanded(si, fi) ? 'show less ▲' : 'show more ▼' }}</button>
                   <p v-if="amendments[amendKey(si, fi)]" class="text-[12px] text-[#1E3A50] mt-0.5">Original: {{ field.value }}</p>
                   <p v-if="field.note" class="text-[12px] text-[#1E3A50] mt-1 leading-[1.4]">{{ field.note }}</p>
                 </template>
               </div>
 
-              <button
+              <svg
                 v-if="editingKey !== amendKey(si, fi)"
-                class="w-6 h-6 rounded-[6px] flex-shrink-0 border border-navy/[0.15] bg-[#E8EDF2] text-[#1E3A50] hover:bg-navy hover:text-white cursor-pointer flex items-center justify-center text-[12px] transition-colors duration-100"
-                title="Inspect source"
-                @click="openSourceModal(
-                  amendKey(si, fi),
-                  {
-                    value: amendments[amendKey(si, fi)]?.amendedValue ?? field.value,
-                    source_doc: field.source?.source_doc,
-                    source_location: field.source?.source_location,
-                    raw_text: field.source?.raw_text,
-                    context: field.source?.context,
-                  },
-                  field.label
-                )"
-              >↗</button>
+                class="w-3 h-3 flex-shrink-0 mt-[5px] text-navy/20 group-hover:text-navy/60 transition-colors duration-100"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M7 17L17 7M7 7h10v10"/>
+              </svg>
+
             </div>
           </div>
         </div>
@@ -171,7 +165,44 @@ import type { RiskReport, RpLine, RpSection, RpLocation, RpReportField } from '~
 
 const props = defineProps<{ report?: RiskReport | null }>()
 
-const { amendments, editingKey, editDraft, editInputRef, saveEdit, cancelEdit, openSourceModal } = inject(AMENDMENTS_KEY)!
+const { amendments, editingKey, editDraft, editInputRef, saveEdit, cancelEdit, sourceModal, openSourceModal, openSourceModalLoading } = inject(AMENDMENTS_KEY)!
+
+const route = useRoute()
+const submissionId = route.params.id as string
+
+type SourceResult = { source_doc: string | null; source_location: string | null; raw_text: string | null; context: string | null }
+const sourceCache = ref<Record<string, SourceResult>>({})
+
+function toSourceRaw(r: SourceResult) {
+  return {
+    source_doc:      r.source_doc      ?? undefined,
+    source_location: r.source_location ?? undefined,
+    raw_text:        r.raw_text        ?? undefined,
+    context:         r.context         ?? undefined,
+  }
+}
+
+async function fetchAndOpenSource(fieldKey: string, label: string, value: string) {
+  const cached = sourceCache.value[fieldKey]
+  if (cached) {
+    openSourceModal(fieldKey, { value, ...toSourceRaw(cached) }, label)
+    return
+  }
+
+  openSourceModalLoading(fieldKey, label)
+  try {
+    const result = await $fetch<SourceResult>(`/api/submissions/${submissionId}/field-source`, {
+      method: 'POST',
+      body: { field_key: fieldKey, label, value },
+    })
+    sourceCache.value = { ...sourceCache.value, [fieldKey]: result }
+    if (sourceModal.value?.key === fieldKey) {
+      openSourceModal(fieldKey, { value, ...toSourceRaw(result) }, label)
+    }
+  } catch (e: any) {
+    console.error('[field-source] fetch failed:', e?.message)
+  }
+}
 
 type StatusKey = 'ok' | 'warn' | 'fail' | 'na' | 'unconfirmed'
 

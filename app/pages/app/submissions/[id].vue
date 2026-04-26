@@ -260,6 +260,7 @@
     <!-- ── Source Modal ───────────────────────────────────────── -->
     <SubmissionSourceModal
       :is-open="!!sourceModal"
+      :is-loading="sourceModalLoading"
       :field-key="sourceModal?.key ?? ''"
       :display-title="sourceModalTitle"
       :amendable="sourceModalAmendable"
@@ -290,6 +291,7 @@ const {
   sourceModal,
   sourceModalTitle,
   sourceModalAmendable,
+  sourceModalLoading,
   sourceModalDoc,
   sourceModalLocation,
   sourceModalRawText,
