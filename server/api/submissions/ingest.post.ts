@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
       const { error: evalInsertError } = await getSupabase().from('evaluations').insert({
         org_id: submission.org_id,
         submission_id: submission.id,
-        decision: verdict.decision,
+        decision: (verdict as any).verdict_code,
         composite_score: verdict.composite_score,
         verdict: storedVerdict,
       })
@@ -99,11 +99,11 @@ export default defineEventHandler(async (event) => {
       console.log(`[ingest] total       ${Date.now() - t_total}ms`)
 
       if (submission.broker_email) {
-        const namedInsured = storedVerdict.risk_profile?.risk_summary?.named_insured ?? null
+        const namedInsured = storedVerdict.risk_profile?.named_insured ?? null
         await sendResultsEmail(
           submission.broker_email,
           submission.id,
-          verdict.decision,
+          (verdict as any).verdict_code,
           namedInsured,
         ).catch(err => console.error(`[email] failed  submission=${submission.id}  error=${err.message}`))
       }

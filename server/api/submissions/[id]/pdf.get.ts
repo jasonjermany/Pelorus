@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const verdict = evaluation.verdict as any
-  const namedInsured: string | null = verdict.risk_profile?.risk_summary?.named_insured ?? null
+  const namedInsured: string | null = verdict.risk_profile?.named_insured ?? verdict.risk_profile?.risk_summary?.named_insured ?? null
   const submissionDate = new Date(submission.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

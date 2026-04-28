@@ -96,6 +96,7 @@ export default defineEventHandler(async (event) => {
       page: getChunkPage(chunk),
       block_types: getChunkBlockTypes(chunk),
       is_pinned: false,
+      rule_type: cls?.type ?? null,
       summary: cls?.summary ?? null,
     }
   })

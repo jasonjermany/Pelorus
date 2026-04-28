@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     const { error: evalInsertError } = await getSupabase().from('evaluations').insert({
       org_id: submission.org_id,
       submission_id: id,
-      decision: verdict.decision,
+      decision: (verdict as any).verdict_code,
       composite_score: verdict.composite_score,
       verdict: storedVerdict,
     })

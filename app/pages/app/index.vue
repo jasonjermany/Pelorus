@@ -572,9 +572,11 @@ function scoreColor(score: number): string {
 }
 
 function decisionClass(decision: string): string {
-  if (decision === 'PROCEED') return 'bg-green-50 text-green-800 border border-green-200'
-  if (decision === 'REFER') return 'bg-amber-50 text-amber-800 border border-amber-200'
-  if (decision === 'DECLINE') return 'bg-red-50 text-red-800 border border-red-200'
+  if (decision === 'PROCEED')      return 'bg-green-50 text-green-800 border border-green-200'
+  if (decision === 'REFER')        return 'bg-amber-50 text-amber-800 border border-amber-200'
+  if (decision === 'DECLINE')      return 'bg-red-50 text-red-800 border border-red-200'
+  if (decision === 'SOFT_DECLINE') return 'bg-orange-50 text-orange-800 border border-orange-200'
+  if (decision === 'REQUEST_INFO') return 'bg-blue-50 text-blue-800 border border-blue-200'
   return 'bg-gray-100 text-gray-800 border border-gray-200'
 }
 

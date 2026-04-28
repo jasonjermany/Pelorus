@@ -43,9 +43,16 @@
 
           <!-- Content -->
           <template v-else>
-            <div v-if="sourceDoc || sourceLocation" class="flex flex-col gap-1">
+            <div v-if="sourceDoc || sourceLocation || sourceTier" class="flex flex-col gap-1">
               <p class="text-[10px] font-black uppercase tracking-[0.12em] text-gray-500">Source</p>
-              <p v-if="sourceDoc" class="text-[14px] font-semibold text-gray-800">{{ sourceDoc }}</p>
+              <div class="flex items-center gap-2 flex-wrap">
+                <p v-if="sourceDoc" class="text-[14px] font-semibold text-gray-800">{{ sourceDoc }}</p>
+                <span
+                  v-if="sourceTier && sourceTier !== 'NOT_CONFIRMED'"
+                  class="text-[10px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded-full border"
+                  :class="tierBadgeClass"
+                >{{ sourceTier }}</span>
+              </div>
               <p v-if="sourceLocation" class="text-[13px] text-gray-600">{{ sourceLocation }}</p>
             </div>
             <div v-if="rawText" class="flex flex-col gap-1">
@@ -78,13 +85,17 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import { formatKey } from '~/utils/submission'
+
+const props = defineProps<{
   isOpen: boolean
   isLoading?: boolean
   fieldKey: string
   displayTitle?: string | null
   sourceDoc: string | null
   sourceLocation: string | null
+  sourceTier?: string | null
   rawText: string | null
   context: string | null
   amendable?: boolean
@@ -94,4 +105,13 @@ defineEmits<{
   close: []
   amend: []
 }>()
+
+const tierBadgeClass = computed(() => {
+  const t = props.sourceTier
+  if (t === 'T1') return 'bg-green-50 text-green-800 border-green-200'
+  if (t === 'T2') return 'bg-blue-50 text-blue-700 border-blue-200'
+  if (t === 'T3') return 'bg-amber-50 text-amber-700 border-amber-200'
+  if (t === 'T4') return 'bg-red-50 text-red-600 border-red-200'
+  return 'bg-gray-100 text-gray-600 border-gray-200'
+})
 </script>

@@ -132,7 +132,7 @@ export default defineEventHandler(async (event) => {
       const { error: evalError } = await getSupabase().from('evaluations').insert({
         org_id: submission.org_id,
         submission_id: submission.id,
-        decision: verdict.decision,
+        decision: (verdict as any).verdict_code,
         composite_score: verdict.composite_score,
         verdict: { ...verdict, analyzed_in_seconds: analyzedInSeconds },
       })
@@ -147,14 +147,14 @@ export default defineEventHandler(async (event) => {
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
 
       if (brokerEmail) {
-        const namedInsured = verdict.risk_profile?.risk_summary?.named_insured ?? null
+        const namedInsured = verdict.risk_profile?.named_insured ?? null
         const sub = submission as any
         const pdfBuffer = await generatePdfBuffer(
           { ...verdict, analyzed_in_seconds: analyzedInSeconds } as any,
           new Date(sub.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           namedInsured,
         )
-        await sendInboundResultsEmail(brokerEmail, sub.id, verdict.decision, namedInsured, pdfBuffer)
+        await sendInboundResultsEmail(brokerEmail, sub.id, (verdict as any).verdict_code, namedInsured, pdfBuffer)
           .catch(err => console.error(`[email/inbound] reply failed  submission=${sub.id}  error=${err.message}`))
       }
     } catch (err) {

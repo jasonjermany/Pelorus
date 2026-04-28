@@ -25,10 +25,10 @@
             :class="{ 'bg-red-50/40': check.status === 'fail', 'bg-amber-50/30': check.status === 'review' }"
           >
             <td class="td-cell align-top">
-              <p class="font-medium text-gray-900">{{ check.rule }}</p>
-              <p class="text-[13px] text-gray-600 mt-1"><span class="font-semibold text-gray-700">Ref:</span> {{ check.cited_section }}</p>
+              <p class="font-medium text-gray-900">{{ check.rule_name }}</p>
+              <p class="text-[13px] text-gray-600 mt-1"><span class="font-semibold text-gray-700">Ref:</span> {{ check.section }}</p>
             </td>
-            <td class="td-cell text-gray-800 leading-relaxed align-top">{{ check.required }}</td>
+            <td class="td-cell text-gray-800 leading-relaxed align-top">{{ check.requirement }}</td>
             <td class="td-cell align-top">
               <div class="flex items-start gap-2">
                 <div class="flex-1 min-w-0">
@@ -39,13 +39,13 @@
                       v-model="editDraft"
                       type="text"
                       class="w-full bg-gray-50 border border-gray-300 focus:border-accent-500/70 focus:bg-white rounded-lg px-2.5 py-1.5 text-[14px] text-gray-900 outline-none transition-colors"
-                      @keydown.enter="saveEdit('check:' + i, check.submitted)"
+                      @keydown.enter="saveEdit('check:' + i, check.submitted_value)"
                       @keydown.escape="cancelEdit"
                     />
                     <div class="flex gap-1.5 mt-2">
                       <button
                         class="text-[12px] font-bold text-[#050A18] bg-accent-500 hover:bg-accent-400 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-                        @click="saveEdit('check:' + i, check.submitted)"
+                        @click="saveEdit('check:' + i, check.submitted_value)"
                       >Save</button>
                       <button
                         class="text-[12px] font-medium text-gray-700 hover:text-gray-900 px-2.5 py-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -59,8 +59,8 @@
                       v-if="amendments['check:' + i]"
                       class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap"
                     >Amended</span>
-                    <p class="text-gray-800 leading-relaxed">{{ amendments['check:' + i]?.amendedValue ?? check.submitted }}</p>
-                    <p v-if="amendments['check:' + i]" class="text-[11px] text-gray-500 mt-0.5 line-clamp-2">Original: {{ check.submitted }}</p>
+                    <p class="text-gray-800 leading-relaxed">{{ amendments['check:' + i]?.amendedValue ?? check.submitted_value }}</p>
+                    <p v-if="amendments['check:' + i]" class="text-[11px] text-gray-500 mt-0.5 line-clamp-2">Original: {{ check.submitted_value }}</p>
                   </template>
                 </div>
                 <!-- Action buttons (hidden while editing) -->
@@ -68,7 +68,7 @@
                   <button
                     class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
                     title="Edit submitted value"
-                    @click="startEdit('check:' + i, amendments['check:' + i]?.amendedValue ?? check.submitted)"
+                    @click="startEdit('check:' + i, amendments['check:' + i]?.amendedValue ?? check.submitted_value)"
                   >
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                       <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
@@ -77,7 +77,17 @@
                   <button
                     class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded"
                     title="View source"
-                    @click="openSourceModal('check:' + i, { value: amendments['check:' + i]?.amendedValue ?? check.submitted, source_doc: check.submission_source?.trim() && check.submission_source.trim() !== 'Not disclosed' ? check.submission_source.trim() : undefined, raw_text: check.raw_text ?? check.submitted, context: check.context ?? ('Guideline requires: ' + check.required) }, check.rule)"
+                    @click="openSourceModal(
+                      'check:' + i,
+                      {
+                        value: amendments['check:' + i]?.amendedValue ?? check.submitted_value,
+                        source_doc: check.doc_name?.trim() || (check.source_doc?.trim() && check.source_doc.trim() !== 'Not disclosed' ? check.source_doc.trim() : undefined),
+                        source_location: check.page_ref ?? undefined,
+                        raw_text: check.raw_text ?? check.submitted_value,
+                        context: check.context ?? ('Guideline requires: ' + check.requirement),
+                      },
+                      check.rule_name
+                    )"
                   >
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
@@ -87,14 +97,19 @@
               </div>
             </td>
             <td class="td-cell align-top">
-              <span
-                class="text-[12px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
-                :class="{
-                  'bg-green-50 text-green-800 border border-green-200': check.status === 'pass',
-                  'bg-amber-50 text-amber-800 border border-amber-200': check.status === 'review',
-                  'bg-red-50 text-red-800 border border-red-200': check.status === 'fail',
-                }"
-              >{{ check.status }}</span>
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-[12px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
+                  :class="{
+                    'bg-amber-50 text-amber-800 border border-amber-200': check.status === 'review',
+                    'bg-red-50 text-red-800 border border-red-200': check.status === 'fail',
+                  }"
+                >{{ check.status }}</span>
+                <span
+                  v-if="check.source_tier && check.source_tier !== 'NOT_CONFIRMED'"
+                  class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap self-start"
+                >{{ check.source_tier }}</span>
+              </div>
             </td>
           </tr>
         </tbody>

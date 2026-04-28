@@ -8,7 +8,7 @@
           {{ lineMeta(activeLine).icon }}
         </div>
         <div>
-          <p class="text-[12px] text-white/60 tracking-[.04em] uppercase mb-0.5">{{ report?.risk_summary?.named_insured || '' }}</p>
+          <p class="text-[12px] text-white/60 tracking-[.04em] uppercase mb-0.5">{{ report?.named_insured || '' }}</p>
           <p class="text-[17px] font-semibold text-white tracking-[-0.01em]">{{ activeLineData.label || activeLine }}</p>
         </div>
       </div>
@@ -88,7 +88,7 @@
               :key="fi"
               class="group py-2 flex items-start gap-2.5 border-b border-navy/[0.05] [&:last-child]:border-b-0 rounded-md transition-colors duration-100"
               :class="editingKey !== amendKey(si, fi) ? 'cursor-pointer hover:bg-navy/[0.04]' : ''"
-              @click="editingKey !== amendKey(si, fi) && fetchAndOpenSource(amendKey(si, fi), field.label, field.value)"
+              @click="editingKey !== amendKey(si, fi) && openFieldSource(amendKey(si, fi), field)"
             >
               <div
                 class="w-[3px] rounded-sm flex-shrink-0 self-stretch min-h-4 mt-0.5"
@@ -151,8 +151,6 @@
         </div>
       </template>
       <p v-else class="p-6 text-center text-[#1E3A50] text-[14px]">No sections extracted for this line of business.</p>
-
-      <p class="text-center text-[10px] text-[#5A7290] tracking-[.1em] mt-1.5">PELORUS · RISK PROFILE · DYNAMIC — DRIVEN BY CLAUDE JSON</p>
     </div>
   </div>
   <div v-else class="p-12 text-center text-[15px] text-[#1E3A50]">No risk profile data available.</div>
@@ -173,31 +171,22 @@ const submissionId = route.params.id as string
 type SourceResult = { source_doc: string | null; source_location: string | null; raw_text: string | null; context: string | null }
 const sourceCache = ref<Record<string, SourceResult>>({})
 
-function toSourceRaw(r: SourceResult) {
-  return {
-    source_doc:      r.source_doc      ?? undefined,
-    source_location: r.source_location ?? undefined,
-    raw_text:        r.raw_text        ?? undefined,
-    context:         r.context         ?? undefined,
-  }
-}
-
-async function fetchAndOpenSource(fieldKey: string, label: string, value: string) {
+async function openFieldSource(fieldKey: string, field: RpReportField) {
   const cached = sourceCache.value[fieldKey]
   if (cached) {
-    openSourceModal(fieldKey, { value, ...toSourceRaw(cached) }, label)
+    openSourceModal(fieldKey, { value: field.value, source_doc: cached.source_doc ?? undefined, source_location: cached.source_location ?? undefined, raw_text: cached.raw_text ?? undefined, context: cached.context ?? undefined }, field.label)
     return
   }
 
-  openSourceModalLoading(fieldKey, label)
+  openSourceModalLoading(fieldKey, field.label)
   try {
     const result = await $fetch<SourceResult>(`/api/submissions/${submissionId}/field-source`, {
       method: 'POST',
-      body: { field_key: fieldKey, label, value },
+      body: { field_key: fieldKey, label: field.label, value: field.value },
     })
     sourceCache.value = { ...sourceCache.value, [fieldKey]: result }
     if (sourceModal.value?.key === fieldKey) {
-      openSourceModal(fieldKey, { value, ...toSourceRaw(result) }, label)
+      openSourceModal(fieldKey, { value: field.value, source_doc: result.source_doc ?? undefined, source_location: result.source_location ?? undefined, raw_text: result.raw_text ?? undefined, context: result.context ?? undefined }, field.label)
     }
   } catch (e: any) {
     console.error('[field-source] fetch failed:', e?.message)
@@ -215,12 +204,15 @@ const STATUS_META: Record<StatusKey, { color: string; bg: string; label: string 
 }
 
 const LINE_META: Record<string, { icon: string; color: string }> = {
-  property: { icon: 'PRP', color: '#A8C0E0' },
-  gl:       { icon: 'GL',  color: '#7FD1C8' },
-  auto:     { icon: 'AUT', color: '#90B4E0' },
-  wc:       { icon: 'WC',  color: '#C4A0E0' },
-  im:       { icon: 'IM',  color: '#C4A080' },
-  umbrella: { icon: 'UMB', color: '#80B0D0' },
+  property:     { icon: 'PRP', color: '#A8C0E0' },
+  gl:           { icon: 'GL',  color: '#7FD1C8' },
+  auto:         { icon: 'AUT', color: '#90B4E0' },
+  wc:           { icon: 'WC',  color: '#C4A0E0' },
+  im_transit:   { icon: 'TRN', color: '#C4A080' },
+  im_equipment: { icon: 'EQP', color: '#B4906A' },
+  im_br:        { icon: 'BR',  color: '#A47860' },
+  im:           { icon: 'IM',  color: '#C4A080' },
+  umbrella:     { icon: 'UMB', color: '#80B0D0' },
 }
 
 const lineMeta = (type: string) => LINE_META[type] ?? { icon: type.slice(0, 3).toUpperCase(), color: '#A8C0E0' }

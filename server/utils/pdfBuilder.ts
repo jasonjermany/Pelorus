@@ -26,16 +26,20 @@ type RpLine = { line_type: string; label?: string; locations?: RpLocation[]; sec
 type RiskReport = { risk_summary?: { named_insured?: string; broker?: string; prior_carrier?: string }; lines: RpLine[] }
 
 type Verdict = {
-  decision: 'PROCEED' | 'REFER' | 'DECLINE'
+  verdict_code: string
   composite_score: number
   analyzed_in_seconds?: string
   dimension_scores?: Record<string, number>
+  score_label?: string
+  risk_summary?: { one_liner?: string; uw_file_note?: string; risk_tier?: string; binding_authority?: string }
+  analysis_summary?: string
+  priority_actions?: Array<{ priority: number; action: string; why: string; deadline: string; owner: string }>
   recommendation?: { summary: string; action_items?: string[] }
-  flags?: Array<{ title: string; type: string; explanation: string; action_required: string; cited_section: string }>
-  favorable_factors?: string[]
-  guideline_checks?: Array<{ rule: string; required: string; submitted: string; status: string; cited_section: string }>
-  insights?: Record<string, string>
-  missing_info?: Array<{ label: string; description: string }>
+  flags?: Array<{ title: string; type: string; severity?: string; priority_rank?: number; explanation: string; action_required: string; cited_section: string; source_doc?: string }>
+  favorable_factors?: Array<{ factor: string; detail: string; source_doc?: string; source_tier?: string }>
+  guideline_checks?: Array<{ rule_name: string; requirement: string; submitted_value: string; status: string; section: string }>
+  insights?: Array<{ type: string; label: string; finding: string; source_docs?: string[] }>
+  missing_information?: Array<{ label: string; description: string; why_it_matters?: string; priority?: string }>
   risk_profile?: RiskReport
 }
 
@@ -99,7 +103,7 @@ function kvTable(rows: [string, string][]) {
 // ─── Document builder ─────────────────────────────────────────────────────────
 
 function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: string | null) {
-  const colors = decisionColors(verdict.decision)
+  const colors = decisionColors(verdict.verdict_code)
   const score = normalizeScore(verdict.composite_score)
   const content: any[] = []
 
@@ -118,7 +122,7 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
         {
           stack: [
             { text: 'DECISION', style: 'label' },
-            { text: verdict.decision, fontSize: 24, bold: true, color: colors.text, margin: [0, 4, 0, 8] },
+            { text: verdict.verdict_code, fontSize: 24, bold: true, color: colors.text, margin: [0, 4, 0, 8] },
             { text: verdict.recommendation?.summary ?? '', style: 'body' },
             ...(verdict.analyzed_in_seconds
               ? [{ text: `Analyzed in ${verdict.analyzed_in_seconds}s`, style: 'caption', margin: [0, 3, 0, 0] as [number, number, number, number] }]
@@ -152,15 +156,10 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
   if (rp) {
     content.push(sectionTitle('Risk Profile'))
 
-    // Summary row (account-level metadata)
-    const summary = rp.risk_summary
-    if (summary) {
-      const summaryRows: [string, string][] = []
-      if (summary.named_insured) summaryRows.push(['Named Insured', summary.named_insured])
-      if (summary.broker)        summaryRows.push(['Broker', summary.broker])
-      if (summary.prior_carrier) summaryRows.push(['Prior Carrier', summary.prior_carrier])
-      if (summaryRows.length) content.push(kvTable(summaryRows))
-    }
+    const summaryRows: [string, string][] = []
+    if (rp.named_insured) summaryRows.push(['Named Insured', rp.named_insured])
+    if (rp.broker)        summaryRows.push(['Broker', rp.broker])
+    if (summaryRows.length) content.push(kvTable(summaryRows))
 
     const statusColor = (s: string) =>
       s === 'ok' ? '#15803d' : s === 'warn' ? '#a8882e' : s === 'fail' || s === 'unconfirmed' ? '#dc2626' : '#94a3b8'
@@ -248,9 +247,7 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
   }
 
   // ── Flags ──
-  const sortedFlags = [...(verdict.flags ?? [])].sort((a, b) =>
-    a.type === 'CONDITION' && b.type !== 'CONDITION' ? -1 : a.type !== 'CONDITION' && b.type === 'CONDITION' ? 1 : 0
-  )
+  const sortedFlags = [...(verdict.flags ?? [])].sort((a, b) => (a.priority_rank ?? 99) - (b.priority_rank ?? 99))
   if (sortedFlags.length) {
     content.push(sectionTitle('Concerns & Flags'))
     for (const flag of sortedFlags) {
@@ -279,8 +276,10 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
     for (const f of verdict.favorable_factors) {
       content.push({
         margin: [0, 3, 0, 0] as [number, number, number, number],
-        text: [{ text: '✓  ', color: '#22c55e', bold: true }, f],
-        style: 'body',
+        stack: [
+          { text: [{ text: '✓  ', color: '#22c55e', bold: true }, f.factor], style: 'body' },
+          ...(f.detail ? [{ text: f.detail, style: 'caption', margin: [16, 1, 0, 0] as [number, number, number, number] }] : []),
+        ],
       })
     }
   }
@@ -299,16 +298,16 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
             { text: 'STATUS', style: 'tableHeader', alignment: 'center' },
           ],
           ...verdict.guideline_checks.map(check => {
-            const statusColor = check.status === 'pass' ? '#15803d' : check.status === 'review' ? '#a8882e' : '#dc2626'
+            const statusColor = check.status === 'review' ? '#a8882e' : '#dc2626'
             return [
               {
                 stack: [
-                  { text: check.rule, style: 'tableValueBold' },
-                  { text: check.cited_section, style: 'caption', margin: [0, 2, 0, 0] as [number, number, number, number] },
+                  { text: check.rule_name, style: 'tableValueBold' },
+                  { text: check.section, style: 'caption', margin: [0, 2, 0, 0] as [number, number, number, number] },
                 ],
               },
-              { text: check.required, style: 'tableValue' },
-              { text: check.submitted, style: 'tableValue' },
+              { text: check.requirement, style: 'tableValue' },
+              { text: check.submitted_value, style: 'tableValue' },
               { text: check.status.toUpperCase(), style: 'badge', alignment: 'center', color: statusColor },
             ]
           }),
@@ -319,37 +318,39 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
   }
 
   // ── Insights ──
-  if (verdict.insights) {
-    const insightEntries = Object.entries(verdict.insights)
-    if (insightEntries.length) {
-      content.push(sectionTitle('Underwriting Insights'))
-      // 2-column grid, row by row
-      for (let i = 0; i < insightEntries.length; i += 2) {
-        const pair = insightEntries.slice(i, i + 2)
-        content.push({
-          columns: pair.map(([key, value]) => ({
-            width: '*',
-            stack: [
-              { text: formatKey(key).toUpperCase(), style: 'label', margin: [0, 0, 0, 4] as [number, number, number, number] },
-              { text: value, style: 'body' },
-            ],
-          })),
-          columnGap: 24,
-          margin: [0, 0, 0, 14] as [number, number, number, number],
-        })
-      }
+  if (verdict.insights?.length) {
+    content.push(sectionTitle('Underwriting Insights'))
+    for (let i = 0; i < verdict.insights.length; i += 2) {
+      const pair = verdict.insights.slice(i, i + 2)
+      content.push({
+        columns: pair.map(insight => ({
+          width: '*',
+          stack: [
+            { text: (insight.label || formatKey(insight.type)).toUpperCase(), style: 'label', margin: [0, 0, 0, 4] as [number, number, number, number] },
+            { text: insight.finding, style: 'body' },
+          ],
+        })),
+        columnGap: 24,
+        margin: [0, 0, 0, 14] as [number, number, number, number],
+      })
     }
   }
 
   // ── Missing Information ──
-  if (verdict.missing_info?.length) {
+  if (verdict.missing_information?.length) {
     content.push(sectionTitle('Missing Information'))
-    for (const item of verdict.missing_info) {
+    for (const item of verdict.missing_information) {
       content.push({
         margin: [0, 0, 0, 10] as [number, number, number, number],
         stack: [
-          { text: item.label, style: 'flagTitle' },
+          {
+            columns: [
+              { text: item.label, style: 'flagTitle', width: '*' },
+              ...(item.priority ? [{ text: item.priority, style: 'badge', color: item.priority === 'BINDING' ? '#dc2626' : '#a8882e', width: 'auto' }] : []),
+            ],
+          },
           { text: item.description, style: 'body', margin: [0, 3, 0, 0] as [number, number, number, number] },
+          ...(item.why_it_matters ? [{ text: item.why_it_matters, style: 'caption', margin: [0, 2, 0, 0] as [number, number, number, number] }] : []),
         ],
       })
     }

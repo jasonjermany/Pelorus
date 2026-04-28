@@ -79,10 +79,6 @@
                 </div>
                 <span class="text-[15px] font-semibold text-gray-800 w-8 text-right flex-shrink-0">{{ f.score.toFixed(1) }}</span>
               </div>
-              <div v-for="f in group.textFields" :key="f.label" class="py-2 border-b border-gray-100 last:border-0">
-                <p class="text-[10px] font-black uppercase tracking-[0.13em] text-gray-600 mb-0.5">{{ f.label }}</p>
-                <span class="text-[15px] text-gray-900">{{ f.value }}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -101,14 +97,57 @@
 
           <!-- Summary -->
           <div v-if="activeTab === 'Summary'" class="flex flex-col gap-4">
-            <div class="glass-card p-5 sm:p-6">
+
+            <!-- Analysis Summary -->
+            <div v-if="verdict.analysis_summary" class="glass-card p-5 sm:p-6">
+              <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900 mb-3">Analysis Summary</p>
+              <p class="text-[15px] text-gray-800 leading-relaxed">{{ verdict.analysis_summary }}</p>
+            </div>
+
+            <!-- UW File Note -->
+            <div v-if="verdict.risk_summary?.uw_file_note" class="glass-card p-5 sm:p-6">
+              <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900 mb-3">Underwriting File Note</p>
+              <p class="text-[15px] text-gray-800 leading-relaxed">{{ verdict.risk_summary.uw_file_note }}</p>
+            </div>
+
+            <!-- Priority Actions -->
+            <div v-if="verdict.priority_actions?.length" class="glass-card overflow-hidden">
+              <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-navy">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Priority Actions</p>
+                <span class="text-[14px] text-gray-300">{{ verdict.priority_actions.length }} item{{ verdict.priority_actions.length !== 1 ? 's' : '' }}</span>
+              </div>
+              <div class="flex flex-col divide-y divide-gray-100">
+                <div
+                  v-for="action in sortedPriorityActions"
+                  :key="action.priority"
+                  class="px-5 sm:px-6 py-4 flex gap-3"
+                >
+                  <span class="text-[13px] font-black text-[#92700A] flex-shrink-0 w-5 mt-0.5">{{ action.priority }}.</span>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[15px] font-medium text-gray-900 leading-snug mb-1">{{ action.action }}</p>
+                    <p class="text-[13px] text-gray-600 leading-relaxed mb-2">{{ action.why }}</p>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full border"
+                        :class="deadlineBadgeClass(action.deadline)"
+                      >{{ action.deadline }}</span>
+                      <span class="text-[11px] text-gray-500">{{ action.owner }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommendation action items (fallback if no priority_actions) -->
+            <div v-else-if="verdict.recommendation?.action_items?.length" class="glass-card p-5 sm:p-6">
               <p class="text-[11px] font-black tracking-[0.13em] uppercase text-gray-900 mb-3">Recommended Next Action</p>
               <ol class="flex flex-col gap-2.5 list-none">
-                <li v-for="(item, i) in verdict.recommendation?.action_items" :key="i" class="flex gap-3 text-[15px] text-gray-800 leading-relaxed">
+                <li v-for="(item, i) in verdict.recommendation.action_items" :key="i" class="flex gap-3 text-[15px] text-gray-800 leading-relaxed">
                   <span class="text-[#92700A] font-bold flex-shrink-0 w-4">{{ i + 1 }}.</span>{{ item }}
                 </li>
               </ol>
             </div>
+
+            <!-- Flags -->
             <div v-if="sortedFlags.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Concerns &amp; Flags</p>
@@ -119,26 +158,32 @@
                   v-for="(flag, i) in sortedFlags"
                   :key="i"
                   class="px-5 sm:px-6 py-5 flex gap-4"
-                  :class="flag.type === 'CONDITION' ? 'bg-red-50/40' : 'bg-amber-50/30'"
+                  :class="['HARD_STOP','CONDITION'].includes(flag.type) ? 'bg-red-50/40' : flag.type === 'VERIFY' ? 'bg-amber-50/30' : ''"
                 >
-                  <div class="w-[3px] rounded-full flex-shrink-0 mt-0.5" :class="flag.type === 'CONDITION' ? 'bg-red-500' : 'bg-amber-500'" />
+                  <div class="w-[3px] rounded-full flex-shrink-0 mt-0.5" :class="flagBarClass(flag.type)" />
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start gap-2 mb-1.5">
                       <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ flag.title }}</p>
                       <button
-                        v-if="flag.source_doc || flag.raw_text"
+                        v-if="flag.source_doc || flag.source_tier"
                         class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded flex-shrink-0"
                         title="View source"
-                        @click="openSourceModal('flag:' + i, { value: flag.title, source_doc: flag.source_doc, source_location: flag.source_location, raw_text: flag.raw_text, context: flag.context }, flag.title, false)"
+                        @click="openSourceModal('flag:' + i, { value: flag.title, source_doc: flag.source_doc }, flag.title, false)"
                       >
                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
                         </svg>
                       </button>
-                      <span
-                        class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
-                        :class="flag.type === 'CONDITION' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-800 border border-amber-200'"
-                      >{{ flag.type }}</span>
+                      <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <span
+                          class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full"
+                          :class="severityBadgeClass(flag.severity)"
+                        >{{ flag.severity }}</span>
+                        <span
+                          class="text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full"
+                          :class="['HARD_STOP','CONDITION'].includes(flag.type) ? 'bg-red-50 text-red-700 border border-red-200' : flag.type === 'VERIFY' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-600 border border-gray-200'"
+                        >{{ flag.type }}</span>
+                      </div>
                     </div>
                     <p class="text-[15px] text-gray-800 leading-relaxed mb-2.5">{{ flag.explanation }}</p>
                     <p class="text-[14px] text-gray-700 mb-1.5"><span class="font-semibold text-gray-800">Action:</span> {{ flag.action_required }}</p>
@@ -147,16 +192,24 @@
                 </div>
               </div>
             </div>
+
+            <!-- Favorable Factors -->
             <div v-if="verdict.favorable_factors?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Favorable Factors</p>
               </div>
               <ul class="flex flex-col divide-y divide-gray-100 list-none">
-                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 sm:px-6 py-4 text-[15px] text-gray-800 leading-relaxed">
+                <li v-for="(f, i) in verdict.favorable_factors" :key="i" class="flex items-start gap-3 px-5 sm:px-6 py-4">
                   <svg class="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 13l4 4L19 7"/>
                   </svg>
-                  {{ f }}
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[15px] font-medium text-gray-900 leading-snug">{{ f.factor }}</p>
+                    <p class="text-[14px] text-gray-700 leading-relaxed mt-0.5">{{ f.detail }}</p>
+                    <p v-if="f.source_doc" class="text-[12px] text-gray-500 mt-1">
+                      {{ f.source_doc }}<span v-if="f.source_tier" class="ml-1.5 font-bold">{{ f.source_tier }}</span>
+                    </p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -170,42 +223,56 @@
 
           <!-- Insights -->
           <div v-else-if="activeTab === 'Insights'" class="flex flex-col gap-4">
-            <div v-if="verdict.insights" class="glass-card overflow-hidden">
+            <div v-if="verdict.insights?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Underwriting Insights</p>
               </div>
               <div class="divide-y divide-gray-100 overflow-y-auto" style="max-height:min(55vh,520px)">
-                <div v-for="(value, key) in verdict.insights" :key="key" class="px-5 sm:px-6 py-5">
-                  <p class="text-[11px] font-black uppercase tracking-[0.13em] text-gray-900 mb-2">{{ formatKey(key) }}</p>
-                  <p class="text-[15px] text-gray-800 leading-relaxed">{{ value }}</p>
+                <div v-for="(insight, i) in verdict.insights" :key="i" class="px-5 sm:px-6 py-5">
+                  <div class="flex items-center gap-2 mb-2">
+                    <p class="text-[11px] font-black uppercase tracking-[0.13em] text-gray-900">{{ insight.label || formatKey(insight.type) }}</p>
+                    <span
+                      class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full"
+                      :class="insightTypeBadgeClass(insight.type)"
+                    >{{ insightTypeLabel(insight.type) }}</span>
+                    <span
+                      v-if="insight.source_tier && insight.source_tier !== 'NOT_CONFIRMED'"
+                      class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600"
+                    >{{ insight.source_tier }}</span>
+                  </div>
+                  <p class="text-[15px] text-gray-800 leading-relaxed">{{ insight.finding }}</p>
+                  <p v-if="insight.source_docs?.length" class="text-[12px] text-gray-500 mt-1.5">
+                    Sources: {{ insight.source_docs.join(', ') }}
+                  </p>
                 </div>
               </div>
             </div>
-            <div v-if="verdict.missing_info?.length" class="glass-card overflow-hidden">
+
+            <div v-if="verdict.missing_information?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Missing Information</p>
               </div>
               <div class="flex flex-col divide-y divide-gray-100">
-                <div v-for="(item, i) in verdict.missing_info" :key="i" class="px-5 sm:px-6 py-4">
+                <div v-for="(item, i) in verdict.missing_information" :key="i" class="px-5 sm:px-6 py-4">
                   <div class="flex items-center gap-2 mb-1.5">
                     <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ item.label }}</p>
-                    <button
-                      v-if="item.source_doc || item.raw_text"
-                      class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded flex-shrink-0"
-                      title="View source"
-                      @click="openSourceModal('missing:' + i, { value: item.label, source_doc: item.source_doc, source_location: item.source_location, raw_text: item.raw_text, context: item.context }, item.label, false)"
-                    >
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
-                      </svg>
-                    </button>
                     <span
                       v-if="item.priority"
                       class="text-[11px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
-                      :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-800'"
+                      :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'"
                     >{{ item.priority }}</span>
+                    <span
+                      v-if="item.source_tier_needed"
+                      class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex-shrink-0"
+                    >Need {{ item.source_tier_needed }}</span>
                   </div>
                   <p class="text-[15px] text-gray-800 leading-relaxed">{{ item.description }}</p>
+                  <p v-if="item.why_it_matters" class="text-[13px] text-gray-600 mt-1.5 leading-relaxed">
+                    <span class="font-semibold text-gray-700">Why it matters:</span> {{ item.why_it_matters }}
+                  </p>
+                  <p v-if="item.how_to_obtain" class="text-[13px] text-gray-600 mt-1 leading-relaxed">
+                    <span class="font-semibold text-gray-700">How to obtain:</span> {{ item.how_to_obtain }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -266,6 +333,7 @@
       :amendable="sourceModalAmendable"
       :source-doc="sourceModalDoc"
       :source-location="sourceModalLocation"
+      :source-tier="sourceModalTier"
       :raw-text="sourceModalRawText"
       :context="sourceModalContext"
       @close="closeSourceModal"
@@ -278,12 +346,13 @@
 <script setup lang="ts">
 import { computed, onMounted, provide, ref } from 'vue'
 import { AMENDMENTS_KEY } from '~/composables/useAmendments'
-import type { SubmissionResponse } from '~/types/submission'
+import { formatKey, normalizeScore } from '~/utils/submission'
+import type { SubmissionResponse, FlagType, FlagSeverity } from '~/types/submission'
 
 const route = useRoute()
 const id = route.params.id as string
 
-// ── Amendment state (shared with tab components via provide) ──
+// ── Amendment state ────────────────────────────────────────────
 const amendmentsApi = useAmendments(id)
 provide(AMENDMENTS_KEY, amendmentsApi)
 const {
@@ -294,6 +363,7 @@ const {
   sourceModalLoading,
   sourceModalDoc,
   sourceModalLocation,
+  sourceModalTier,
   sourceModalRawText,
   sourceModalContext,
   openSourceModal,
@@ -306,7 +376,7 @@ const submission = ref<SubmissionResponse | null>(null)
 const verdict = computed(() => submission.value?.verdict ?? null)
 
 const namedInsured = computed(() =>
-  verdict.value?.risk_profile?.risk_summary?.named_insured ?? null
+  verdict.value?.risk_profile?.named_insured ?? null
 )
 
 const isLoading = ref(false)
@@ -319,13 +389,22 @@ const downloadError = ref<string | null>(null)
 const tabs = ['Summary', 'Guidelines', 'Insights', 'Risk Profile'] as const
 const activeTab = ref<(typeof tabs)[number]>('Summary')
 
+// ── Sorted flags by priority_rank ──────────────────────────────
 const sortedFlags = computed(() => {
   if (!verdict.value?.flags) return []
   return [...verdict.value.flags].sort((a, b) => {
-    if (a.type === 'CONDITION' && b.type !== 'CONDITION') return -1
-    if (a.type !== 'CONDITION' && b.type === 'CONDITION') return 1
-    return 0
+    const pa = a.priority_rank ?? 99
+    const pb = b.priority_rank ?? 99
+    if (pa !== pb) return pa - pb
+    const order: Record<string, number> = { HARD_STOP: 0, CONDITION: 1, VERIFY: 2, INFO: 3 }
+    return (order[a.type] ?? 4) - (order[b.type] ?? 4)
   })
+})
+
+// ── Sorted priority actions ────────────────────────────────────
+const sortedPriorityActions = computed(() => {
+  if (!verdict.value?.priority_actions) return []
+  return [...verdict.value.priority_actions].sort((a, b) => a.priority - b.priority)
 })
 
 // ── Dimension score groups ─────────────────────────────────────
@@ -333,7 +412,6 @@ type DimGroup = {
   locationId: string
   address?: string
   numericFields: Array<{ label: string; score: number }>
-  textFields: Array<{ label: string; value: string }>
 }
 
 const dimGroups = computed<DimGroup[]>(() => {
@@ -345,11 +423,50 @@ const dimGroups = computed<DimGroup[]>(() => {
         label: formatKey(key),
         score: normalizeScore(score as number),
       })),
-      textFields: [],
     }]
   }
   return []
 })
+
+// ── Style helpers ──────────────────────────────────────────────
+function flagBarClass(type: FlagType) {
+  if (type === 'HARD_STOP' || type === 'CONDITION') return 'bg-red-500'
+  if (type === 'VERIFY') return 'bg-amber-500'
+  return 'bg-gray-400'
+}
+
+function severityBadgeClass(severity: FlagSeverity) {
+  if (severity === 'CRITICAL') return 'bg-red-100 text-red-800 border border-red-300'
+  if (severity === 'HIGH')     return 'bg-orange-50 text-orange-800 border border-orange-200'
+  if (severity === 'MEDIUM')   return 'bg-amber-50 text-amber-700 border border-amber-200'
+  return 'bg-gray-100 text-gray-600 border border-gray-200'
+}
+
+function deadlineBadgeClass(deadline: string) {
+  if (deadline === 'Before binding') return 'bg-red-50 text-red-700 border border-red-200'
+  if (deadline === 'Before quoting') return 'bg-orange-50 text-orange-700 border border-orange-200'
+  if (deadline === 'Within 10 days') return 'bg-amber-50 text-amber-700 border border-amber-200'
+  if (deadline === 'Within 30 days') return 'bg-blue-50 text-blue-700 border border-blue-200'
+  return 'bg-gray-100 text-gray-600 border border-gray-200'
+}
+
+function insightTypeBadgeClass(type: string) {
+  if (type === 'PATTERN_RECOGNITION') return 'bg-purple-50 text-purple-700'
+  if (type === 'MARKET_CONTEXT')      return 'bg-blue-50 text-blue-700'
+  if (type === 'CONSISTENCY_CHECK')   return 'bg-amber-50 text-amber-700'
+  if (type === 'COVERAGE_GAP')        return 'bg-red-50 text-red-700'
+  return 'bg-gray-100 text-gray-600'
+}
+
+function insightTypeLabel(type: string) {
+  const map: Record<string, string> = {
+    PATTERN_RECOGNITION: 'Pattern',
+    MARKET_CONTEXT:      'Market',
+    CONSISTENCY_CHECK:   'Consistency',
+    COVERAGE_GAP:        'Coverage Gap',
+  }
+  return map[type] ?? type
+}
 
 // ── Data loading ───────────────────────────────────────────────
 async function load() {

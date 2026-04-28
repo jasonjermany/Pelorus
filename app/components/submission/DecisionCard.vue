@@ -3,10 +3,23 @@
     <div class="flex items-start justify-between gap-6">
       <div class="flex-1 min-w-0">
         <p class="text-[12px] font-bold tracking-[0.12em] uppercase mb-3" :style="{ color: colors.label }">Decision</p>
-        <span
-          class="inline-flex items-center px-3.5 py-1 rounded-full text-[14px] font-bold tracking-[0.04em] uppercase mb-4"
-          :style="{ background: colors.pillBg, color: colors.pillText }"
-        >{{ verdict.decision }}</span>
+        <div class="flex items-center gap-2 flex-wrap mb-4">
+          <span
+            class="inline-flex items-center px-3.5 py-1 rounded-full text-[14px] font-bold tracking-[0.04em] uppercase"
+            :style="{ background: colors.pillBg, color: colors.pillText }"
+          >{{ verdictLabel }}</span>
+          <span
+            v-if="verdict.risk_summary?.risk_tier"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-[0.06em] uppercase"
+            :class="tierClass"
+          >{{ verdict.risk_summary.risk_tier }}</span>
+          <span
+            v-if="verdict.risk_summary?.binding_authority"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-[0.04em] border"
+            :style="{ color: colors.meta, background: colors.metaBg, borderColor: colors.border }"
+          >{{ verdict.risk_summary.binding_authority.replace('_', ' ') }}</span>
+        </div>
+        <p v-if="verdict.risk_summary?.one_liner" class="text-[13px] font-medium text-gray-600 mb-2 leading-snug">{{ verdict.risk_summary.one_liner }}</p>
         <p class="text-[16px] leading-[1.7] mb-4 text-gray-800">{{ verdict.recommendation?.summary }}</p>
         <div class="flex items-center flex-wrap gap-2">
           <span
@@ -14,6 +27,11 @@
             class="text-[13px] font-medium px-2.5 py-1 rounded-full"
             :style="{ background: colors.metaBg, color: colors.meta }"
           >Analyzed in {{ verdict.analyzed_in_seconds }}s</span>
+          <span
+            v-if="verdict.score_label"
+            class="text-[13px] font-medium px-2.5 py-1 rounded-full"
+            :style="{ background: colors.metaBg, color: colors.meta }"
+          >{{ verdict.score_label }}</span>
         </div>
       </div>
       <div class="flex-shrink-0 flex flex-col items-end">
@@ -29,11 +47,24 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Verdict } from '~/types/submission'
+import { normalizeScore } from '~/utils/submission'
 
 const props = defineProps<{ verdict: Verdict }>()
 
+const verdictLabel = computed(() => {
+  if (props.verdict.verdict_label) return props.verdict.verdict_label
+  const map: Record<string, string> = {
+    DECLINE:      'Decline',
+    SOFT_DECLINE: 'Recommended Decline',
+    REFER:        'Refer to Authority',
+    REQUEST_INFO: 'Request Additional Information',
+    PROCEED:      'Proceed to Quote',
+  }
+  return map[props.verdict.verdict_code] ?? props.verdict.verdict_code
+})
+
 const colors = computed(() => {
-  const d = props.verdict.decision
+  const d = props.verdict.verdict_code
   if (d === 'PROCEED') return {
     bg: '#dcfce7', border: '#86efac',
     label: '#15803d', meta: '#15803d',
@@ -46,12 +77,34 @@ const colors = computed(() => {
     metaBg: '#fde68a', score: '#92700A', scoreLabel: 'rgba(146,112,10,0.5)',
     pillBg: '#fde68a', pillText: '#78580A',
   }
+  if (d === 'REQUEST_INFO') return {
+    bg: '#eff6ff', border: '#93c5fd',
+    label: '#1d4ed8', meta: '#1d4ed8',
+    metaBg: '#dbeafe', score: '#1d4ed8', scoreLabel: 'rgba(29,78,216,0.5)',
+    pillBg: '#dbeafe', pillText: '#1e3a8a',
+  }
+  if (d === 'SOFT_DECLINE') return {
+    bg: '#fff7ed', border: '#fdba74',
+    label: '#c2410c', meta: '#c2410c',
+    metaBg: '#fed7aa', score: '#c2410c', scoreLabel: 'rgba(194,65,12,0.5)',
+    pillBg: '#fed7aa', pillText: '#9a3412',
+  }
+  // DECLINE
   return {
     bg: '#fee2e2', border: '#fca5a5',
     label: '#dc2626', meta: '#dc2626',
     metaBg: '#fecaca', score: '#dc2626', scoreLabel: 'rgba(220,38,38,0.5)',
     pillBg: '#fecaca', pillText: '#991b1b',
   }
+})
+
+const tierClass = computed(() => {
+  const tier = props.verdict.risk_summary?.risk_tier
+  if (tier === 'PREFERRED')   return 'bg-green-50 text-green-800 border border-green-200'
+  if (tier === 'STANDARD')    return 'bg-blue-50 text-blue-800 border border-blue-200'
+  if (tier === 'SUBSTANDARD') return 'bg-amber-50 text-amber-800 border border-amber-200'
+  if (tier === 'INELIGIBLE')  return 'bg-red-50 text-red-700 border border-red-200'
+  return 'bg-gray-100 text-gray-700 border border-gray-200'
 })
 
 const cardStyle = computed(() => ({

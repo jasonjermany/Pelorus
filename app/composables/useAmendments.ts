@@ -6,6 +6,7 @@ type SourceRaw = {
   source?: string
   source_doc?: string
   source_location?: string
+  source_tier?: string
   raw_text?: string
   context?: string
 }
@@ -75,6 +76,7 @@ export function useAmendments(submissionId: string) {
     const r = sourceModal.value?.raw
     return r?.source_doc ? (r.source_location ?? null) : null
   })
+  const sourceModalTier = computed(() => sourceModal.value?.raw?.source_tier ?? null)
   const sourceModalRawText = computed(() => sourceModal.value?.raw?.raw_text ?? null)
   const sourceModalContext = computed(() => sourceModal.value?.raw?.context ?? null)
 
@@ -115,6 +117,7 @@ export function useAmendments(submissionId: string) {
     sourceModalLoading,
     sourceModalDoc,
     sourceModalLocation,
+    sourceModalTier,
     sourceModalRawText,
     sourceModalContext,
     openSourceModal,
