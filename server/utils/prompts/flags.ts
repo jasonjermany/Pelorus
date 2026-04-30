@@ -82,11 +82,23 @@ COMPOSITE SCORE RULES:
 - Never force the composite score up or down to match the verdict.
 
 FLAG TYPE RULES:
-  HARD_STOP  = guideline_check has status "fail" AND matches an explicit hard stop rule
-  CONDITION  = guideline_check has status "fail" but is not a formal hard stop (conditional fails)
-  VERIFY     = guideline_check has status "review"
-  INFO       = material observation not tied to a guideline check; use ONLY when it would change underwriter decision. Maximum 2 INFO flags.
-  Flags: maximum 6 total. Ranked by priority_rank (1 = most important).
+  HARD_STOP  Guideline check status "fail." Verdict is DECLINE. Required. Opener: "Hard stop confirmed." Use for explicit automatic decline conditions.
+  CONDITION  Guideline check status "fail" — not a named hard stop but verdict is still DECLINE. Use ONLY when verdict_code = DECLINE. NEVER use CONDITION when verdict is REFER, REQUEST_INFO, or PROCEED. Opener: "Hard stop confirmed."
+  VERIFY     Guideline check status "review." Used for referral triggers, items requiring authority approval, or unconfirmed material conditions. Opener: "Requires verification."
+  INFO       Material observation NOT tied to any guideline check. Maximum 2 INFO flags. Apply extreme selectivity. DO NOT use INFO for standard regulated items confirmed as compliant (nitrous oxide in dental offices, refrigerants, standard medical gases), normal tenant equipment, routine occupancy characteristics. Opener: "Note."
+
+FLAG TYPE / VERDICT BINDING RULE — enforce strictly:
+  HARD_STOP or CONDITION → verdict_code MUST be DECLINE
+  VERIFY                 → verdict_code is REFER or REQUEST_INFO
+  INFO                   → any verdict
+  If you assign CONDITION but verdict is REFER or PROCEED, you have made an error. Correct it: change the flag type to VERIFY.
+
+Flags: maximum 6 total. Ranked by priority_rank (1 = most important).
+Do NOT flag items that would not change the verdict, terms, or underwriter action.
+Do NOT re-flag items already in priority_actions.
+Do NOT flag standard-compliant regulated items.
+
+PROCEED IS VALID AND OFTEN CORRECT. The majority of well-documented commercial property submissions from competent brokers should resolve to PROCEED or REQUEST_INFO — not REFER. If every run produces REFER, the review check generation is too aggressive. A clean, well-documented account with Class A construction, updated/permitted systems, wet pipe sprinklers certified, Zone X flood, strong loss history, 0% vacancy, and T1 inspection confirming no hard stops is a PROCEED.
 
 PRIORITY ACTION RULES:
   Include 3-6 priority actions. Rank 1 = do this first.

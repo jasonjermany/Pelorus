@@ -6,6 +6,10 @@ export const CHECKS_TOOL = {
   input_schema: {
     type: 'object' as const,
     properties: {
+      pelorus_reference_id: {
+        type: 'string',
+        description: 'Generate as PEL-YYYYMMDD-XXXX where XXXX is a 4-char hash of the named insured (e.g. PEL-20260428-MAPL). Use today\'s date.',
+      },
       verdict_code: {
         type: 'string',
         enum: ['DECLINE', 'SOFT_DECLINE', 'REFER', 'REQUEST_INFO', 'PROCEED'],
@@ -56,7 +60,7 @@ export const CHECKS_TOOL = {
         },
       },
     },
-    required: ['verdict_code', 'verdict_label', 'verdict_reason', 'action_recommendation', 'hard_stops_triggered', 'guideline_checks'],
+    required: ['pelorus_reference_id', 'verdict_code', 'verdict_label', 'verdict_reason', 'action_recommendation', 'hard_stops_triggered', 'guideline_checks'],
   },
 }
 
@@ -153,6 +157,15 @@ CHECK SELECTION — focused list, not exhaustive audit:
   - Checks covering conditions material for this risk whose absence is a meaningful gap (include as "review")
   Omit any check with no bearing on this account. Do not rename checks. Use the exact rule_name from the eligible check list.
 
+REVIEW CHECK DISCIPLINE — prevent over-generation:
+  Status "review" means the condition is ENTIRELY ABSENT from the submission.
+  Do NOT assign "review" when:
+  - The submission confirms a related compliant material or system (copper wiring confirmed → aluminum and K&T are implicitly addressed)
+  - The condition is standard practice for the occupancy type and no adverse indicators exist
+  - A licensed inspection report reviewed the system and found no concerns — sign-off covers the check unless the specific prohibited material is explicitly named
+  REVIEW checks should reflect GENUINE gaps. Do not manufacture review checks for theoretical possibilities that the submission's overall documentation pattern makes highly unlikely.
+  CALIBRATION TEST: Before adding a "review" check, ask — would a senior underwriter at a regional carrier actually hold this quote pending this specific confirmation, given everything else in this submission? If the answer is "probably not," omit the check.
+
 STATUS RULES — apply Hard Stop Decision Logic above exactly:
   "fail"   — condition present in submission (explicitly, vaguely, or by implication) without T1/T2 documentation satisfying it. T3 broker denial without T1/T2 confirmation = "fail."
   "review" — check is relevant but condition entirely absent from all docs.
@@ -161,6 +174,22 @@ STATUS RULES — apply Hard Stop Decision Logic above exactly:
 
 ELIGIBLE CHECKS:
 ${hardStopCheckList}
+
+PROCEED DOCTRINE — anti-bias rule, apply on every run:
+  PROCEED is not a fallback. It is the correct verdict for any well-documented submission that passes all guideline checks and has no BINDING missing information.
+  Do NOT issue REFER solely because:
+  - A routine item is unconfirmed but not a guideline-specified referral trigger
+  - The submission could theoretically be more complete
+  - A standard regulated occupancy hazard exists and is documented as compliant
+  - An older system exists but is within all guideline thresholds
+  - Your general uncertainty about the risk
+  REFER requires a SPECIFIC, ARTICULABLE guideline section or authority requirement. If you cannot cite a section that requires referral for this specific condition, the verdict is PROCEED, not REFER.
+  The following items do NOT trigger REFER on their own:
+  - Copper wiring confirmed without panel brand names stated (panel brand is a VERIFY flag only)
+  - Standard medical gas in licensed medical/dental occupancy confirmed compliant
+  - Single water loss in 5+ years with documented remediation and no recurrence
+  - Original plumbing/electrical within age thresholds with no adverse findings
+  - Any item for which the submission documents confirm compliance with the controlling regulatory authority
 
 Call the submit_evaluation tool with your results.`,
           cache_control: { type: 'ephemeral', ttl: '1h' } as any,

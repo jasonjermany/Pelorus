@@ -176,6 +176,7 @@ export async function evaluateSubmission(
     throw new Error(`[eval] checks call returned no tool_use block (stop_reason: ${finalMsg.stop_reason})`)
   }
   const checksResult = (toolUseBlock as any).input as {
+    pelorus_reference_id?: string
     verdict_code: string
     verdict_label?: string
     verdict_reason?: string
@@ -239,6 +240,7 @@ export async function evaluateSubmission(
   console.log(`[eval] total        ${Date.now() - t0}ms`)
 
   return {
+    pelorus_reference_id:  checksResult.pelorus_reference_id,
     verdict_code:          checksResult.verdict_code,
     verdict_label:         checksResult.verdict_label,
     verdict_reason:        checksResult.verdict_reason,

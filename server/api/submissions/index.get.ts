@@ -47,8 +47,8 @@ const submissions = (data ?? []).map((sub: any) => {
       created_at: sub.created_at,
       decision: evaluation?.decision ?? null,
       composite_score: evaluation?.composite_score ?? null,
-      named_insured: verdict?.risk_profile?.risk_summary?.named_insured ?? null,
-      broker: verdict?.risk_profile?.risk_summary?.broker ?? null,
+      named_insured: verdict?.risk_profile?.named_insured ?? verdict?.risk_profile?.risk_summary?.named_insured ?? null,
+      broker: verdict?.risk_profile?.broker ?? verdict?.risk_profile?.risk_summary?.broker ?? null,
       prior_carrier: verdict?.risk_profile?.risk_summary?.prior_carrier ?? null,
     }
   })

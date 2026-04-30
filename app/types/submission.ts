@@ -140,10 +140,50 @@ export type MissingInfoItem = {
   source_tier_needed?: 'T1' | 'T2'
 }
 
+// ── Prompt 12: Email Draft ─────────────────────────────────────────────────
+
+export type EmailDraft = {
+  to: string
+  subject: string
+  body: string
+  template: 'A' | 'B' | 'C' | 'D' | 'E'
+  mailto_encoded: string
+}
+
+// ── Prompt 13: Renewal Comparison ─────────────────────────────────────────
+
+export type RenewalChange = {
+  category: 'CONSTRUCTION' | 'OCCUPANCY' | 'LOSS_HISTORY' | 'TIV' | 'SYSTEMS' | 'TENANTS'
+  field: string
+  prior_value: string
+  current_value: string
+  direction: 'IMPROVED' | 'NEUTRAL' | 'DETERIORATED' | 'NEW' | 'REMOVED'
+  note: string
+}
+
+export type RenewalComparison = {
+  prior_reference_id: string
+  current_reference_id: string
+  prior_verdict: VerdictCode
+  current_verdict: VerdictCode
+  verdict_changed: boolean
+  prior_composite: number
+  current_composite: number
+  score_delta: number
+  score_trend: 'IMPROVED' | 'STABLE' | 'DETERIORATED'
+  changes: RenewalChange[]
+  resolved_concerns: string[]
+  new_concerns: string[]
+  persistent_concerns: string[]
+  renewal_recommendation: string
+  uw_renewal_note: string
+}
+
 // ── Main Verdict ───────────────────────────────────────────────────────────
 
 export type Verdict = {
   // Prompt 8 outputs
+  pelorus_reference_id?: string
   verdict_code: VerdictCode
   verdict_label?: string
   verdict_reason?: string

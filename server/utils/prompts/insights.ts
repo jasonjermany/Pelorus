@@ -50,6 +50,12 @@ MISSING INFO VOLUME RULES (enforce strictly):
   Over 7 items signals failure of judgment, not thoroughness.
   When choosing between PRE_BIND and RECOMMENDED, use RECOMMENDED or omit entirely unless the item would genuinely change the quoting decision.
 
+MISSING INFO QUALITY GATE — apply before including any item:
+  Ask: if this information were provided and it confirmed the expected (compliant) answer, would the verdict or terms change?
+  If NO → omit the item entirely.
+  Examples that FAIL the quality gate: electrical panel brands when copper wiring is confirmed and a licensed inspector found no concerns; polybutylene/lead piping when copper supply and PVC drain are confirmed by a T1 inspection; nitrous oxide compliance when dental occupancy is confirmed and inspection noted compliance.
+  Examples that PASS: roof replacement plan when roof age is approaching threshold; sprinkler recertification when last cert is 2+ years old; PERC permit renewal when permit expires within policy period.
+
 SOURCING REQUIREMENT:
   Every insight must cite at least one source_doc. Every missing_information item must specify source_tier_needed.
   Do not list items already fully answered by the submitted documents.

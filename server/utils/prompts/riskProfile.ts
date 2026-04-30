@@ -77,7 +77,24 @@ STATUS VALUES — assign one per field:
 
 STRUCTURE RULES:
   1. You MUST populate the lines array. Always include at least one line. Infer the line from submission content if not explicitly labeled. Default to "property" for building/location submissions.
-  2. PROPERTY: one location object per insured location. Sections per location: CONSTRUCTION / COPE, ELECTRICAL, PLUMBING, HVAC, ROOF, FIRE PROTECTION, SECURITY, OCCUPANCY, INSURED VALUES, LOSS HISTORY — include a section only if the submission has relevant data.
+
+  2. PROPERTY: one location object per INSURED LOCATION — not per building. A location is a site address or site identifier, not an individual structure. Multiple buildings at the same address or on the same campus are grouped under a single location object.
+     Sections per location: CONSTRUCTION / COPE, ELECTRICAL, PLUMBING, HVAC, ROOF, FIRE PROTECTION, SECURITY, OCCUPANCY, INSURED VALUES, LOSS HISTORY — include a section only if the submission has relevant data.
+
+  2a. LARGE SOV HANDLING — apply when the SOV has more than 6 locations:
+      GROUPING RULES: Group by physical site when buildings share an address or are part of the same campus, complex, or contiguous parcel. A 10-unit condo building at one address is ONE location with a buildings_count field, not 10 locations.
+      When grouping, extract per-location aggregate values: total_tiv, building_count, year_built_range, roof_age_range, worst_status.
+
+      DISPLAY TIERS by location count:
+        1-6 locations:  Full section-by-section extraction per location (standard)
+        7-15 locations: Grouped extraction — full COPE per location, condensed sections (no separate ELECTRICAL/PLUMBING/HVAC unless a specific concern exists)
+        16+ locations:  Portfolio summary mode — extract key fields per location (address, TIV, year built, construction class, roof age, worst status), then provide a PORTFOLIO SUMMARY section with aggregate statistics. Only expand individual locations where a concern exists.
+
+      PORTFOLIO SUMMARY SECTION (required when 16+ locations):
+        portfolio_summary: { location_count, building_count, total_tiv, tiv_by_location, largest_single_location_tiv, largest_single_location_pct, construction_class_breakdown, roof_age_profile, flood_zone_breakdown, protection_class_breakdown, locations_with_concerns, locations_requiring_attention }
+
+      CONCENTRATION ANALYSIS: Flag when any single location exceeds 25% of total TIV. Surface as an INFO flag if it exceeds 40%.
+
   3. GL: sections directly on the line (no locations): OPERATIONS, CLASSIFICATIONS, LIMITS, LOSS HISTORY, CONTROLS
   4. COMMERCIAL AUTO: sections on the line: FLEET, DRIVERS, OPERATIONS, CARGO, COMPLIANCE, LOSS HISTORY
   5. WORKERS COMP: sections on the line: CLASSIFICATIONS, PAYROLL, EXPERIENCE MOD, LOSS HISTORY, SAFETY PROGRAM, OPEN CLAIMS
@@ -86,7 +103,8 @@ STRUCTURE RULES:
   8. Do NOT include source citations on fields. Source document, location, tier, and raw text are all fetched separately on demand when the underwriter opens a field. Keep fields lean: label, value, status, note only.
   9. Assign status honestly. Flag age issues, gaps, missing docs, and hard stops. Do not default everything to "ok". If you are uncertain, use "unconfirmed".
   10. Be thorough but proportionate. Extract all material facts. Keep field values to 20 words or fewer. Include notes only when status is warn, fail, or unconfirmed.
-  11. THE FIELD LIBRARY IS A FLOOR, NOT A CEILING. Extract any additional variable a senior CPCU-level underwriter would notice, even if not listed.${fieldHints}
+  11. THE FIELD LIBRARY IS A FLOOR, NOT A CEILING. Extract any additional variable a senior CPCU-level underwriter would notice, even if not listed.
+  12. COMPLIANT REGULATED ITEMS — DO NOT FLAG AS CONCERNS. When a submission documents that a potentially hazardous item is present AND confirms regulatory compliance, the item is FAVORABLE, not a concern. Extract it as a field with status "ok" and note the compliance confirmation. Examples: nitrous oxide in a licensed dental office (NFPA 99), PERC dry cleaning with current state permit, compressed gas in medical occupancy confirmed secured per regulations, sprinkler systems confirmed certified, electrical systems updated to code with permits. Flagging a compliant item as a concern creates noise, not signal.${fieldHints}
 
 ## SUBMISSION
 ${submissionText}

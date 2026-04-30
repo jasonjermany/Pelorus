@@ -32,6 +32,11 @@
             class="text-[13px] font-medium px-2.5 py-1 rounded-full"
             :style="{ background: colors.metaBg, color: colors.meta }"
           >{{ verdict.score_label }}</span>
+          <span
+            v-if="verdict.pelorus_reference_id"
+            class="text-[12px] font-mono px-2 py-0.5 rounded-full bg-black/10"
+            :style="{ color: colors.meta }"
+          >{{ verdict.pelorus_reference_id }}</span>
         </div>
       </div>
       <div class="flex-shrink-0 flex flex-col items-end">
