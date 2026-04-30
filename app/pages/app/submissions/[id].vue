@@ -7,17 +7,17 @@
         <div class="flex items-center gap-4 min-w-0">
           <NuxtLink
             to="/app"
-            class="flex items-center gap-1.5 text-[14px] text-gray-600 hover:text-gray-800 transition-colors duration-150 flex-shrink-0"
+            class="flex items-center gap-1.5 text-[14px] text-white/70 hover:text-white transition-colors duration-150 flex-shrink-0"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7"/>
             </svg>
             Dashboard
           </NuxtLink>
-          <span class="text-gray-500 flex-shrink-0">·</span>
+          <span class="text-white/30 flex-shrink-0">·</span>
           <div class="flex items-center gap-2 min-w-0">
             <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" class="flex-shrink-0" />
-            <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px] truncate">
+            <span class="text-[16px] font-semibold text-white tracking-[-0.3px] truncate">
               {{ namedInsured || 'Submission Review' }}
             </span>
           </div>
@@ -25,7 +25,7 @@
         <div class="flex items-center gap-2 flex-shrink-0">
           <button
             v-if="verdict"
-            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-100 border border-gray-200 hover:bg-gray-200/70 hover:border-gray-300 text-gray-800 hover:text-gray-900 text-[14px] font-medium transition-all duration-150 disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 text-white text-[14px] font-medium transition-all duration-150 disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30"
             :disabled="isDownloading"
             @click="downloadPdf"
           >
@@ -38,7 +38,7 @@
             {{ isDownloading ? 'Generating…' : 'Download PDF' }}
           </button>
         </div>
-        <p v-if="downloadError" class="text-[13px] text-red-600 mt-1 text-right">{{ downloadError }}</p>
+        <p v-if="downloadError" class="text-[13px] text-red-300 mt-1 text-right">{{ downloadError }}</p>
       </div>
     </AppHeader>
 
@@ -114,7 +114,7 @@
             <div v-if="verdict.priority_actions?.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Priority Actions</p>
-                <span class="text-[14px] text-gray-300">{{ verdict.priority_actions.length }} item{{ verdict.priority_actions.length !== 1 ? 's' : '' }}</span>
+                <span class="text-[14px] text-white/70">{{ verdict.priority_actions.length }} item{{ verdict.priority_actions.length !== 1 ? 's' : '' }}</span>
               </div>
               <div class="flex flex-col divide-y divide-gray-100">
                 <div
@@ -151,7 +151,7 @@
             <div v-if="sortedFlags.length" class="glass-card overflow-hidden">
               <div class="px-5 sm:px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-navy">
                 <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Concerns &amp; Flags</p>
-                <span class="text-[14px] text-gray-300">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
+                <span class="text-[14px] text-white/70">{{ sortedFlags.length }} item{{ sortedFlags.length !== 1 ? 's' : '' }}</span>
               </div>
               <div class="flex flex-col divide-y divide-gray-100 overflow-y-auto" style="max-height:min(50vh,480px)">
                 <div

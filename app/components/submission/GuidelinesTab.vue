@@ -2,7 +2,7 @@
   <div class="glass-card overflow-hidden">
     <div class="px-5 sm:px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-navy">
       <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Guideline Checks</p>
-      <span class="text-[14px] text-gray-200">
+      <span class="text-[14px] text-white/70">
         <span v-if="sortedChecks.length">{{ sortedChecks.length }} check{{ sortedChecks.length !== 1 ? 's' : '' }} require attention</span>
         <span v-else class="text-green-300 font-medium">All checks passed</span>
       </span>

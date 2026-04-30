@@ -26,17 +26,17 @@
       style="width:min(680px,100vw)"
     >
       <!-- Header -->
-      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.08] bg-navy flex-shrink-0">
         <div class="flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded-full bg-accent-500/10 border border-accent-500/20 flex items-center justify-center flex-shrink-0">
-            <svg class="w-3.5 h-3.5 text-[#92700A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+            <svg class="w-3.5 h-3.5 text-accent-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
             </svg>
           </div>
-          <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.2px]">Research Assistant</span>
+          <span class="text-[16px] font-semibold text-white tracking-[-0.2px]">Research Assistant</span>
         </div>
         <button
-          class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
+          class="w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-150 cursor-pointer"
           aria-label="Close"
           @click="chatOpen = false"
         >

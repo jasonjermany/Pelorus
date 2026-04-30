@@ -2,24 +2,24 @@
   <!-- Marketing variant -->
   <nav
     v-if="variant === 'marketing'"
-    class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-white border-b border-gray-200 shadow-sm"
+    class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-navy border-b border-white/[0.08]"
   >
     <a href="#" class="flex items-center gap-2.5 no-underline">
       <img src="/PelorusLogo.png" width="36" height="36" alt="Pelorus" />
-      <span class="text-[17px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
+      <span class="text-[17px] font-semibold text-white tracking-[-0.3px]">Pelorus</span>
     </a>
     <ul class="flex items-center gap-1 list-none">
       <li class="hidden md:block">
-        <a href="#features" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Features</a>
+        <a href="#features" class="text-[15px] font-medium text-white/70 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-150 no-underline">Features</a>
       </li>
       <li class="hidden md:block">
-        <a href="#how" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">How it works</a>
+        <a href="#how" class="text-[15px] font-medium text-white/70 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-150 no-underline">How it works</a>
       </li>
       <li class="hidden md:block">
-        <NuxtLink to="/login" class="text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 no-underline">Sign in</NuxtLink>
+        <NuxtLink to="/login" class="text-[15px] font-medium text-white/70 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-150 no-underline">Sign in</NuxtLink>
       </li>
       <li>
-        <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-[#050A18] text-[15px] font-bold px-4 py-1.5 rounded-lg no-underline transition-colors duration-150">Contact Sales</a>
+        <a href="#contact" class="bg-accent-500 hover:bg-accent-400 text-white text-[15px] font-bold px-4 py-1.5 rounded-lg no-underline transition-colors duration-150">Contact Sales</a>
       </li>
     </ul>
   </nav>
@@ -27,7 +27,7 @@
   <!-- App variant -->
   <header
     v-else-if="variant === 'app'"
-    class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm"
+    class="sticky top-0 z-50 bg-navy border-b border-white/[0.08]"
   >
     <slot />
   </header>

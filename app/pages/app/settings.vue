@@ -7,17 +7,17 @@
         <div class="flex items-center gap-4">
           <NuxtLink
             to="/app"
-            class="flex items-center gap-1.5 text-[14px] text-gray-600 hover:text-gray-800 transition-colors duration-150"
+            class="flex items-center gap-1.5 text-[14px] text-white/70 hover:text-white transition-colors duration-150"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Dashboard
           </NuxtLink>
-          <span class="text-gray-500">·</span>
+          <span class="text-white/30">·</span>
           <div class="flex items-center gap-2">
             <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" />
-            <span class="text-[16px] font-semibold text-gray-900 tracking-[-0.3px]">Guidelines &amp; Settings</span>
+            <span class="text-[16px] font-semibold text-white tracking-[-0.3px]">Guidelines &amp; Settings</span>
           </div>
         </div>
       </div>
@@ -105,15 +105,15 @@
 
       <!-- Chunks table -->
       <div v-if="chunks.length" class="glass-card overflow-hidden">
-        <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
+        <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-white/[0.08] bg-navy">
           <div>
-            <h2 class="text-[16px] font-semibold text-gray-900">Guideline Library</h2>
-            <p class="text-[14px] text-gray-700 mt-0.5">
+            <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Guideline Library</p>
+            <p class="text-[13px] text-gray-300 mt-0.5">
               {{ chunks.length }} total · {{ standardCount }} sections · {{ pinnedCount }} hard stops
             </p>
           </div>
           <button
-            class="table-btn"
+            class="table-btn-navy"
             @click="loadChunks"
           >
             Refresh
@@ -281,5 +281,8 @@ onMounted(loadChunks)
 }
 .table-btn {
   @apply text-[13px] font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer;
+}
+.table-btn-navy {
+  @apply text-[13px] font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer;
 }
 </style>

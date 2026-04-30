@@ -2,13 +2,13 @@
   <div class="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
 
     <!-- ── Top Nav ─────────────────────────────────────────────── -->
-    <nav class="sticky top-0 z-50 h-14 flex items-center border-b border-gray-200 bg-white shadow-sm">
+    <nav class="sticky top-0 z-50 h-14 flex items-center border-b border-white/[0.08] bg-navy">
       <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
         <!-- Left: logo + nav -->
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-2.5 flex-shrink-0">
             <img src="/PelorusLogo.png" width="26" height="26" alt="Pelorus" />
-            <span class="text-[15px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
+            <span class="text-[15px] font-semibold text-white tracking-[-0.3px]">Pelorus</span>
           </div>
           <div class="hidden md:flex items-center gap-0.5">
             <span class="nav-link nav-link--active">Dashboard</span>
@@ -20,7 +20,7 @@
         <div class="flex items-center gap-2">
           <!-- New Submission -->
           <button
-            class="hidden sm:flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 disabled:opacity-50 text-[#050A18] text-[14px] font-bold px-3.5 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="hidden sm:flex items-center gap-1.5 bg-accent-500 hover:bg-accent-400 disabled:opacity-50 text-white text-[14px] font-bold px-3.5 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
             :disabled="isIngesting"
             @click="showIngest = true"
           >
@@ -33,7 +33,7 @@
           <!-- Mobile new -->
           <button
             aria-label="New submission"
-            class="sm:hidden w-8 h-8 rounded-lg bg-accent-500 hover:bg-accent-400 flex items-center justify-center text-[#050A18] transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+            class="sm:hidden w-8 h-8 rounded-lg bg-accent-500 hover:bg-accent-400 flex items-center justify-center text-white transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
             @click="showIngest = true"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -44,7 +44,7 @@
           <!-- Avatar + dropdown -->
           <div class="relative" ref="avatarMenuRef">
             <button
-              class="w-8 h-8 rounded-full bg-accent-500/15 border border-accent-500/25 flex items-center justify-center text-[#92700A] text-[13px] font-bold hover:bg-accent-500/25 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-500/50"
+              class="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-[13px] font-bold hover:bg-white/20 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30"
               :title="user?.email"
               @click="showAvatarMenu = !showAvatarMenu"
             >
@@ -145,12 +145,12 @@
           <div class="glass-card overflow-hidden">
 
             <!-- Table toolbar -->
-            <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-gray-100">
+            <div class="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-white/[0.08] bg-navy">
               <div class="flex items-center gap-3">
                 <!-- Admin back button -->
                 <button
                   v-if="isAdmin && selectedUser"
-                  class="flex items-center gap-1.5 text-[14px] text-gray-700 hover:text-gray-900 transition-colors duration-150 cursor-pointer"
+                  class="flex items-center gap-1.5 text-[14px] text-white/80 hover:text-white transition-colors duration-150 cursor-pointer"
                   @click="clearUser"
                 >
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -159,8 +159,8 @@
                   Back
                 </button>
 
-                <span class="text-[15px] text-gray-700">
-                  <span v-if="isAdmin && selectedUser" class="text-gray-900 font-medium">{{ selectedUser.email }}</span>
+                <span class="text-[15px] text-white/80">
+                  <span v-if="isAdmin && selectedUser" class="text-white font-medium">{{ selectedUser.email }}</span>
                   <span v-else-if="isAdmin && !selectedUser">Select an underwriter</span>
                   <span v-else>{{ submissions.length }} submission{{ submissions.length !== 1 ? 's' : '' }}</span>
                 </span>
@@ -170,7 +170,7 @@
                 <!-- Admin user selector -->
                 <div v-if="isAdmin && !selectedUser && orgUsers.length" class="hidden sm:flex items-center gap-1.5">
                   <button
-                    class="table-btn"
+                    class="table-btn-navy"
                     @click="selectUser({ id: '__all__', email: 'All Submissions', role: 'admin' })"
                   >
                     All Users
@@ -178,7 +178,7 @@
                   <button
                     v-for="u in orgUsers.slice(0, 3)"
                     :key="u.id"
-                    class="table-btn"
+                    class="table-btn-navy"
                     @click="selectUser(u)"
                   >
                     {{ u.email.split('@')[0] }}
@@ -186,7 +186,7 @@
                 </div>
 
                 <button
-                  class="table-btn flex items-center gap-1.5"
+                  class="table-btn-navy flex items-center gap-1.5"
                   :disabled="isLoading"
                   @click="load"
                 >
@@ -378,9 +378,9 @@
 
             <!-- Activity feed -->
             <div class="glass-card flex flex-col min-h-0">
-              <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 flex-shrink-0">
-                <p class="text-[15px] font-semibold text-gray-900">Recent Activity</p>
-                <span class="text-[12px] font-semibold text-gray-600 uppercase tracking-[0.06em]">Live</span>
+              <div class="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.08] bg-navy flex-shrink-0">
+                <p class="text-[11px] font-black tracking-[0.13em] uppercase text-white">Recent Activity</p>
+                <span class="text-[12px] font-semibold text-gray-300 uppercase tracking-[0.06em]">Live</span>
               </div>
 
               <div class="p-3 space-y-0.5 overflow-y-auto max-h-[420px] xl:max-h-[520px]">
@@ -807,11 +807,11 @@ onUnmounted(() => {
 }
 
 .nav-link {
-  @apply text-[15px] font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-150 cursor-pointer;
+  @apply text-[15px] font-medium text-white/70 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-150 cursor-pointer;
 }
 
 .nav-link--active {
-  @apply text-gray-900 bg-gray-100;
+  @apply text-white bg-white/10;
 }
 
 .th-cell {
@@ -828,6 +828,10 @@ onUnmounted(() => {
 
 .table-btn {
   @apply text-[13px] font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-default;
+}
+
+.table-btn-navy {
+  @apply text-[13px] font-medium text-white/80 hover:text-white border border-white/20 hover:border-white/40 px-2.5 py-1.5 rounded-lg transition-all duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-default;
 }
 
 .modal-label {
