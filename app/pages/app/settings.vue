@@ -15,8 +15,10 @@
             Dashboard
           </NuxtLink>
           <span class="text-white/30">·</span>
-          <div class="flex items-center gap-2">
-            <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" />
+          <div class="flex items-center gap-1.5">
+            <img src="/PelorusLogo.png" alt="Pelorus mark" class="h-14 w-auto" />
+            <img src="/PelorusWordmark.png" alt="Pelorus" class="w-[9rem] h-auto" style="margin-top:5px;margin-left:-40px" />
+            <span class="text-white/40 mx-1">·</span>
             <span class="text-[16px] font-semibold text-white tracking-[-0.3px]">Guidelines &amp; Settings</span>
           </div>
         </div>

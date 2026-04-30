@@ -15,8 +15,9 @@
             Dashboard
           </NuxtLink>
           <span class="text-white/30 flex-shrink-0">·</span>
-          <div class="flex items-center gap-2 min-w-0">
-            <img src="/PelorusLogo.png" width="22" height="22" alt="Pelorus" class="flex-shrink-0" />
+          <div class="flex items-center gap-1.5 min-w-0">
+            <img src="/PelorusLogo.png" alt="Pelorus mark" class="h-14 w-auto flex-shrink-0" />
+            <img src="/PelorusWordmark.png" alt="Pelorus" class="w-[9rem] h-auto flex-shrink-0" style="margin-top:5px;margin-left:-40px" />
             <span class="text-[16px] font-semibold text-white tracking-[-0.3px] truncate">
               {{ namedInsured || 'Submission Review' }}
             </span>

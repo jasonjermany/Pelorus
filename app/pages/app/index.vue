@@ -3,12 +3,12 @@
 
     <!-- ── Top Nav ─────────────────────────────────────────────── -->
     <nav class="sticky top-0 z-50 h-14 flex items-center border-b border-white/[0.08] bg-navy">
-      <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+      <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 h-full">
         <!-- Left: logo + nav -->
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2.5 flex-shrink-0">
-            <img src="/PelorusLogo.png" width="26" height="26" alt="Pelorus" />
-            <span class="text-[15px] font-semibold text-white tracking-[-0.3px]">Pelorus</span>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <img src="/PelorusLogo.png" alt="Pelorus mark" class="h-14 w-auto" />
+            <img src="/PelorusWordmark.png" alt="Pelorus" class="w-[9rem] h-auto" style="margin-top:5px;margin-left:-40px" />
           </div>
           <div class="hidden md:flex items-center gap-0.5">
             <span class="nav-link nav-link--active">Dashboard</span>

@@ -349,8 +349,8 @@
         <div class="flex flex-col md:flex-row justify-between gap-10 mb-10 md:mb-12">
           <div>
             <div class="flex items-center gap-2.5 mb-2">
-              <img src="/PelorusLogo.png" width="28" height="28" alt="Pelorus" />
-              <span class="text-[17px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
+              <img src="/PelorusLogo.png" width="28" height="28" alt="Pelorus mark" />
+              <img src="/PelorusWordmark.png" height="18" alt="Pelorus" class="h-[18px] w-auto" />
             </div>
             <div class="text-[15px] text-gray-600 italic">'Know your bearing on every risk'</div>
           </div>

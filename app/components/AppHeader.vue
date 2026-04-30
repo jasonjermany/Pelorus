@@ -4,9 +4,9 @@
     v-if="variant === 'marketing'"
     class="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-navy border-b border-white/[0.08]"
   >
-    <a href="#" class="flex items-center gap-2.5 no-underline">
-      <img src="/PelorusLogo.png" width="36" height="36" alt="Pelorus" />
-      <span class="text-[17px] font-semibold text-white tracking-[-0.3px]">Pelorus</span>
+    <a href="#" class="flex items-center gap-1.5 no-underline">
+      <img src="/PelorusLogo.png" alt="Pelorus mark" class="h-14 w-auto" />
+      <img src="/PelorusWordmark.png" alt="Pelorus" class="w-[9rem] h-auto" style="margin-top:5px;margin-left:-40px" />
     </a>
     <ul class="flex items-center gap-1 list-none">
       <li class="hidden md:block">
@@ -27,7 +27,7 @@
   <!-- App variant -->
   <header
     v-else-if="variant === 'app'"
-    class="sticky top-0 z-50 bg-navy border-b border-white/[0.08]"
+    class="sticky top-0 z-50 bg-navy border-b border-white/[0.08] h-14"
   >
     <slot />
   </header>

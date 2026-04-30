@@ -24,3 +24,10 @@ body {
   background-color: #F8F9FA;
   color: #111827;
 }
+
+/* Prevent flex layout collapse during Nuxt page transitions */
+#__nuxt {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

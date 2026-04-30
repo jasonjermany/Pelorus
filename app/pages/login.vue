@@ -1,15 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 relative overflow-hidden">
+  <div class="min-h-screen bg-gray-50 flex flex-col relative overflow-hidden">
+  <AppHeader variant="app">
+    <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center h-14">
+      <div class="flex items-center gap-1.5">
+        <img src="/PelorusLogo.png" alt="Pelorus mark" class="h-14 w-auto" />
+        <img src="/PelorusWordmark.png" alt="Pelorus" class="w-[9rem] h-auto" style="margin-top:5px;margin-left:-40px" />
+      </div>
+    </div>
+  </AppHeader>
+
+  <div class="flex-1 flex items-center justify-center px-4">
     <!-- Subtle grid -->
     <div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); background-size: 60px 60px"/>
 
     <div class="w-full max-w-[380px] relative z-10">
-
-      <!-- Logo -->
-      <div class="flex items-center justify-center gap-2.5 mb-8">
-        <img src="/PelorusLogo.png" width="40" height="40" alt="Pelorus" />
-        <span class="text-[19px] font-semibold text-gray-900 tracking-[-0.3px]">Pelorus</span>
-      </div>
 
       <!-- Card -->
       <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
@@ -63,6 +67,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 

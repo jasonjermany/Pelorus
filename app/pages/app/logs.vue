@@ -3,7 +3,7 @@
 
     <div class="logs-toolbar">
       <div class="logs-toolbar-left">
-        <img src="/PelorusLogo.png" width="20" height="20" alt="Pelorus" />
+        <img src="/PelorusLogo.png" width="20" height="20" alt="Pelorus mark" />
         <span class="logs-title">Server Logs</span>
         <span class="logs-dot" :class="connected ? 'logs-dot--live' : 'logs-dot--dead'" />
         <span class="logs-status">{{ connected ? 'Live' : 'Disconnected' }}</span>
