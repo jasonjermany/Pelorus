@@ -48,7 +48,7 @@
               <div class="flex items-center gap-2 flex-wrap">
                 <p v-if="sourceDoc" class="text-[14px] font-semibold text-gray-800">{{ sourceDoc }}</p>
                 <span
-                  v-if="sourceTier && sourceTier !== 'NOT_CONFIRMED'"
+                  v-if="sourceTier && sourceTier !== 'Not Confirmed'"
                   class="text-[10px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded-full border"
                   :class="tierBadgeClass"
                 >{{ sourceTier }}</span>
@@ -108,10 +108,10 @@ defineEmits<{
 
 const tierBadgeClass = computed(() => {
   const t = props.sourceTier
-  if (t === 'T1') return 'bg-green-50 text-green-800 border-green-200'
-  if (t === 'T2') return 'bg-blue-50 text-blue-700 border-blue-200'
-  if (t === 'T3') return 'bg-amber-50 text-amber-700 border-amber-200'
-  if (t === 'T4') return 'bg-red-50 text-red-600 border-red-200'
+  if (t === 'Inspector Confirmed') return 'bg-green-50 text-green-800 border-green-200'
+  if (t === 'Application Stated')  return 'bg-blue-50 text-blue-700 border-blue-200'
+  if (t === 'Broker Represented')  return 'bg-amber-50 text-amber-700 border-amber-200'
+  if (t === 'Owner Stated')        return 'bg-red-50 text-red-600 border-red-200'
   return 'bg-gray-100 text-gray-600 border-gray-200'
 })
 </script>

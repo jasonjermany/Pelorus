@@ -20,8 +20,7 @@ Return ONLY valid JSON, no markdown, no backticks:
     "one_liner": "<15 words max. Named insured, primary operation, location, TIV. Nothing else.>",
     "uw_file_note": "<3-5 sentences written as underwriting file notes — past tense, declarative, professional. Cover: what was submitted, what the analysis found, what the key issues are, and what action was taken or recommended. Do not start with I.>",
     "risk_tier": "<PREFERRED | STANDARD | SUBSTANDARD | INELIGIBLE>",
-    "risk_tier_reason": "<one sentence explaining the tier assignment>",
-    "binding_authority": "<FIELD | REFER_CUM | REFER_SENIOR | DECLINE>"
+    "risk_tier_reason": "<one sentence explaining the tier assignment>"
   },
   "analysis_summary": "<3-5 sentence executive summary. Start with the verdict word (DECLINE. REFER. PROCEED.). Cite the two most material findings. End with the single most important next action.>",
   "priority_actions": [
@@ -47,15 +46,14 @@ Return ONLY valid JSON, no markdown, no backticks:
       "action_required": "<what must be done — verb-first, 1 sentence>",
       "cited_section": "<guideline section reference>",
       "source_doc": "<submission document name>",
-      "source_tier": "<T1 | T2 | T3 | T4 | NOT_CONFIRMED>"
+      "source_tier": "<Inspector Confirmed | Application Stated | Broker Represented | Owner Stated | Not Confirmed>"
     }
   ],
   "favorable_factors": [
     {
       "factor": "<positive finding — noun phrase, 6 words max>",
       "detail": "<1 sentence — start with Positive indicator.>",
-      "source_doc": "<document name>",
-      "source_tier": "<T1 | T2 | T3 | T4>"
+      "source_doc": "<document name>"
     }
   ],
   "dimension_scores": {
@@ -98,7 +96,7 @@ Do NOT flag items that would not change the verdict, terms, or underwriter actio
 Do NOT re-flag items already in priority_actions.
 Do NOT flag standard-compliant regulated items.
 
-PROCEED IS VALID AND OFTEN CORRECT. The majority of well-documented commercial property submissions from competent brokers should resolve to PROCEED or REQUEST_INFO — not REFER. If every run produces REFER, the review check generation is too aggressive. A clean, well-documented account with Class A construction, updated/permitted systems, wet pipe sprinklers certified, Zone X flood, strong loss history, 0% vacancy, and T1 inspection confirming no hard stops is a PROCEED.
+PROCEED IS VALID AND OFTEN CORRECT. The majority of well-documented commercial property submissions from competent brokers should resolve to PROCEED or REQUEST_INFO — not REFER. If every run produces REFER, the review check generation is too aggressive. A clean, well-documented account with Class A construction, updated/permitted systems, wet pipe sprinklers certified, Zone X flood, strong loss history, 0% vacancy, and an Inspector Confirmed report finding no hard stops is a PROCEED.
 
 PRIORITY ACTION RULES:
   Include 3-6 priority actions. Rank 1 = do this first.

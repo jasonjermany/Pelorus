@@ -31,7 +31,7 @@ type Verdict = {
   analyzed_in_seconds?: string
   dimension_scores?: Record<string, number>
   score_label?: string
-  risk_summary?: { one_liner?: string; uw_file_note?: string; risk_tier?: string; binding_authority?: string }
+  risk_summary?: { one_liner?: string; uw_file_note?: string; risk_tier?: string }
   analysis_summary?: string
   priority_actions?: Array<{ priority: number; action: string; why: string; deadline: string; owner: string }>
   recommendation?: { summary: string; action_items?: string[] }
@@ -39,7 +39,7 @@ type Verdict = {
   favorable_factors?: Array<{ factor: string; detail: string; source_doc?: string; source_tier?: string }>
   guideline_checks?: Array<{ rule_name: string; requirement: string; submitted_value: string; status: string; section: string }>
   insights?: Array<{ type: string; label: string; finding: string; source_docs?: string[] }>
-  missing_information?: Array<{ label: string; description: string; why_it_matters?: string; priority?: string }>
+  missing_information?: Array<{ label: string; description: string; why_it_matters?: string; priority?: number }>
   risk_profile?: RiskReport
 }
 
@@ -346,7 +346,7 @@ function buildDocDef(verdict: Verdict, submissionDate: string, namedInsured: str
           {
             columns: [
               { text: item.label, style: 'flagTitle', width: '*' },
-              ...(item.priority ? [{ text: item.priority, style: 'badge', color: item.priority === 'BINDING' ? '#dc2626' : '#a8882e', width: 'auto' }] : []),
+              ...(item.priority ? [{ text: `Priority ${item.priority}`, style: 'badge', color: item.priority <= 2 ? '#dc2626' : item.priority <= 4 ? '#a8882e' : '#6b7280', width: 'auto' }] : []),
             ],
           },
           { text: item.description, style: 'body', margin: [0, 3, 0, 0] as [number, number, number, number] },

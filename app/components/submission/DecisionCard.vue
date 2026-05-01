@@ -13,11 +13,6 @@
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-[0.06em] uppercase"
             :class="tierClass"
           >{{ verdict.risk_summary.risk_tier }}</span>
-          <span
-            v-if="verdict.risk_summary?.binding_authority"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-[0.04em] border"
-            :style="{ color: colors.meta, background: colors.metaBg, borderColor: colors.border }"
-          >{{ verdict.risk_summary.binding_authority.replace('_', ' ') }}</span>
         </div>
         <p v-if="verdict.risk_summary?.one_liner" class="text-[13px] font-medium text-gray-600 mb-2 leading-snug">{{ verdict.risk_summary.one_liner }}</p>
         <p class="text-[16px] leading-[1.7] mb-4 text-gray-800">{{ verdict.recommendation?.summary }}</p>
@@ -32,11 +27,6 @@
             class="text-[13px] font-medium px-2.5 py-1 rounded-full"
             :style="{ background: colors.metaBg, color: colors.meta }"
           >{{ verdict.score_label }}</span>
-          <span
-            v-if="verdict.pelorus_reference_id"
-            class="text-[12px] font-mono px-2 py-0.5 rounded-full bg-black/10"
-            :style="{ color: colors.meta }"
-          >{{ verdict.pelorus_reference_id }}</span>
         </div>
       </div>
       <div class="flex-shrink-0 flex flex-col items-end">

@@ -56,8 +56,8 @@ RENEWAL-SPECIFIC JUDGMENT RULES:
 Return ONLY valid JSON, no markdown, no backticks. Append as a top-level "renewal_comparison" field:
 {
   "renewal_comparison": {
-    "prior_reference_id": "<prior pelorus_reference_id>",
-    "current_reference_id": "<current pelorus_reference_id>",
+    "prior_reference_id": "<prior submission identifier>",
+    "current_reference_id": "<current submission identifier>",
     "prior_verdict": "<prior verdict_code>",
     "current_verdict": "<current verdict_code>",
     "verdict_changed": <true | false>,

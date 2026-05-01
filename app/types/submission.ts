@@ -4,7 +4,7 @@ export type RpAmendment = {
   amendedAt: string
 }
 
-export type SourceTier = 'T1' | 'T2' | 'T3' | 'T4' | 'NOT_CONFIRMED'
+export type SourceTier = 'Inspector Confirmed' | 'Application Stated' | 'Broker Represented' | 'Owner Stated' | 'Not Confirmed'
 
 // ── Prompt 7: Risk Profile ─────────────────────────────────────────────────
 
@@ -90,7 +90,6 @@ export type FavorableFactor = {
   factor: string
   detail: string
   source_doc?: string
-  source_tier?: SourceTier
 }
 
 export type PriorityAction = {
@@ -106,7 +105,6 @@ export type RiskSummary = {
   uw_file_note: string
   risk_tier: 'PREFERRED' | 'STANDARD' | 'SUBSTANDARD' | 'INELIGIBLE'
   risk_tier_reason: string
-  binding_authority: 'FIELD' | 'REFER_CUM' | 'REFER_SENIOR' | 'DECLINE'
 }
 
 export type DimensionScores = {
@@ -128,7 +126,6 @@ export type Insight = {
   label: string
   finding: string
   source_docs: string[]
-  source_tier: SourceTier
 }
 
 export type MissingInfoItem = {
@@ -136,8 +133,7 @@ export type MissingInfoItem = {
   description: string
   why_it_matters?: string
   how_to_obtain?: string
-  priority: 'BINDING' | 'PRE_BIND' | 'RECOMMENDED'
-  source_tier_needed?: 'T1' | 'T2'
+  priority: number
 }
 
 // ── Prompt 12: Email Draft ─────────────────────────────────────────────────
@@ -183,7 +179,6 @@ export type RenewalComparison = {
 
 export type Verdict = {
   // Prompt 8 outputs
-  pelorus_reference_id?: string
   verdict_code: VerdictCode
   verdict_label?: string
   verdict_reason?: string

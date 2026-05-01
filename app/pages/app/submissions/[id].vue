@@ -207,9 +207,7 @@
                   <div class="flex-1 min-w-0">
                     <p class="text-[15px] font-medium text-gray-900 leading-snug">{{ f.factor }}</p>
                     <p class="text-[14px] text-gray-700 leading-relaxed mt-0.5">{{ f.detail }}</p>
-                    <p v-if="f.source_doc" class="text-[12px] text-gray-500 mt-1">
-                      {{ f.source_doc }}<span v-if="f.source_tier" class="ml-1.5 font-bold">{{ f.source_tier }}</span>
-                    </p>
+                    <p v-if="f.source_doc" class="text-[12px] text-gray-500 mt-1">{{ f.source_doc }}</p>
                   </div>
                 </li>
               </ul>
@@ -236,10 +234,6 @@
                       class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full"
                       :class="insightTypeBadgeClass(insight.type)"
                     >{{ insightTypeLabel(insight.type) }}</span>
-                    <span
-                      v-if="insight.source_tier && insight.source_tier !== 'NOT_CONFIRMED'"
-                      class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600"
-                    >{{ insight.source_tier }}</span>
                   </div>
                   <p class="text-[15px] text-gray-800 leading-relaxed">{{ insight.finding }}</p>
                   <p v-if="insight.source_docs?.length" class="text-[12px] text-gray-500 mt-1.5">
@@ -259,13 +253,9 @@
                     <p class="text-[15px] font-semibold text-gray-900 flex-1 min-w-0">{{ item.label }}</p>
                     <span
                       v-if="item.priority"
-                      class="text-[11px] font-bold tracking-[0.08em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
-                      :class="item.priority === 'BINDING' ? 'bg-red-50 text-red-700 border border-red-200' : item.priority === 'PRE_BIND' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'"
-                    >{{ item.priority }}</span>
-                    <span
-                      v-if="item.source_tier_needed"
-                      class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex-shrink-0"
-                    >Need {{ item.source_tier_needed }}</span>
+                      class="text-[11px] font-bold tracking-[0.08em] px-2 py-0.5 rounded-full flex-shrink-0"
+                      :class="item.priority <= 2 ? 'bg-red-50 text-red-700 border border-red-200' : item.priority <= 4 ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-700 border border-gray-200'"
+                    >Priority {{ item.priority }}</span>
                   </div>
                   <p class="text-[15px] text-gray-800 leading-relaxed">{{ item.description }}</p>
                   <p v-if="item.why_it_matters" class="text-[13px] text-gray-600 mt-1.5 leading-relaxed">

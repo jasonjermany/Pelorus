@@ -6,10 +6,6 @@ export const CHECKS_TOOL = {
   input_schema: {
     type: 'object' as const,
     properties: {
-      pelorus_reference_id: {
-        type: 'string',
-        description: 'Generate as PEL-YYYYMMDD-XXXX where XXXX is a 4-char hash of the named insured (e.g. PEL-20260428-MAPL). Use today\'s date.',
-      },
       verdict_code: {
         type: 'string',
         enum: ['DECLINE', 'SOFT_DECLINE', 'REFER', 'REQUEST_INFO', 'PROCEED'],
@@ -37,7 +33,7 @@ export const CHECKS_TOOL = {
             condition_confirmed: { type: 'string', description: 'Specific condition found in this submission.' },
             guideline_section:   { type: 'string', description: 'Section reference in carrier guidelines.' },
             source_doc:          { type: 'string', description: 'Document where condition was found.' },
-            source_tier:         { type: 'string', enum: ['T1', 'T2', 'T3', 'T4'], description: 'Source tier of the confirming evidence.' },
+            source_tier:         { type: 'string', enum: ['Inspector Confirmed', 'Application Stated', 'Broker Represented', 'Owner Stated'], description: 'Source tier of the confirming evidence.' },
           },
           required: ['rule_name', 'condition_confirmed', 'guideline_section', 'source_doc', 'source_tier'],
         },
@@ -54,13 +50,13 @@ export const CHECKS_TOOL = {
             submitted_value: { type: 'string', description: 'What was submitted — 20 words max, factual only.' },
             section:         { type: 'string', description: 'Guideline section reference.' },
             source_doc:      { type: 'string', description: 'Submission document name. "Not disclosed" if not traceable.' },
-            source_tier:     { type: 'string', enum: ['T1', 'T2', 'T3', 'T4', 'NOT_CONFIRMED'], description: 'Source tier.' },
+            source_tier:     { type: 'string', enum: ['Inspector Confirmed', 'Application Stated', 'Broker Represented', 'Owner Stated', 'Not Confirmed'], description: 'Source tier.' },
           },
           required: ['rule_name', 'status', 'requirement', 'submitted_value', 'section', 'source_doc', 'source_tier'],
         },
       },
     },
-    required: ['pelorus_reference_id', 'verdict_code', 'verdict_label', 'verdict_reason', 'action_recommendation', 'hard_stops_triggered', 'guideline_checks'],
+    required: ['verdict_code', 'verdict_label', 'verdict_reason', 'action_recommendation', 'hard_stops_triggered', 'guideline_checks'],
   },
 }
 
@@ -167,9 +163,9 @@ REVIEW CHECK DISCIPLINE — prevent over-generation:
   CALIBRATION TEST: Before adding a "review" check, ask — would a senior underwriter at a regional carrier actually hold this quote pending this specific confirmation, given everything else in this submission? If the answer is "probably not," omit the check.
 
 STATUS RULES — apply Hard Stop Decision Logic above exactly:
-  "fail"   — condition present in submission (explicitly, vaguely, or by implication) without T1/T2 documentation satisfying it. T3 broker denial without T1/T2 confirmation = "fail."
+  "fail"   — condition present in submission (explicitly, vaguely, or by implication) without Inspector Confirmed or Application Stated documentation satisfying it. Broker Represented denial without Inspector Confirmed or Application Stated confirmation = "fail."
   "review" — check is relevant but condition entirely absent from all docs.
-  "pass"   — explicitly confirmed absent by T1/T2 source. Omit from output.
+  "pass"   — explicitly confirmed absent by Inspector Confirmed or Application Stated source. Omit from output.
   Show only "fail" and "review" checks in guideline_checks.
 
 ELIGIBLE CHECKS:

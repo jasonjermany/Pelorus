@@ -106,7 +106,7 @@
                   }"
                 >{{ check.status }}</span>
                 <span
-                  v-if="check.source_tier && check.source_tier !== 'NOT_CONFIRMED'"
+                  v-if="check.source_tier && check.source_tier !== 'Not Confirmed'"
                   class="text-[10px] font-bold tracking-[0.06em] uppercase px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap self-start"
                 >{{ check.source_tier }}</span>
               </div>

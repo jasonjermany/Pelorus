@@ -1,6 +1,5 @@
 export function buildEmailDraftPrompt(params: {
   verdict_code: string
-  pelorus_reference_id: string
   named_insured: string
   broker?: string
   hard_stops_triggered?: any[]
@@ -10,7 +9,6 @@ export function buildEmailDraftPrompt(params: {
 }): string {
   const {
     verdict_code,
-    pelorus_reference_id,
     named_insured,
     broker,
     hard_stops_triggered = [],
@@ -33,7 +31,6 @@ EMAIL PRINCIPLES — apply to every draft:
 INPUTS:
   VERDICT: ${verdict_code}
   NAMED INSURED: ${named_insured}
-  PELORUS REFERENCE: ${pelorus_reference_id}
   BROKER: ${broker || '(unknown)'}
   HARD STOPS TRIGGERED: ${JSON.stringify(hard_stops_triggered)}
   GUIDELINE CHECKS: ${JSON.stringify(guideline_checks)}
@@ -43,32 +40,28 @@ INPUTS:
 TEMPLATE SELECTION — choose based on verdict_code:
 
 PROCEED → Template A: Proceed to Quote
-  Subject: ${named_insured} — Proceeding to Quote | Ref ${pelorus_reference_id}
-  ${brokerGreeting}
+  Subject: ${named_insured} — Proceeding to Quote  ${brokerGreeting}
   Thank you for submitting ${named_insured}. We reviewed the submission and are proceeding to quote.
-  [If any PRE_BIND or RECOMMENDED missing items exist — one sentence listing them. If none — omit entirely.]
+  [If any lower-priority (3-7) missing items exist — one sentence listing them. If none — omit entirely.]
   Quote to follow. Let me know if you have questions in the meantime.
   [Underwriter name]
 
 REQUEST_INFO → Template B: Request Additional Information
-  Subject: ${named_insured} — Additional Information Needed | Ref ${pelorus_reference_id}
-  ${brokerGreeting}
+  Subject: ${named_insured} — Additional Information Needed  ${brokerGreeting}
   Thank you for submitting ${named_insured}. We reviewed the submission and have a few items we need before we can issue a quote:
   [Numbered list of BINDING missing_information items only — max 4. One sentence each.]
   Please provide the above at your convenience. We can proceed to quote once we receive these items.
   [Underwriter name]
 
 REFER → Template C: Referral Summary
-  Subject: ${named_insured} — Referred to Authority | Ref ${pelorus_reference_id}
-  ${brokerGreeting}
+  Subject: ${named_insured} — Referred to Authority  ${brokerGreeting}
   Thank you for submitting ${named_insured}. We reviewed the submission and are referring the account for the following:
   [Bulleted list of referral reasons — 2-4 items max. One sentence each. Cite guideline section if applicable.]
   This is not a decline. We will follow up once we have a response.
   [Underwriter name]
 
 DECLINE → Template D: Declination
-  Subject: ${named_insured} — Unable to Quote | Ref ${pelorus_reference_id}
-  ${brokerGreeting}
+  Subject: ${named_insured} — Unable to Quote  ${brokerGreeting}
   Thank you for submitting ${named_insured}. After reviewing the submission against our underwriting guidelines, we are unable to offer terms at this time.
   [1-2 sentences citing the specific hard stop condition(s) and guideline section(s). Specific but not harsh.]
   [If cure path exists: "We would be happy to reconsider if [specific cure condition]."]
@@ -76,8 +69,7 @@ DECLINE → Template D: Declination
   [Underwriter name]
 
 SOFT_DECLINE → Template E: Recommended Decline
-  Subject: ${named_insured} — Unable to Quote | Ref ${pelorus_reference_id}
-  ${brokerGreeting}
+  Subject: ${named_insured} — Unable to Quote  ${brokerGreeting}
   Thank you for submitting ${named_insured}. After a thorough review, we are recommending against offering terms on this account at this time.
   [1-2 sentences explaining the totality of concerns — no single hard stop, but the combination. Honest but professional.]
   We appreciate you thinking of us and hope to work with you on future submissions.

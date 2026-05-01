@@ -69,7 +69,7 @@ export function buildRiskProfileMessages(submissionText: string, fields: string[
       content: `You are building a structured risk profile from an insurance submission for a commercial underwriter. Extract every material fact needed to evaluate this risk.
 
 STATUS VALUES — assign one per field:
-  "ok"          — value confirmed with T1/T2 documentation, no concerns
+  "ok"          — value confirmed with Inspector Confirmed or Application Stated documentation, no concerns
   "warn"        — value present but flagged (age threshold, gap, missing doc, advisory item, value approaching a guideline limit)
   "fail"        — hard stop condition confirmed (prohibited material, binding condition unmet, hard stop threshold breached)
   "unconfirmed" — condition referenced but specific supporting documentation not present in this submission
