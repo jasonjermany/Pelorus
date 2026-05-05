@@ -45,7 +45,7 @@
               <span class="text-[12px] text-gray-600 uppercase tracking-[0.08em] font-semibold">Property, GL, casualty &amp; more</span>
             </div>
             <div>
-              <span class="block text-[22px] md:text-[26px] font-bold text-gray-900 tracking-[-0.5px]">xx–xx min</span>
+              <span class="block text-[22px] md:text-[26px] font-bold text-gray-900 tracking-[-0.5px]">30 min</span>
               <span class="text-[12px] text-gray-600 uppercase tracking-[0.08em] font-semibold">Saved per submission</span>
             </div>
           </div>
@@ -55,28 +55,57 @@
         <div class="relative hidden lg:block">
           <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white" style="animation:float 6s ease-in-out infinite;transform:rotate(-1deg);box-shadow:0 32px 80px rgba(0,0,0,0.12)">
             <!-- Mini nav -->
-            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100">
-              <span class="block text-[11px] text-gray-600 tracking-[0.04em] mb-0.5">← Inbox</span>
-              <div class="flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 bg-accent-500 rounded-full flex-shrink-0"/>
-                <span class="text-[15px] font-semibold text-gray-900 leading-tight">Harborlight Marina &amp; Boat Storage</span>
+            <div class="bg-gray-50 border-b border-gray-100">
+              <!-- Inbox list -->
+              <div class="px-4 pt-3 pb-1">
+                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Inbox</span>
               </div>
-              <span class="text-[11px] text-gray-600 ml-3">Submission Review</span>
+              <div class="flex flex-col">
+                <div class="px-3 py-2 flex items-center gap-2 opacity-50">
+                  <span class="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"/>
+                  <span class="text-[11px] text-gray-700 truncate">Northgate Cold Storage LLC</span>
+                  <span class="ml-auto text-[9px] text-gray-400 flex-shrink-0">6m</span>
+                </div>
+                <div class="px-3 py-2 flex items-center gap-2 opacity-50">
+                  <span class="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"/>
+                  <span class="text-[11px] text-gray-700 truncate">Lakewood Auto Dealerships Inc.</span>
+                  <span class="ml-auto text-[9px] text-gray-400 flex-shrink-0">11m</span>
+                </div>
+                <div class="px-3 py-2 flex items-center gap-2 bg-white border-l-2 border-accent-500 rounded-r-sm">
+                  <span class="w-1.5 h-1.5 bg-accent-500 rounded-full flex-shrink-0"/>
+                  <span class="text-[11px] font-semibold text-gray-900 truncate">Clearwater Medical Plaza</span>
+                  <span class="ml-auto text-[9px] text-accent-600 font-medium flex-shrink-0">Now</span>
+                </div>
+                <div class="px-3 py-2 flex items-center gap-2 opacity-40">
+                  <span class="w-1.5 h-1.5 bg-gray-300 rounded-full flex-shrink-0"/>
+                  <span class="text-[11px] text-gray-500 truncate">Blue Harbor Hospitality Group</span>
+                  <span class="ml-auto text-[9px] text-gray-400 flex-shrink-0">58m</span>
+                </div>
+              </div>
+              <div class="px-4 pt-2 pb-2 border-t border-gray-100 mt-1">
+                <span class="text-[11px] text-gray-600 font-medium">Clearwater Medical Plaza</span>
+                <span class="text-[10px] text-gray-500 ml-2">· Submission Review</span>
+              </div>
+            </div>
+            <!-- Simulated notice -->
+            <div class="mx-3 mt-2.5 px-3 py-1.5 rounded-lg bg-accent-500/[0.07] border border-accent-500/20 flex items-center gap-2">
+              <span class="text-[9px] font-black tracking-[0.1em] uppercase bg-accent-500/20 text-[#92700A] px-1.5 py-0.5 rounded flex-shrink-0">Demo</span>
+              <span class="text-[10px] text-[#92700A]/80 font-medium">Simulated submission — mirrors real-world commercial property triage</span>
             </div>
             <!-- Decision banner -->
-            <div class="mx-3 mt-3 rounded-xl p-4 flex items-start justify-between gap-3 bg-red-100 border border-red-200">
+            <div class="mx-3 mt-2 rounded-xl p-4 flex items-start justify-between gap-3 bg-green-50 border border-green-200">
               <div class="flex-1">
                 <span class="block text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600 mb-1">Decision</span>
-                <span class="block text-[20px] font-bold text-red-600 tracking-[-0.5px] mb-1">DECLINE</span>
-                <span class="block text-[12px] text-gray-800 leading-relaxed mb-2">Two hard stops triggered. Federal Pacific panel confirmed in certified loss runs.</span>
+                <span class="block text-[20px] font-bold text-green-700 tracking-[-0.5px] mb-1">PROCEED TO QUOTE</span>
+                <span class="block text-[12px] text-gray-800 leading-relaxed mb-2">No hard stops triggered. Class A medical office, zero losses in 5 years.</span>
                 <div class="flex items-center gap-2">
-                  <span class="text-[12px] text-gray-600">TIV: $20,975,000</span>
-                  <span class="bg-red-200/60 text-[11px] text-red-700 font-medium px-2 py-0.5 rounded-full">45.2s</span>
+                  <span class="text-[12px] text-gray-600">TIV: $4,200,000</span>
+                  <span class="bg-green-100 text-[11px] text-green-700 font-medium px-2 py-0.5 rounded-full">71s</span>
                 </div>
               </div>
               <div class="flex-shrink-0 flex items-baseline gap-0.5">
-                <span class="text-[30px] font-bold text-red-600 tracking-[-1.5px] leading-none">2.5</span>
-                <span class="text-[15px] font-medium text-red-400">/ 10</span>
+                <span class="text-[30px] font-bold text-green-700 tracking-[-1.5px] leading-none">8.7</span>
+                <span class="text-[15px] font-medium text-green-400">/ 10</span>
               </div>
             </div>
             <!-- Tabs -->
@@ -90,13 +119,13 @@
             <div class="mx-3 mt-3 mb-3 flex flex-col gap-2.5">
               <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
                 <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-600 mb-1.5">Recommended Next Action</p>
-                <p class="text-[12px] text-gray-800 leading-relaxed mb-2.5">Decline — two confirmed hard stops. Issue formal declination citing Section 4.4.1 and Section 4.2.</p>
+                <p class="text-[12px] text-gray-800 leading-relaxed mb-2.5">Proceed to quote. All guideline checks passed. Obtain roof inspection for the 16-year membrane prior to binding.</p>
                 <div class="flex flex-col gap-1.5">
                   <div class="flex gap-1.5 text-[11px] text-gray-700 leading-relaxed">
-                    <span class="text-[#92700A] font-bold flex-shrink-0">1.</span>Issue formal declination citing FP Stab-Lok panel confirmed in loss runs
+                    <span class="text-green-700 font-bold flex-shrink-0">1.</span>Issue quote per standard commercial property terms
                   </div>
                   <div class="flex gap-1.5 text-[11px] text-gray-700 leading-relaxed">
-                    <span class="text-[#92700A] font-bold flex-shrink-0">2.</span>Advise broker Location 4 requires complete gut rehab documentation
+                    <span class="text-green-700 font-bold flex-shrink-0">2.</span>Request roof inspection report prior to binding
                   </div>
                 </div>
               </div>
@@ -106,19 +135,19 @@
                   <span class="text-[11px] text-gray-600">2 items</span>
                 </div>
                 <div class="divide-y divide-gray-100">
-                  <div class="p-3 bg-red-50/40">
-                    <div class="flex items-start justify-between gap-2 mb-1">
-                      <span class="text-[11px] font-semibold text-gray-900">Federal Pacific Stab-Lok Panel — Confirmed</span>
-                      <span class="text-[7px] font-bold bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded-full flex-shrink-0">CONDITION</span>
-                    </div>
-                    <p class="text-[11px] text-gray-700 leading-relaxed">Certified loss runs confirm FP panel caused 2021 fire. Hard stop applies.</p>
-                  </div>
                   <div class="p-3 bg-amber-50/30">
                     <div class="flex items-start justify-between gap-2 mb-1">
-                      <span class="text-[11px] font-semibold text-gray-900">Location 4 — Roof Age 22 Years</span>
+                      <span class="text-[11px] font-semibold text-gray-900">Roof Age — 16-Year TPO Membrane</span>
                       <span class="text-[7px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-full flex-shrink-0">VERIFY</span>
                     </div>
-                    <p class="text-[11px] text-gray-700 leading-relaxed">BUR roof approaching 25-year hard stop threshold. Senior UW referral required.</p>
+                    <p class="text-[11px] text-gray-700 leading-relaxed">Within 4 years of 20-year guideline threshold. Inspection required before binding.</p>
+                  </div>
+                  <div class="p-3">
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                      <span class="text-[11px] font-semibold text-gray-900">Co-Insurance — Confirm Replacement Cost</span>
+                      <span class="text-[7px] font-bold bg-gray-100 text-gray-600 border border-gray-200 px-1.5 py-0.5 rounded-full flex-shrink-0">INFO</span>
+                    </div>
+                    <p class="text-[11px] text-gray-700 leading-relaxed">TIV at $4.2M. Verify replacement cost valuation reflects current construction costs.</p>
                   </div>
                 </div>
               </div>
@@ -155,11 +184,12 @@
     </section>
 
     <!-- ── BUILT FOR ──────────────────────────────────────────── -->
-    <div class="border-t border-b border-gray-100 bg-gray-50 py-7 px-6 md:px-12">
+    <div class="bg-navy py-7 px-6 md:px-12">
       <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-12" data-fade>
-        <span class="text-[12px] uppercase tracking-[0.12em] text-gray-600 font-semibold whitespace-nowrap flex-shrink-0">Built for</span>
+        <span class="text-[12px] uppercase tracking-[0.12em] text-white/40 font-semibold whitespace-nowrap flex-shrink-0">Built for</span>
+        <div class="w-px h-4 bg-white/10 flex-shrink-0 hidden md:block"/>
         <div class="flex items-center gap-6 md:gap-12 flex-wrap">
-          <span v-for="type in ['Regional Carriers', 'Mutual Companies', 'MGAs', 'Program Administrators', 'Specialty Lines']" :key="type" class="text-[16px] md:text-[15px] font-semibold text-gray-600">{{ type }}</span>
+          <span v-for="type in ['Regional Carriers', 'Mutual Companies', 'MGAs', 'Program Administrators', 'Specialty Lines']" :key="type" class="text-[15px] md:text-[15px] font-semibold text-white/70">{{ type }}</span>
         </div>
       </div>
     </div>
@@ -207,14 +237,14 @@
     </section>
 
     <!-- ── METRICS ─────────────────────────────────────────────── -->
-    <section class="py-16 md:py-24 px-6 md:px-12">
+    <section class="py-16 md:py-24 px-6 md:px-12 bg-navy">
       <div class="max-w-[1200px] mx-auto">
-        <p class="text-[13px] uppercase tracking-[0.12em] text-[#92700A] font-semibold mb-4" data-fade>Impact</p>
-        <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-gray-900 leading-[1.12] tracking-[-1px] mb-12" data-fade data-fade-delay="60">The numbers that matter</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden bg-gray-100">
-          <div v-for="metric in metrics" :key="metric.num" class="bg-white px-6 md:px-8 py-8 md:py-10 text-center" data-fade>
-            <span class="block text-[34px] md:text-[42px] font-bold text-gray-900 leading-none mb-2 tracking-[-1.5px]">{{ metric.num }}</span>
-            <span class="text-[14px] text-gray-700 leading-relaxed">{{ metric.label }}</span>
+        <p class="text-[13px] uppercase tracking-[0.12em] text-accent-500 font-semibold mb-4" data-fade>Impact</p>
+        <h2 class="text-[clamp(28px,4vw,46px)] font-bold text-white leading-[1.12] tracking-[-1px] mb-12" data-fade data-fade-delay="60">The numbers that matter</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden bg-white/10">
+          <div v-for="metric in metrics" :key="metric.num" class="bg-navy px-6 md:px-8 py-8 md:py-10 text-center" data-fade>
+            <span class="block text-[34px] md:text-[42px] font-bold text-white leading-none mb-2 tracking-[-1.5px]">{{ metric.num }}</span>
+            <span class="text-[14px] text-white/55 leading-relaxed">{{ metric.label }}</span>
           </div>
         </div>
       </div>
@@ -366,9 +396,9 @@
             <div>
               <div class="text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-600 mb-4">Company</div>
               <ul class="flex flex-col gap-3 list-none">
-                <li v-for="link in ['Contact Sales', 'Privacy Policy', 'Terms of Service']" :key="link">
-                  <a href="#contact" class="text-[15px] text-gray-700 hover:text-gray-900 no-underline transition-colors duration-150">{{ link }}</a>
-                </li>
+                <li><a href="#contact" class="text-[15px] text-gray-700 hover:text-gray-900 no-underline transition-colors duration-150">Contact Sales</a></li>
+                <li><NuxtLink to="/privacy" class="text-[15px] text-gray-700 hover:text-gray-900 no-underline transition-colors duration-150">Privacy Policy</NuxtLink></li>
+                <li><span class="text-[15px] text-gray-400 cursor-default">Terms of Service</span></li>
               </ul>
             </div>
           </div>
@@ -376,8 +406,8 @@
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-8 border-t border-gray-100">
           <span class="text-[14px] text-gray-600">© 2026 Pelorus LLC. All rights reserved.</span>
           <div class="flex gap-6">
-            <a href="#" class="text-[14px] text-gray-600 hover:text-gray-800 no-underline transition-colors duration-150">Privacy</a>
-            <a href="#" class="text-[14px] text-gray-600 hover:text-gray-800 no-underline transition-colors duration-150">Terms</a>
+            <NuxtLink to="/privacy" class="text-[14px] text-gray-600 hover:text-gray-800 no-underline transition-colors duration-150">Privacy</NuxtLink>
+            <span class="text-[14px] text-gray-400 cursor-default">Terms</span>
           </div>
         </div>
       </div>

@@ -59,19 +59,20 @@ export default defineEventHandler(async (event) => {
 
   const orgId = org.id
 
-  // Only process submissions from users who belong to this org
-  // const { data: userRecord } = await getSupabase()
-  //   .from('users')
-  //   .select('id')
-  //   .eq('org_id', orgId)
-  //   .eq('email', brokerEmail)
-  //   .single()
-
-  // if (!brokerEmail || !userRecord) {
   if (!brokerEmail) {
-    console.warn(`[email/inbound] sender not whitelisted  from=${brokerEmail}  handle=${handle}`)
+    console.warn(`[email/inbound] no sender email  handle=${handle}`)
     return { ok: true }
   }
+
+  // Look up the user record so we can set user_id on the submission
+  const { data: userRecord } = await getSupabase()
+    .from('users')
+    .select('id')
+    .eq('org_id', orgId)
+    .eq('email', brokerEmail)
+    .single()
+
+  const userId: string | null = userRecord?.id ?? null
 
   // Collect all attachments; fall back to plain-text body wrapped as .txt
   const attachmentFiles = parts
@@ -95,8 +96,9 @@ export default defineEventHandler(async (event) => {
     .from('submissions')
     .insert({
       org_id: orgId,
+      user_id: userId,
       raw_text: '',
-      broker_email: brokerEmail,
+      broker_email: null,
       source: 'email',
       status: 'processing',
     })
@@ -146,7 +148,7 @@ export default defineEventHandler(async (event) => {
 
       console.log(`[email/inbound] complete ${submission.id}  ${((Date.now() - t_total) / 1000).toFixed(1)}s`)
 
-      if (brokerEmail) {
+      if (brokerEmail) { // brokerEmail = sender's email — used to reply with results
         const namedInsured = verdict.risk_profile?.named_insured ?? null
         const sub = submission as any
         const pdfBuffer = await generatePdfBuffer(

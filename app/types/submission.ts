@@ -117,6 +117,26 @@ export type DimensionScores = {
   submission_quality: number
 }
 
+export type DimensionLabels = {
+  construction: string
+  fire_protection: string
+  occupancy: string
+  loss_history: string
+  management: string
+  cat_exposure: string
+  submission_quality: string
+}
+
+export type LineBreakdown = {
+  line: string
+  premium_share?: number | null
+  dimension_labels: DimensionLabels
+  dimension_scores: DimensionScores
+  composite_score: number
+  score_label: string
+  verdict: VerdictCode
+}
+
 // ── Prompt 11: Insights ────────────────────────────────────────────────────
 
 export type InsightType = 'PATTERN_RECOGNITION' | 'MARKET_CONTEXT' | 'CONSISTENCY_CHECK' | 'COVERAGE_GAP'
@@ -193,9 +213,12 @@ export type Verdict = {
   recommendation: { summary: string; action_items: string[] }
   flags: Flag[]
   favorable_factors: FavorableFactor[]
+  detected_lines?: string[]
+  dimension_labels?: DimensionLabels
   dimension_scores: DimensionScores
   composite_score: number
   score_label?: string
+  line_breakdown?: LineBreakdown[] | null
 
   // Prompt 11 outputs
   insights: Insight[]

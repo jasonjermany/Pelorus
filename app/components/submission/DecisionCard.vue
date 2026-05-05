@@ -22,18 +22,20 @@
             class="text-[13px] font-medium px-2.5 py-1 rounded-full"
             :style="{ background: colors.metaBg, color: colors.meta }"
           >Analyzed in {{ verdict.analyzed_in_seconds }}s</span>
-          <span
-            v-if="verdict.score_label"
-            class="text-[13px] font-medium px-2.5 py-1 rounded-full"
-            :style="{ background: colors.metaBg, color: colors.meta }"
-          >{{ verdict.score_label }}</span>
         </div>
       </div>
-      <div class="flex-shrink-0 flex flex-col items-end">
-        <span class="leading-none tracking-[-3px]" style="font-size:68px;font-weight:300" :style="{ color: colors.score }">
-          {{ normalizeScore(verdict.composite_score).toFixed(1) }}
-        </span>
-        <span class="text-[14px] font-medium -mt-1" :style="{ color: colors.scoreLabel }">out of 10</span>
+      <div class="flex-shrink-0 flex flex-col items-end gap-1">
+        <div class="flex items-baseline gap-1.5 leading-none">
+          <span class="leading-none tracking-[-3px]" style="font-size:68px;font-weight:300" :style="{ color: colors.score }">
+            {{ normalizeScore(verdict.composite_score).toFixed(1) }}
+          </span>
+          <span class="text-[16px] font-medium" :style="{ color: colors.scoreLabel }">/10</span>
+        </div>
+        <span
+          v-if="verdict.score_label"
+          class="text-[12px] font-bold tracking-[0.05em] px-2.5 py-1 rounded-full text-right"
+          :style="{ background: colors.metaBg, color: colors.meta }"
+        >{{ verdict.score_label }}</span>
       </div>
     </div>
   </div>

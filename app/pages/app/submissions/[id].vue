@@ -82,6 +82,75 @@
               </div>
             </div>
           </div>
+
+          <!-- By Line accordion — only when 2+ lines detected -->
+          <div v-if="multiLineBreakdown.length" class="mt-5 pt-5 border-t border-gray-100">
+            <button
+              class="flex items-center gap-2 text-[11px] font-black tracking-[0.13em] uppercase text-gray-600 hover:text-gray-900 transition-colors cursor-pointer w-full text-left"
+              @click="byLineOpen = !byLineOpen"
+            >
+              <svg
+                class="w-3.5 h-3.5 transition-transform duration-200 flex-shrink-0"
+                :class="byLineOpen ? 'rotate-90' : ''"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+              By Line
+            </button>
+
+            <div v-if="byLineOpen" class="mt-3 flex flex-col gap-2">
+              <div
+                v-for="lb in multiLineBreakdown"
+                :key="lb.line"
+                class="rounded-xl border border-gray-200 overflow-hidden"
+              >
+                <!-- Line header -->
+                <button
+                  class="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer text-left"
+                  @click="toggleLine(lb.line)"
+                >
+                  <svg
+                    class="w-3 h-3 text-gray-500 transition-transform duration-200 flex-shrink-0"
+                    :class="expandedLines.has(lb.line) ? 'rotate-90' : ''"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                  >
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                  <span class="text-[12px] font-bold tracking-[0.08em] uppercase text-gray-800 w-20 flex-shrink-0">{{ lb.line }}</span>
+                  <span class="text-[14px] font-semibold text-gray-900">{{ normalizeScore(lb.composite_score).toFixed(1) }}/10</span>
+                  <span class="text-[12px] text-gray-600">{{ lb.score_label }}</span>
+                  <span
+                    class="ml-auto text-[11px] font-bold tracking-[0.06em] uppercase px-2 py-0.5 rounded-full flex-shrink-0"
+                    :class="lb.verdict === 'PROCEED' ? 'bg-green-50 text-green-700 border border-green-200' : lb.verdict === 'DECLINE' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-800 border border-amber-200'"
+                  >{{ lb.verdict }}</span>
+                </button>
+
+                <!-- Line dimension rows -->
+                <div v-if="expandedLines.has(lb.line)" class="px-4 py-2 flex flex-col divide-y divide-gray-100">
+                  <div
+                    v-for="key in dimensionKeys"
+                    :key="key"
+                    class="flex items-center gap-4 py-2.5"
+                  >
+                    <span class="text-[10px] font-black uppercase tracking-[0.13em] text-gray-700 w-36 flex-shrink-0">
+                      {{ lb.dimension_labels?.[key] ?? formatKey(key) }}
+                    </span>
+                    <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        class="h-1.5 rounded-full transition-all duration-700"
+                        :class="normalizeScore(lb.dimension_scores[key]) >= 7.5 ? 'bg-green-500' : normalizeScore(lb.dimension_scores[key]) >= 5.0 ? 'bg-accent-500' : 'bg-red-500'"
+                        :style="{ width: `${normalizeScore(lb.dimension_scores[key]) * 10}%` }"
+                      />
+                    </div>
+                    <span class="text-[15px] font-semibold text-gray-800 w-8 text-right flex-shrink-0">
+                      {{ normalizeScore(lb.dimension_scores[key]).toFixed(1) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Tabs -->
@@ -407,17 +476,39 @@ type DimGroup = {
 
 const dimGroups = computed<DimGroup[]>(() => {
   if (verdict.value?.dimension_scores) {
+    const labels = verdict.value.dimension_labels
     return [{
       locationId: '',
       address: undefined,
       numericFields: Object.entries(verdict.value.dimension_scores).map(([key, score]) => ({
-        label: formatKey(key),
+        label: labels?.[key as keyof typeof labels] ?? formatKey(key),
         score: normalizeScore(score as number),
       })),
     }]
   }
   return []
 })
+
+// ── By Line accordion ──────────────────────────────────────────
+const dimensionKeys = ['construction', 'fire_protection', 'occupancy', 'loss_history', 'management', 'cat_exposure', 'submission_quality'] as const
+
+const multiLineBreakdown = computed(() => {
+  const lb = verdict.value?.line_breakdown
+  return lb && lb.length > 1 ? lb : []
+})
+
+const byLineOpen = ref(false)
+const expandedLines = ref(new Set<string>())
+
+function toggleLine(line: string) {
+  if (expandedLines.value.has(line)) {
+    expandedLines.value.delete(line)
+  } else {
+    expandedLines.value.add(line)
+  }
+  // trigger reactivity
+  expandedLines.value = new Set(expandedLines.value)
+}
 
 // ── Style helpers ──────────────────────────────────────────────
 function flagBarClass(type: FlagType) {
